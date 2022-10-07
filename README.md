@@ -1,7 +1,6 @@
-
 # v41-geckos-team-08
 
-The Job Board
+Job Board
 
 # Description
 
