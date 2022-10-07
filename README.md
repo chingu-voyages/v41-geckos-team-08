@@ -1,5 +1,8 @@
 # voyage-tasks
 
+To open the diagram file use:
+[https://app.diagrams.net/](https://app.diagrams.net/).
+
 Your project's `readme` is as important to success as your code. For 
 this reason you should put as much care into its creation and maintenance
 as you would any other component of the application.
@@ -12,3 +15,5 @@ And before we go there's "one more thing"! Once you decide what to include
 in your `readme` feel free to replace the text we've provided here.
 
 > Own it & Make it your Own!
+
+
