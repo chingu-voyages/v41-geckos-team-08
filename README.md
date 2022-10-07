@@ -1,19 +1,30 @@
-# voyage-tasks
 
-To open the diagram file use:
-[https://app.diagrams.net/](https://app.diagrams.net/).
+# v41-geckos-team-08
 
-Your project's `readme` is as important to success as your code. For 
-this reason you should put as much care into its creation and maintenance
-as you would any other component of the application.
+The Job Board
 
-If you are unsure of what should go into the `readme` let this article,
-written by an experienced Chingu, be your starting point - 
-[Keys to a well written README](https://tinyurl.com/yk3wubft).
+# Description
 
-And before we go there's "one more thing"! Once you decide what to include
-in your `readme` feel free to replace the text we've provided here.
+The Job Board defines Users as either Consumer or Supplier, with each creating a profile through signup and login form.The Supplier will specify the product they offer on signup, Consumers can search for products offerings. After the Cosumer selects a supplier both parties can negotiate rates and time of completion, then they will both be required to indicate that the task is completed.
 
-> Own it & Make it your Own!
+This project is part of [Chingu's](https://chingu.io/) Voyage 41 cohort.
 
+Objective was to reach Minimum Viable Product (MVP) for first release.
 
+# Development Build
+
+# Production Build
+
+# Tech Stack
+
+**PERN Stack**
+
+- [Postgresql](http://www.postgresql.org)
+- [ExpressJS](https://expressjs.com/en/api.html)
+- [ReactJS](https://reactjs.org/)
+- [Redux](https://redux.js.org)
+- [NodeJS](https://nodejs.org/en/)
+
+# Team
+
+<a href="https://github.com/chingu-voyages/v41-geckos-team-08/graphs/contributors"> <img src="https://contributors-img.firebaseapp.com/image?repo=chingu-voyages/v41-geckos-team-08" /> </a>
