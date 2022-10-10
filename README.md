@@ -1,14 +1,14 @@
-# Job Board
+# Work Order System
 
 v41-geckos-team-08
 
 # Description
 
-The Job Board defines Users as either Consumer or Supplier, with each creating a profile through signup and login form.The Supplier will specify the product they offer on signup, Consumers can search for products offerings. After the Cosumer selects a supplier both parties can negotiate rates and time of completion, then they will both be required to indicate that the task is completed.
+The Work Order System defines users as either consumers or suppliers, with each creating an authenticated profile. The supplier will specify the product that they offer on signup. Consumers can search for products offered by different suppliers. After the consumer selects a supplier, both parties can negotiate the rates and time of completion. Afterwards, they'll both be required to indicate that the work order is complete.
 
 This project is part of [Chingu's](https://chingu.io/) Voyage 41 cohort.
 
-Objective was to reach Minimum Viable Product (MVP) for first release.
+Objective was to reach a Minimum Viable Product (MVP) for the first release.
 
 # Development Build
 
