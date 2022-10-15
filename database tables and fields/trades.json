@@ -1,0 +1,12 @@
+[
+	{ "id": 1, "title": "Overhead Doors", "suppliers_trade": 10 },
+	{ "id": 2, "title": "Sitework & Site Utilities", "suppliers_trade": 2 },
+	{ "id": 3, "title": "Asphalt Paving", "suppliers_trade": 8 },
+	{ "id": 4, "title": "Retaining Wall and Brick Pavers", "suppliers_trade": 7 },
+	{ "id": 5, "title": "Masonry & Precast", "suppliers_trade": 10 },
+	{ "id": 6, "title": "Granite Surfaces", "suppliers_trade": 2 },
+	{ "id": 7, "title": "Plumbing & Medical Gas", "suppliers_trade": 3 },
+	{ "id": 8, "title": "Framing (Wood)", "suppliers_trade": 9 },
+	{ "id": 9, "title": "Drilled Shafts", "suppliers_trade": 1 },
+	{ "id": 10, "title": "Rebar & Wire Mesh Install", "suppliers_trade": 3 }
+]

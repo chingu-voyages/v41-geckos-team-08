@@ -1,0 +1,92 @@
+[
+	{
+		"id": 1,
+		"name": "Carpenter",
+		"supplier_id": 8,
+		"city_id": 2,
+		"price": "$1527.82",
+		"photo": "http://dummyimage.com/108x100.png/ff4444/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 2,
+		"name": "Millwright",
+		"supplier_id": 8,
+		"city_id": 5,
+		"price": "$246.84",
+		"photo": "http://dummyimage.com/118x100.png/ff4444/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 3,
+		"name": "Laborer",
+		"supplier_id": 6,
+		"city_id": 5,
+		"price": "$976.62",
+		"photo": "http://dummyimage.com/225x100.png/cc0000/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 4,
+		"name": "Concrete Finisher",
+		"supplier_id": 3,
+		"city_id": 9,
+		"price": "$1962.96",
+		"photo": "http://dummyimage.com/219x100.png/ff4444/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 5,
+		"name": "Painter",
+		"supplier_id": 5,
+		"city_id": 7,
+		"price": "$1712.59",
+		"photo": "http://dummyimage.com/232x100.png/cc0000/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 6,
+		"name": "Refridgeration",
+		"supplier_id": 10,
+		"city_id": 7,
+		"price": "$1668.98",
+		"photo": "http://dummyimage.com/190x100.png/ff4444/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 7,
+		"name": "Concrete Finisher",
+		"supplier_id": 6,
+		"city_id": 4,
+		"price": "$1127.99",
+		"photo": "http://dummyimage.com/217x100.png/cc0000/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 8,
+		"name": "Brickmason",
+		"supplier_id": 8,
+		"city_id": 6,
+		"price": "$1019.19",
+		"photo": "http://dummyimage.com/233x100.png/ff4444/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 9,
+		"name": "Laborer",
+		"supplier_id": 8,
+		"city_id": 8,
+		"price": "$180.66",
+		"photo": "http://dummyimage.com/229x100.png/5fa2dd/ffffff",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	},
+	{
+		"id": 10,
+		"name": "Ironworker",
+		"supplier_id": 4,
+		"city_id": 8,
+		"price": "$808.36",
+		"photo": "http://dummyimage.com/118x100.png/dddddd/000000",
+		"trade_id": "error: undefined method `id' for nil:NilClass"
+	}
+]
