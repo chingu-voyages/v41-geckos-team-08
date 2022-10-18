@@ -1,13 +1,26 @@
-const express = require('express')
-const swaggerUi = require('swagger-ui-express')
-const swaggerDocument = require('./src/documentation/swagger.json')
+const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./src/documentation/swagger.json');
 
-const { port } = require('./environment')
+const { port } = require('./environment');
+const login = require('./src/auth/login');
+const jobs = require('./src/routes/jobs');
+const locations = require('./src/routes/location');
+const proposals = require('./src/routes/proposals');
+const trades = require('./src/routes/trades');
+const users = require('./src/routes/users');
 
-const app = express()
+const app = express();
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use('/login', login);
+app.use('/jobs', jobs);
+app.use('/locations', locations);
+app.use('/proposals', proposals);
+app.use('/trades', trades);
+app.use('/users', users);
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(port, () => {
-	console.log(`Server started, listening on port ${port}`)
-})
+	console.log(`Server started, listening on port ${port}`);
+});
