@@ -4,7 +4,7 @@
 
 ### Semicolons
 
-There should not be any semicolons (This is my personal preference, but we can change this if the mayority of the team prefers semicolons)
+We will be using semicolons at the end of each line
 
 ### Variable and Constants
 
