@@ -7,19 +7,43 @@ const hashPassword = async (plainPassword) => {
 	return await bcrypt.hash(plainPassword, 10);
 };
 
-route.get('/', (req, res) => {
-	res.json({
-		data: 'Users working',
-	});
-});
+/**
+ *
+ * Saves the trades that a supplier have
+ *
+ * @param {Array} trades
+ * @param {uuid} supplier_uuid
+ * @returns  {boolean} True if it was a success to save false if there was any problem
+ */
+const saveTrades = async (trades, supplier_uuid) => {
+	try {
+		let sql = 'delete from supplier_trade where supplier_uuid = $1';
+		await client.query(sql, [supplier_uuid]);
+
+		for (index in trades) {
+			trade = trades[index];
+
+			sql =
+				'insert into supplier_trade(trade_uuid, supplier_uuid) values ($1, $2)';
+			await client.query(sql, [trade, supplier_uuid]);
+		}
+
+		return true;
+	} catch (err) {
+		return false;
+	}
+};
 
 /**
  *
+ * Saves the cities where a user is registered
+ *
  * @param {Array} cities
- * @param {string} supplier_uuid
- * @param {Response} res
+ * @param {uuid} supplier_uuid
+ *
+ * @returns {boolean} True if it was a success to save false if there was any problem
  */
-const saveCities = async (cities, supplier_uuid, res) => {
+const saveCities = async (cities, supplier_uuid) => {
 	try {
 		let sql = 'delete from supplier_city where supplier_uuid = $1';
 		await client.query(sql, [supplier_uuid]);
@@ -30,22 +54,52 @@ const saveCities = async (cities, supplier_uuid, res) => {
 				'insert into supplier_city (city_uuid, supplier_uuid) values ($1, $2)';
 			await client.query(sql, [city, supplier_uuid]);
 		}
+		return true;
 	} catch (err) {
-		res.status(406).json({
-			detail: 'Invalid city uuid',
-		});
+		return false;
 	}
+};
+
+/**
+ *
+ * Given the UUID of a user, it will return the formatted version of what the API is expected to return
+ *
+ * @param {uuid} userUUID
+ * @returns {FormatedResponse}
+ */
+const formatOneUserResponse = async (user) => {
+	// Gets all of the trades a specific user has
+	let sql =
+		'select trades.uuid, trades.description from trades join supplier_trade on trades.uuid = supplier_trade.trades_uuid where supplier_trade.supplier_uuid = $1';
+	const trades = await (await client.query(sql, [user.uuid])).rows;
+
+	// Get all of the cities a specific user has
+	sql =
+		'select city.uuid, city.name from city join supplier_city on city.uuid = supplier_city.city_uuid where supplier_city.supplier_uuid = $1';
+	const cities = await (await client.query(sql, [user.uuid])).rows;
+
+	// Formats the data so it is easy to use in the front end
+	return {
+		uuid: user.uuid,
+		email: user.email,
+		name: user.name,
+		phone: user.phone,
+		is_supplier: user.is_supplier,
+		trades,
+		cities,
+	};
 };
 
 route.post('/', async (req, res) => {
 	const userData = req.body;
-	await client.query('BEGIN');
+	await client.query('BEGIN'); // Start a transaction nothing will be saved until a commit
 
 	try {
-		const userUUID = uuid.v4();
+		const userUUID = uuid.v4(); // Generates a new UUID to use in the user
 		let sql =
 			'insert into users (uuid, email, password, is_supplier, is_active, name, phone) values ($1, $2, $3, $4, $5, $6, $7)';
 
+		// Hashes the password so we do not save passwords that anyone can read
 		const hashedPassword = await hashPassword(userData.password);
 
 		const values = [
@@ -58,43 +112,44 @@ route.post('/', async (req, res) => {
 			userData.phone,
 		];
 
-		await client.query(sql, values);
+		await client.query(sql, values); // Execute the query
 
+		// If the request have an array of cities, then it saves them
 		if (userData.cities && userData.cities.length > 0) {
-			await saveCities(cities, userUUID.res);
+			if (!(await saveCities(userData.cities, userUUID))) {
+				await client.query('ROLLBACK');
+				res.status(406).json({ detail: 'Invalid city uuid' });
+				return;
+			}
 		}
 
-		await client.query('COMMIT');
+		// If the request have an array of trades, then it saves them
+		if (userData.trades && userData.trades.length > 0) {
+			if (!(await saveTrades(userData.trades, userUUID))) {
+				await client.query('ROLLBACK');
+				res.status(406).json({ detail: 'Invalid trade uuid' });
+				return;
+			}
+		}
+
+		await client.query('COMMIT'); // Saves all the information to the database
+
+		// if saving was succefsull then we get the saved information
 
 		sql =
 			'select uuid, email, is_supplier, name, phone from users where uuid = $1';
 		const userResponse = await (await client.query(sql, [userUUID])).rows;
 
-		sql =
-			'select trades.uuid, trades.description from trades join supplier_trade on trades.uuid = supplier_trade.trades_uuid where supplier_trade.supplier_uuid = $1';
+		const responseData = await formatOneUserResponse(userResponse[0]);
 
-		const trades = await (await client.query(sql, [userUUID])).rows;
-
-		sql =
-			'select city.uuid, city.name from city join supplier_city on city.uuid = supplier_city.city_uuid where supplier_city.supplier_uuid = $1';
-		const cities = await (await client.query(sql, [userUUID])).rows;
-
-		const responseData = {
-			uuid: userResponse[0].uuid,
-			email: userResponse[0].email,
-			name: userResponse[0].name,
-			phone: userResponse[0].phone,
-			is_supplier: userResponse[0].is_supplier,
-			trades,
-			cities,
-		};
-
+		// Sends it back to the user with a status code of 201
 		res.status(201).json({
 			data: responseData,
 		});
 	} catch (err) {
-		await client.query('ROLLBACK');
+		await client.query('ROLLBACK'); // On any error it will rollback
 		console.error(err);
+		// Sends to the user the error information with a status code of 409
 		res.status(409).json({
 			detail: 'Conflict',
 		});
