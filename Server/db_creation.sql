@@ -122,3 +122,19 @@ CREATE TABLE public.proposal
         ON DELETE RESTRICT
         NOT VALID
 );
+
+CREATE TABLE IF NOT EXISTS public.countries
+(
+    uuid uuid NOT NULL,
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT countries_pkey PRIMARY KEY (uuid)
+)
+
+ALTER TABLE IF EXISTS public.city
+    ADD COLUMN country_uuid uuid NOT NULL;
+ALTER TABLE IF EXISTS public.city
+    ADD CONSTRAINT fk_city_country FOREIGN KEY (country_uuid)
+    REFERENCES public.countries (uuid) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE RESTRICT
+    NOT VALID;
