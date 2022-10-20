@@ -125,10 +125,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserResponse"
-                  }
+                  "$ref": "#/components/schemas/UserResponse"
                 }
               }
             }
@@ -719,7 +716,7 @@
         "tags": [
           "Location"
         ],
-        "summary": "Gets all of the locations",
+        "summary": "Gets all of the countries",
         "responses": {
           "200": {
             "description": "OK",
@@ -730,6 +727,40 @@
                   "items": {
                     "$ref": "#/components/schemas/LocationResponse"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{uuid}": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "Get all of the cities of a specified country",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Country uuid",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "appliction/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityResponse"
                 }
               }
             }
@@ -925,6 +956,21 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "CityResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "$ref": "#/components/schemas/LocationResponse"
           }
         }
       },
