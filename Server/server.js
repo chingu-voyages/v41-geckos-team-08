@@ -12,6 +12,8 @@ const users = require('./src/routes/users');
 
 const app = express();
 
+app.use(express.json());
+
 app.use('/login', login);
 app.use('/jobs', jobs);
 app.use('/locations', locations);
