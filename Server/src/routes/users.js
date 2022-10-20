@@ -90,6 +90,45 @@ const formatOneUserResponse = async (user) => {
 	};
 };
 
+route.get('/', async (req, res) => {
+	// Validation that the request have a query parameter named supplier and its value is either true or false
+	if (!req.query.supplier) {
+		res.status(406).json({
+			detail: 'Query parameter supplier is required',
+		});
+		return;
+	}
+
+	if (
+		req.query.supplier.toLowerCase() !== 'true' &&
+		req.query.supplier.toLowerCase() !== 'false'
+	) {
+		res.status(406).json({
+			detail: 'Query parameter supplier value must be true or false',
+		});
+		return;
+	}
+
+	const is_supplier = req.query.supplier.toLowerCase() === 'true';
+	// End of validation
+
+	const sql =
+		'select uuid, email, is_supplier, name, phone from users where is_supplier = $1';
+	const response = await client.query(sql, [is_supplier]);
+	const responseData = [];
+
+	for (index in response.rows) {
+		const userResponse = response.rows[index];
+		const userData = await formatOneUserResponse(userResponse);
+		responseData.push(userData);
+	}
+
+	res.status(200).json({
+		'total-results': response.rowCount,
+		data: responseData,
+	});
+});
+
 route.post('/', async (req, res) => {
 	const userData = req.body;
 	await client.query('BEGIN'); // Start a transaction nothing will be saved until a commit
