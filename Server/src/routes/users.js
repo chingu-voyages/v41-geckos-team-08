@@ -2,92 +2,15 @@ const route = require('express').Router();
 const client = require('../config/db');
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
+const { formatOneUserResponse } = require('../components/format');
+const { saveCities } = require('../components/saveCities');
+const { saveTrades } = require('../components/saveTrades');
 
+// TODO add authentication middelware once created
+
+// TODO move this function to auth when file created
 const hashPassword = async (plainPassword) => {
 	return await bcrypt.hash(plainPassword, 10);
-};
-
-/**
- *
- * Saves the trades that a supplier have
- *
- * @param {Array} trades
- * @param {uuid} supplier_uuid
- * @returns  {boolean} True if it was a success to save false if there was any problem
- */
-const saveTrades = async (trades, supplier_uuid) => {
-	try {
-		let sql = 'delete from supplier_trade where supplier_uuid = $1';
-		await client.query(sql, [supplier_uuid]);
-
-		for (index in trades) {
-			trade = trades[index];
-
-			sql =
-				'insert into supplier_trade(trade_uuid, supplier_uuid) values ($1, $2)';
-			await client.query(sql, [trade, supplier_uuid]);
-		}
-
-		return true;
-	} catch (err) {
-		return false;
-	}
-};
-
-/**
- *
- * Saves the cities where a user is registered
- *
- * @param {Array} cities
- * @param {uuid} supplier_uuid
- *
- * @returns {boolean} True if it was a success to save false if there was any problem
- */
-const saveCities = async (cities, supplier_uuid) => {
-	try {
-		let sql = 'delete from supplier_city where supplier_uuid = $1';
-		await client.query(sql, [supplier_uuid]);
-		for (index in cities) {
-			city = cities[index];
-
-			sql =
-				'insert into supplier_city (city_uuid, supplier_uuid) values ($1, $2)';
-			await client.query(sql, [city, supplier_uuid]);
-		}
-		return true;
-	} catch (err) {
-		return false;
-	}
-};
-
-/**
- *
- * Given the UUID of a user, it will return the formatted version of what the API is expected to return
- *
- * @param {uuid} userUUID
- * @returns {FormatedResponse}
- */
-const formatOneUserResponse = async (user) => {
-	// Gets all of the trades a specific user has
-	let sql =
-		'select trades.uuid, trades.description from trades join supplier_trade on trades.uuid = supplier_trade.trades_uuid where supplier_trade.supplier_uuid = $1 order by trades.description';
-	const trades = await (await client.query(sql, [user.uuid])).rows;
-
-	// Get all of the cities a specific user has
-	sql =
-		'select city.uuid, city.name from city join supplier_city on city.uuid = supplier_city.city_uuid where supplier_city.supplier_uuid = $1 order by city.name';
-	const cities = await (await client.query(sql, [user.uuid])).rows;
-
-	// Formats the data so it is easy to use in the front end
-	return {
-		uuid: user.uuid,
-		email: user.email,
-		name: user.name,
-		phone: user.phone,
-		is_supplier: user.is_supplier,
-		trades,
-		cities,
-	};
 };
 
 route.get('/', async (req, res) => {
