@@ -1,26 +1,19 @@
 const { Client } = require("pg");
 
-// const {
-// 	database_username,
-// 	database_password,
-// 	database_host,
-// 	database_name,
-// 	database_port,
-// } = require("../../environment");
+const {
+	database_username,
+	database_password,
+	database_host,
+	database_name,
+	database_port,
+} = require("../../environment.js");
 
-// const client = new Client({
-// 	user: database_username,
-// 	host: database_host,
-// 	database: database_name,
-// 	password: database_password,
-// 	port: database_port,
-// });
 const client = new Client({
-	user: "postgres",
-	password: "djfyahlinks2",
-	host: "localhost",
-	database: "test",
-	port: 5432,
+	user: database_username,
+	host: database_host,
+	database: database_name,
+	password: database_password,
+	port: database_port,
 });
 
 client.connect((err) => {
