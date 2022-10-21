@@ -70,12 +70,12 @@ const saveCities = async (cities, supplier_uuid) => {
 const formatOneUserResponse = async (user) => {
 	// Gets all of the trades a specific user has
 	let sql =
-		'select trades.uuid, trades.description from trades join supplier_trade on trades.uuid = supplier_trade.trades_uuid where supplier_trade.supplier_uuid = $1';
+		'select trades.uuid, trades.description from trades join supplier_trade on trades.uuid = supplier_trade.trades_uuid where supplier_trade.supplier_uuid = $1 order by trades.description';
 	const trades = await (await client.query(sql, [user.uuid])).rows;
 
 	// Get all of the cities a specific user has
 	sql =
-		'select city.uuid, city.name from city join supplier_city on city.uuid = supplier_city.city_uuid where supplier_city.supplier_uuid = $1';
+		'select city.uuid, city.name from city join supplier_city on city.uuid = supplier_city.city_uuid where supplier_city.supplier_uuid = $1 order by city.name';
 	const cities = await (await client.query(sql, [user.uuid])).rows;
 
 	// Formats the data so it is easy to use in the front end
@@ -192,6 +192,97 @@ route.post('/', async (req, res) => {
 		res.status(409).json({
 			detail: 'Conflict',
 		});
+	}
+});
+
+route.get('/:uuid', async (req, res) => {
+	const userUUID = req.params.uuid;
+
+	const sql =
+		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
+	const userResponse = await await client.query(sql, [userUUID]);
+
+	if (userResponse.rowCount === 0) {
+		res.status(404).json({
+			detail: `User with uuid: ${userUUID} does not exist`,
+		});
+		return;
+	}
+
+	const responseData = await formatOneUserResponse(userResponse.rows[0]);
+
+	res.status(200).json({
+		data: responseData,
+	});
+});
+
+route.put('/:uuid', async (req, res) => {
+	const userUUID = req.params.uuid;
+	const userData = req.body;
+
+	let sql =
+		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
+	const userResponse = await await client.query(sql, [userUUID]);
+
+	if (userResponse.rowCount === 0) {
+		res.status(404).json({
+			detail: `User with uuid: ${userUUID} does not exist`,
+		});
+		return;
+	}
+
+	sql =
+		'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
+	const hashedPassword = await hashPassword(userData.password);
+
+	const values = [
+		userData.email,
+		hashedPassword,
+		userData.name,
+		userData.phone,
+		userData.is_supplier,
+		userUUID,
+	];
+
+	try {
+		await client.query('BEGIN');
+
+		await client.query(sql, values);
+
+		// If the request have an array of cities, then it saves them
+		if (userData.cities && userData.cities.length > 0) {
+			if (!(await saveCities(userData.cities, userUUID))) {
+				await client.query('ROLLBACK');
+				res.status(406).json({ detail: 'Invalid city uuid' });
+				return;
+			}
+		}
+
+		// If the request have an array of trades, then it saves them
+		if (userData.trades && userData.trades.length > 0) {
+			if (!(await saveTrades(userData.trades, userUUID))) {
+				await client.query('ROLLBACK');
+				res.status(406).json({ detail: 'Invalid trade uuid' });
+				return;
+			}
+		}
+
+		await client.query('COMMIT'); // Saves all the information to the database
+
+		// if saving was succefsull then we get the saved information
+
+		sql =
+			'select uuid, email, is_supplier, name, phone from users where uuid = $1';
+		const userResponse = await (await client.query(sql, [userUUID])).rows;
+
+		const responseData = await formatOneUserResponse(userResponse[0]);
+
+		res.status(200).json({
+			data: responseData,
+		});
+	} catch (err) {
+		await client.query('ROLLBACK');
+		res.status(409).json({ detail: 'Conflict' });
 	}
 });
 
