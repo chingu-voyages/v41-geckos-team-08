@@ -2,9 +2,11 @@ const route = require('express').Router();
 const client = require('../config/db');
 const uuid = require('uuid');
 const bcrypt = require('bcrypt');
+
 const { formatOneUserResponse } = require('../components/format');
 const { saveCities } = require('../components/saveCities');
 const { saveTrades } = require('../components/saveTrades');
+const validateUUID = require('../middleware/validateUUID');
 
 // TODO add authentication middelware once created
 
@@ -118,7 +120,7 @@ route.post('/', async (req, res) => {
 	}
 });
 
-route.get('/:uuid', async (req, res) => {
+route.get('/:uuid', validateUUID, async (req, res) => {
 	const userUUID = req.params.uuid;
 
 	const sql =
@@ -139,7 +141,7 @@ route.get('/:uuid', async (req, res) => {
 	});
 });
 
-route.put('/:uuid', async (req, res) => {
+route.put('/:uuid', validateUUID, async (req, res) => {
 	const userUUID = req.params.uuid;
 	const userData = req.body;
 

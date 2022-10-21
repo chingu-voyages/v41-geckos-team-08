@@ -1,4 +1,5 @@
 const client = require('../config/db');
+const { isValidUUID } = require('../middleware/validateUUID');
 
 /**
  *
@@ -15,6 +16,8 @@ const saveTrades = async (trades, supplier_uuid) => {
 
 		for (index in trades) {
 			trade = trades[index];
+
+			if (!isValidUUID(trade)) return false;
 
 			sql =
 				'insert into supplier_trade(trade_uuid, supplier_uuid) values ($1, $2)';

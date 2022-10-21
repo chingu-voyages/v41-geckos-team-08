@@ -1,4 +1,5 @@
 const client = require('../config/db');
+const { isValidUUID } = require('../middleware/validateUUID');
 
 /**
  *
@@ -15,6 +16,8 @@ const saveCities = async (cities, supplier_uuid) => {
 		await client.query(sql, [supplier_uuid]);
 		for (index in cities) {
 			city = cities[index];
+
+			if (!isValidUUID(city)) return false;
 
 			sql =
 				'insert into supplier_city (city_uuid, supplier_uuid) values ($1, $2)';
