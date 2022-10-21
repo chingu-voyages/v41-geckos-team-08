@@ -7,6 +7,7 @@ const { formatOneUserResponse } = require('../components/format');
 const { saveCities } = require('../components/saveCities');
 const { saveTrades } = require('../components/saveTrades');
 const validateUUID = require('../middleware/validateUUID');
+const validateEmail = require('../middleware/validateEmail');
 
 // TODO add authentication middelware once created
 
@@ -54,7 +55,7 @@ route.get('/', async (req, res) => {
 	});
 });
 
-route.post('/', async (req, res) => {
+route.post('/', validateEmail, async (req, res) => {
 	const userData = req.body;
 	await client.query('BEGIN'); // Start a transaction nothing will be saved until a commit
 
@@ -141,7 +142,7 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 	});
 });
 
-route.put('/:uuid', validateUUID, async (req, res) => {
+route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 	const userUUID = req.params.uuid;
 	const userData = req.body;
 
