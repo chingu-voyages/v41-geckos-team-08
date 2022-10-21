@@ -7,7 +7,7 @@ const { formatOneUserResponse } = require('../components/format');
 const { saveCities } = require('../components/saveCities');
 const { saveTrades } = require('../components/saveTrades');
 const validateUUID = require('../middleware/validateUUID');
-const validateEmail = require('../middleware/validateEmail');
+const validateEmail = require('../middleware/validateEmail'); // TODO update this with the actual validate Email middleware
 
 // TODO add authentication middelware once created
 
@@ -57,6 +57,28 @@ route.get('/', async (req, res) => {
 
 route.post('/', validateEmail, async (req, res) => {
 	const userData = req.body;
+
+	if (!req.body.email)
+		return res.status(400).json({ detail: 'Email is a required property' });
+	if (!req.body.password)
+		return res
+			.status(400)
+			.json({ detail: 'Password is a required property' });
+	if (!req.body.name)
+		return res
+			.status(400)
+			.json({ detail: "User's name is a required property" });
+
+	if (!req.body.is_supplier)
+		return res
+			.status(400)
+			.json({ detail: 'Have to specify if user is supplier' });
+
+	if (!req.body.phone)
+		return res
+			.status(400)
+			.json({ detail: "User's phone is a required property" });
+
 	await client.query('BEGIN'); // Start a transaction nothing will be saved until a commit
 
 	try {
@@ -74,7 +96,7 @@ route.post('/', validateEmail, async (req, res) => {
 			userData.is_supplier,
 			true,
 			userData.name,
-			userData.phone,
+			userData.phone || null,
 		];
 
 		await client.query(sql, values); // Execute the query
@@ -148,7 +170,7 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 
 	let sql =
 		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
-	const userResponse = await await client.query(sql, [userUUID]);
+	const userResponse = await client.query(sql, [userUUID]);
 
 	if (userResponse.rowCount === 0) {
 		res.status(404).json({
@@ -157,18 +179,29 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 		return;
 	}
 
-	sql =
-		'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
-	const hashedPassword = await hashPassword(userData.password);
+	// Do not update values that are not sent to the backend
+	const email = userData.email || userResponse.rows[0].email;
+	const name = userData.name || userResponse.rows[0].name;
+	const phone = userData.phone || userResponse.rows[0].phone;
+	const is_supplier =
+		userData.is_supplier || userResponse.rows[0].is_supplier;
 
-	const values = [
-		userData.email,
-		hashedPassword,
-		userData.name,
-		userData.phone,
-		userData.is_supplier,
-		userUUID,
-	];
+	let values = [];
+
+	// Since we can not read the password then if the user doesn't send it then it will not update the password
+	if (userData.password) {
+		sql =
+			'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
+
+		const hashedPassword = await hashPassword(userData.password);
+
+		values = [email, hashedPassword, name, phone, is_supplier, userUUID];
+	} else {
+		sql =
+			'update users set email=$1, name=$2, phone=$3, is_supplier=$4 where uuid=$5';
+
+		values = [email, name, phone, is_supplier, userUUID];
+	}
 
 	try {
 		await client.query('BEGIN');
