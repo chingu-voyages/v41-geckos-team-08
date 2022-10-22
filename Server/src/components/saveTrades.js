@@ -15,7 +15,7 @@ const saveTrades = async (trades, supplier_uuid) => {
 		await client.query(sql, [supplier_uuid]);
 
 		for (index in trades) {
-			trade = trades[index];
+			const trade = trades[index];
 
 			if (!isValidUUID(trade)) return false;
 
