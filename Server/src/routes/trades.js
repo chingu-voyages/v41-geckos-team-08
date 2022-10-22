@@ -3,6 +3,8 @@ const uuid = require('uuid');
 const client = require('../config/db');
 const validateUUID = require('../middleware/validateUUID');
 
+// TODO add authentication middelware
+
 route.get('/', async (req, res) => {
 	const sql = 'select uuid, description from trades';
 
