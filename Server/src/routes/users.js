@@ -185,7 +185,9 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 	const name = userData.name || userResponse.rows[0].name;
 	const phone = userData.phone || userResponse.rows[0].phone;
 	const is_supplier =
-		userData.is_supplier || userResponse.rows[0].is_supplier;
+		userData.is_supplier === undefined
+			? userResponse.rows[0].is_supplier
+			: userData.is_supplier;
 
 	let values = [];
 
