@@ -4,8 +4,9 @@
   "description": "Search for local handyman to help you home",
   "main": "server.js",
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "NODE_ENV=test && jest --detectOpenHandles",
     "start": "node server.js",
+    "start-test": "NODE_ENV=test && node server.js",
     "watch": "nodemon server.js"
   },
   "author": "Chingu-Geckos-Team-08",
