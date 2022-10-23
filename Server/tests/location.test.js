@@ -2,7 +2,6 @@ const request = require('supertest');
 const baseUrl = require('../test-config');
 
 const endpoint = '/locations';
-let validUUID = '';
 
 describe('Test the locations path', () => {
 	describe('Test the countries', () => {
@@ -10,11 +9,6 @@ describe('Test the locations path', () => {
 			const response = await request(baseUrl)
 				.get(endpoint)
 				.expect('Content-Type', /json/);
-
-			validUUID =
-				response.body.data[
-					Math.floor(Math.random() * response.body.data.length)
-				].uuid;
 
 			expect(response.statusCode).toBe(200);
 		});
@@ -59,7 +53,15 @@ describe('Test the locations path', () => {
 		});
 		describe('With good UUID', () => {
 			let response;
-			beforeEach(async () => {
+			beforeAll(async () => {
+				const countryResponse = await request(baseUrl).get(endpoint);
+
+				const validUUID =
+					countryResponse.body.data[
+						Math.floor(
+							Math.random() * countryResponse.body.data.length
+						)
+					].uuid;
 				const url = `${endpoint}/${validUUID}`;
 				response = await request(baseUrl).get(url);
 			});
