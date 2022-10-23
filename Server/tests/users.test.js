@@ -1,6 +1,7 @@
 const request = require('supertest');
 const baseUrl = require('../test-config');
 const client = require('../src/config/db');
+const createUser = require('./common/create-user');
 
 describe('Test the users path', () => {
 	beforeAll(async () => {
@@ -67,13 +68,11 @@ describe('Test the users path', () => {
 
 		describe('Given the JSON body is complete', () => {
 			it('should return 201 when creating a supplier', async () => {
-				response = await request(baseUrl).post('/users').send({
-					email: 'supplier@mail.com',
-					password: 'password123',
-					name: 'The name of the user',
-					is_supplier: true,
-					phone: '123 456 7890',
-				});
+				response = await createUser(
+					'supplier@mail.com',
+					'thisIsaValidOne',
+					true
+				);
 				expect(response.statusCode).toBe(201);
 				expect(response.body.data).toHaveProperty('uuid');
 				expect(typeof response.body.data.uuid).toBe('string');
@@ -92,13 +91,11 @@ describe('Test the users path', () => {
 				expect(response.body.data).not.toHaveProperty('password');
 			});
 			it('should return 201 when creating a non supplier user', async () => {
-				response = await request(baseUrl).post('/users').send({
-					email: 'nonsupplier@mail.com',
-					password: 'password123',
-					name: 'The name of the user',
-					is_supplier: false,
-					phone: '123 456 7890',
-				});
+				response = await createUser(
+					'nonsupplier@mail.com',
+					'thisIsaValidOne',
+					true
+				);
 				expect(response.statusCode).toBe(201);
 				expect(response.body.data).toHaveProperty('uuid');
 				expect(typeof response.body.data.uuid).toBe('string');
@@ -117,22 +114,18 @@ describe('Test the users path', () => {
 				expect(response.body.data).not.toHaveProperty('password');
 			});
 			it('should return 409 when trying to create a user with existing email', async () => {
-				response = await request(baseUrl).post('/users').send({
-					email: 'supplier@mail.com',
-					password: 'password123',
-					name: 'The name of the user',
-					is_supplier: true,
-					phone: '123 456 7890',
-				});
+				response = await createUser(
+					'supplier@mail.com',
+					'thisIsaValidOne',
+					true
+				);
 				expect(response.statusCode).toBe(409);
 
-				response = await request(baseUrl).post('/users').send({
-					email: 'nonsupplier@mail.com',
-					password: 'password123',
-					name: 'The name of the user',
-					is_supplier: false,
-					phone: '123 456 7890',
-				});
+				response = await createUser(
+					'nonsupplier@mail.com',
+					'thisIsaValidOne',
+					true
+				);
 				expect(response.statusCode).toBe(409);
 			});
 		});
@@ -221,7 +214,7 @@ describe('Test the users path', () => {
 
 		beforeAll(async () => {
 			const response = await request(baseUrl).get('/users?supplier=true');
-			console.log(response.body);
+
 			userUUID =
 				response.body.data[
 					Math.floor(Math.random() * response.body.data.length)
@@ -234,14 +227,77 @@ describe('Test the users path', () => {
 
 				expect(response.statusCode).toBe(400);
 			});
-			it('should return 400 with valid UUID inexistent in users', async () => {
+			it('should return 404 with valid UUID inexistent in users', async () => {
 				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 				const url = `/users/${badUUID}`;
 				const response = await request(baseUrl).get(url);
 
-				// console.log(response.body.detail);
+				expect(response.statusCode).toBe(404);
+			});
+			it('should return 200 with a vaild UUID that exist in users', async () => {
+				const url = `/users/${userUUID}`;
+				const response = await request(baseUrl).get(url);
+
+				expect(response.statusCode).toBe(200);
+				expect(response.body.data).toHaveProperty('uuid');
+				expect(typeof response.body.data.uuid).toBe('string');
+				expect(response.body.data).toHaveProperty('email');
+				expect(typeof response.body.data.email).toBe('string');
+				expect(response.body.data).toHaveProperty('name');
+				expect(typeof response.body.data.name).toBe('string');
+				expect(response.body.data).toHaveProperty('phone');
+				expect(typeof response.body.data.phone).toBe('string');
+				expect(response.body.data).toHaveProperty('is_supplier');
+				expect(typeof response.body.data.is_supplier).toBe('boolean');
+				expect(response.body.data).toHaveProperty('trades');
+				expect(typeof response.body.data.trades).toBe('object');
+				expect(response.body.data).toHaveProperty('cities');
+				expect(typeof response.body.data.cities).toBe('object');
+				expect(response.body.data).not.toHaveProperty('password');
+			});
+		});
+	});
+
+	describe('Updating a user', () => {
+		let userUUID;
+
+		beforeAll(async () => {
+			const response = await request(baseUrl).get('/users?supplier=true');
+			userUUID =
+				response.body.data[
+					Math.floor(Math.random() * response.body.data.length)
+				].uuid;
+		});
+		describe('Given the UUID', () => {
+			it('Should return 400 if the UUID is invalid', async () => {
+				const url = `/users/thisanin-vali-duui-dsoi-treturn404nf`;
+				const response = await request(baseUrl).put(url);
+
+				expect(response.statusCode).toBe(400);
+			});
+			it('should return 404 with valid UUID inexistent in users', async () => {
+				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
+				const url = `/users/${badUUID}`;
+				const response = await request(baseUrl).put(url);
 
 				expect(response.statusCode).toBe(404);
+			});
+
+			it('should return 401 with invalide email', async () => {
+				const url = `/users/${userUUID}`;
+				const response = await request(baseUrl)
+					.put(url)
+					.send({ email: 'user' });
+
+				expect(response.statusCode).toBe(401);
+			});
+			it('should return 200 when update succesfull', async () => {
+				const url = `/users/${userUUID}`;
+				const response = await request(baseUrl)
+					.put(url)
+					.send({ password: 'passWord123' });
+
+				expect(response.statusCode).toBe(200);
 			});
 		});
 	});
