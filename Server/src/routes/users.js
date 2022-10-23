@@ -69,7 +69,6 @@ route.post('/', validateEmail, async (req, res) => {
 			.status(400)
 			.json({ detail: "User's name is a required property" });
 
-	console.log(req.body.is_supplier);
 	if (req.body.is_supplier === undefined)
 		return res
 			.status(400)
