@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "@databases/pg-test": "^3.1.2",
+    "@types/jest": "^29.2.0",
+    "@types/supertest": "^2.0.12",
     "jest": "^29.2.1",
     "supertest": "^6.3.0"
   }

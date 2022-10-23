@@ -60,7 +60,6 @@ describe('Test the locations path', () => {
 		describe('With good UUID', () => {
 			let response;
 			beforeEach(async () => {
-				console.log(validUUID);
 				const url = `${endpoint}/${validUUID}`;
 				response = await request(baseUrl).get(url);
 			});
