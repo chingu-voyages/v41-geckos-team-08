@@ -15,17 +15,18 @@ const saveTrades = async (trades, supplier_uuid) => {
 		await client.query(sql, [supplier_uuid]);
 
 		for (index in trades) {
-			trade = trades[index];
-
+			const trade = trades[index];
+			console.log(trade);
 			if (!isValidUUID(trade)) return false;
-
+			console.log('is valid');
 			sql =
-				'insert into supplier_trade(trade_uuid, supplier_uuid) values ($1, $2)';
+				'insert into supplier_trade(trades_uuid, supplier_uuid) values ($1, $2)';
 			await client.query(sql, [trade, supplier_uuid]);
 		}
 
 		return true;
 	} catch (err) {
+		console.error(err);
 		return false;
 	}
 };

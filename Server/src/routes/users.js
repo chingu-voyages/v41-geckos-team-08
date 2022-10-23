@@ -69,7 +69,8 @@ route.post('/', validateEmail, async (req, res) => {
 			.status(400)
 			.json({ detail: "User's name is a required property" });
 
-	if (!req.body.is_supplier)
+	console.log(req.body.is_supplier);
+	if (req.body.is_supplier === undefined)
 		return res
 			.status(400)
 			.json({ detail: 'Have to specify if user is supplier' });
@@ -184,7 +185,9 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 	const name = userData.name || userResponse.rows[0].name;
 	const phone = userData.phone || userResponse.rows[0].phone;
 	const is_supplier =
-		userData.is_supplier || userResponse.rows[0].is_supplier;
+		userData.is_supplier === undefined
+			? userResponse.rows[0].is_supplier
+			: userData.is_supplier;
 
 	let values = [];
 
@@ -205,9 +208,7 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 
 	try {
 		await client.query('BEGIN');
-
 		await client.query(sql, values);
-
 		// If the request have an array of cities, then it saves them
 		if (userData.cities && userData.cities.length > 0) {
 			if (!(await saveCities(userData.cities, userUUID))) {
@@ -218,6 +219,7 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 		}
 
 		// If the request have an array of trades, then it saves them
+		console.log('userData:', userData);
 		if (userData.trades && userData.trades.length > 0) {
 			if (!(await saveTrades(userData.trades, userUUID))) {
 				await client.query('ROLLBACK');
@@ -241,6 +243,7 @@ route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
 		});
 	} catch (err) {
 		await client.query('ROLLBACK');
+		console.error(err);
 		res.status(409).json({ detail: 'Conflict' });
 	}
 });
