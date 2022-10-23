@@ -24,4 +24,8 @@ app.use('/load', load);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.get('/', (req, res) => {
+	res.status(200).json({ data: 'Hello world!' });
+});
+
 module.exports = app;
