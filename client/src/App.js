@@ -2,7 +2,7 @@ import './App.css';
 import Input from './Components/Input';
 import LoginForm from './Components/LoginForm';
 import {NavBar} from './Components/NavBar'
-import {Footer} from './Components/Footer'
+import {Footer} from './Components/Footer.jsx'
 
 function App() {
   return (
