@@ -8,6 +8,7 @@ const { saveCities } = require("../components/saveCities");
 const { saveTrades } = require("../components/saveTrades");
 const validateUUID = require("../middleware/validateUUID");
 const validateEmail = require("../middleware/validateEmail"); // TODO update this with the actual validate Email middleware
+const validatePassword = require("../middleware/validatePassword");
 
 // TODO add authentication middelware once created
 
@@ -55,7 +56,7 @@ route.get("/", async (req, res) => {
 	});
 });
 
-route.post("/", validateEmail, async (req, res) => {
+route.post("/", validatePassword, validateEmail, async (req, res) => {
 	const userData = req.body;
 
 	if (!req.body.email)
