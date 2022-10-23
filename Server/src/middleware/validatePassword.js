@@ -20,7 +20,7 @@ const validatePassword = (req, res, next) => {
 			.json("Password must contain atleast one uppercase letter.");
 	}
 	if (password.match(regPassword && password.length >= 6)) {
-		res.status(200).json("Success");
+		res.status(200);
 	}
 	next();
 };
