@@ -26,6 +26,7 @@ module.exports = {
       white: '#efefef',
       black: '#0a0a0a',
       transparent:'transparent',
+      logo: '#AADFE7'
     },
     extend: {
       boxShadow: {
