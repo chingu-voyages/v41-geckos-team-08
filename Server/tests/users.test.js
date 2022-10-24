@@ -2,28 +2,11 @@ const request = require('supertest');
 const baseUrl = require('../test-config');
 const client = require('../src/config/db');
 const createUser = require('./common/create-user');
+const { initializeDB } = require('./common/initializeDB');
 
 describe('Test the users path', () => {
 	beforeAll(async () => {
-		console.log('Deleting database information');
-		// Clean the database as required
-		let sql = 'delete from supplier_city';
-		await client.query(sql);
-
-		sql = 'delete from supplier_trade';
-		await client.query(sql);
-
-		sql = 'delete from proposal';
-		await client.query(sql);
-
-		sql = 'delete from job';
-		await client.query(sql);
-
-		sql = 'delete from trades';
-		await client.query(sql);
-
-		sql = 'delete from users';
-		await client.query(sql);
+		await initializeDB(client);
 	});
 	afterAll(async () => {
 		await client.end();
