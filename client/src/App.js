@@ -3,11 +3,13 @@ import './App.css';
 // import {NavBar} from './Components/NavBar'
 import {Footer} from './Components/Footer.jsx'
 import Logo from './Components/Logo';
+import Pagination from './Components/Pagination';
 
 function App() {
   return (
     <div className="App">
-    <Logo />
+    <Pagination />
+    {/* <Logo /> */}
     {/* <Footer/> */}
       
      
