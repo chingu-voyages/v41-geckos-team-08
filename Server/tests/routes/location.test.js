@@ -1,5 +1,5 @@
 const request = require('supertest');
-const baseUrl = require('../test-config');
+const baseUrl = require('../../test-config');
 
 const endpoint = '/locations';
 

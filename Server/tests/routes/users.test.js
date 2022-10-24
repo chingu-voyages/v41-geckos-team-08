@@ -1,8 +1,8 @@
 const request = require('supertest');
-const baseUrl = require('../test-config');
-const client = require('../src/config/db');
-const createUser = require('./common/create-user');
-const { initializeDB } = require('./common/initializeDB');
+const baseUrl = require('../../test-config');
+const client = require('../../src/config/db');
+const createUser = require('../common/create-user');
+const { initializeDB } = require('../common/initializeDB');
 
 describe('Test the users path', () => {
 	beforeAll(async () => {
