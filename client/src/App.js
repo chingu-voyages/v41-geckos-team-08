@@ -9,7 +9,7 @@ import Pagination from './Components/Pagination';
 function App() {
   return (
     <div className="App">
-    {/* <Logo /> */}
+    <Logo />
     <Footer/>
     <ProfileCard/>
     <Pagination />
