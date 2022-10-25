@@ -5,14 +5,16 @@ import {Footer} from './Components/Footer.jsx'
 import Logo from './Components/Logo';
 import { ProfileCard } from './Components/ProfileCard';
 import Pagination from './Components/Pagination';
+import LoginPage from "./Pages/LoginPage";
 
 function App() {
   return (
     <div className="App">
-    <Logo />
+      <LoginPage />
+    {/* <Logo />
     <Footer/>
     <ProfileCard/>
-    <Pagination />
+    <Pagination /> */}
     {/* <Logo /> */}
     {/* <Footer/> */}
       
