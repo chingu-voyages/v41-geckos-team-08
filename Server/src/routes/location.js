@@ -1,5 +1,6 @@
 const route = require('express').Router();
 const client = require('../config/db');
+const validateUUID = require('../middleware/validateUUID');
 
 // TODO Add authentication middleware once it is created
 
@@ -14,7 +15,7 @@ route.get('/', async (req, res) => {
 	});
 });
 
-route.get('/:uuid', async (req, res) => {
+route.get('/:uuid', validateUUID, async (req, res) => {
 	const sql =
 		'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 order by city.name';
 
@@ -34,6 +35,11 @@ route.get('/:uuid', async (req, res) => {
 				},
 			});
 		}
+
+		if (queryResponse.rowCount === 0)
+			return res.status(404).json({
+				detail: `No city with UUID: ${req.params.uuid}`,
+			});
 
 		res.json({
 			'total-results': queryResponse.rowCount,

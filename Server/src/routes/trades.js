@@ -31,12 +31,11 @@ route.post('/', async (req, res) => {
 		const values = [tradeUUID, description];
 
 		const insertedTrade = await client.query(sql, values);
-		console.log(insertedTrade.rows[0]);
 		await client.query('COMMIT');
 		res.status(201).json({ data: insertedTrade.rows[0] });
 	} catch (err) {
 		await client.query('ROLLBACK');
-		console.error(err);
+		// console.error(err);
 		res.status(409).json({ detail: 'Trade already exists' });
 	}
 });
