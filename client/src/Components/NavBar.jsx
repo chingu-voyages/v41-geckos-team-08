@@ -4,7 +4,7 @@ import { Button } from './Button';
 export const NavBar = (props) => {
   const [navBarOpen, setNavBarOpen] = useState(true);
   return (
-    <nav className='relative flex flex-wrap justify-between items-center bg-primary-200 px-2 py mb-3 '>
+    <nav className='relative flex flex-wrap justify-between items-center bg-quaternary-200 px-2 py mb-3 shadow-customShadow '>
       <div className='container px-4 mx-auto flex flex-wrap items-center justify-between'>
         <div className='w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start md:w-auto md:static md:block md:justify-start'>
           <a className='inline-block mr-4 py-2 whitespace-nowrap ' href='#home'>
@@ -55,8 +55,8 @@ export const NavBar = (props) => {
         >
           <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
             {/* Buttons or links will be placed here */}
-            <Button />
-            <Button />
+            <Button backgroundColor ='transparent' activeEffect = 'primary-100'/>
+            <Button backgroundColor ='transparent' activeEffect = 'primary-100'/>
           </div>
         </div>
       </div>

@@ -95,7 +95,7 @@ route.post('/', validateEmail, validatePassword, async (req, res) => {
 			userData.email,
 			hashedPassword,
 			userData.is_supplier,
-			true,
+			true || false,
 			userData.name,
 			userData.phone || null,
 		];
