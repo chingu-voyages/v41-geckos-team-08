@@ -1,5 +1,6 @@
 const request = require('supertest');
-const baseUrl = require('../../test-config');
+// const baseUrl = require('../../test-config');
+const baseUrl = require('../../app');
 
 module.exports = async (email, password, is_supplier) => {
 	response = await request(baseUrl).post('/users').send({

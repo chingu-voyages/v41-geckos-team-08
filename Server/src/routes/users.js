@@ -136,7 +136,6 @@ route.post('/', validateEmail, validatePassword, async (req, res) => {
 		});
 	} catch (err) {
 		await client.query('ROLLBACK'); // On any error it will rollback
-		console.error(err);
 		// Sends to the user the error information with a status code of 409
 		res.status(409).json({
 			detail: 'Conflict',
@@ -231,7 +230,6 @@ route.put(
 			}
 
 			// If the request have an array of trades, then it saves them
-			console.log('userData:', userData);
 			if (userData.trades && userData.trades.length > 0) {
 				if (!(await saveTrades(userData.trades, userUUID))) {
 					await client.query('ROLLBACK');
@@ -257,7 +255,6 @@ route.put(
 			});
 		} catch (err) {
 			await client.query('ROLLBACK');
-			console.error(err);
 			res.status(409).json({ detail: 'Conflict' });
 		}
 	}

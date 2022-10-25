@@ -1,9 +1,14 @@
 const request = require('supertest');
-const baseUrl = require('../../test-config');
+// const baseUrl = require('../../test-config');
+const baseUrl = require('../../app');
+const client = require('../../src/config/db');
 
 const endpoint = '/locations';
 
 describe('Test the locations path', () => {
+	afterAll(async () => {
+		client.end();
+	});
 	describe('Test the countries', () => {
 		test('It should return 200', async () => {
 			const response = await request(baseUrl)
