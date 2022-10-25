@@ -8,6 +8,7 @@ const { saveCities } = require('../components/saveCities');
 const { saveTrades } = require('../components/saveTrades');
 const validateUUID = require('../middleware/validateUUID');
 const validateEmail = require('../middleware/validateEmail'); // TODO update this with the actual validate Email middleware
+const validatePassword = require('../middleware/validatePassword');
 
 // TODO add authentication middelware once created
 
@@ -55,7 +56,7 @@ route.get('/', async (req, res) => {
 	});
 });
 
-route.post('/', validateEmail, async (req, res) => {
+route.post('/', validateEmail, validatePassword, async (req, res) => {
 	const userData = req.body;
 
 	if (!req.body.email)
@@ -164,87 +165,102 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 	});
 });
 
-route.put('/:uuid', validateUUID, validateEmail, async (req, res) => {
-	const userUUID = req.params.uuid;
-	const userData = req.body;
+route.put(
+	'/:uuid',
+	validateUUID,
+	validateEmail,
+	validatePassword,
+	async (req, res) => {
+		const userUUID = req.params.uuid;
+		const userData = req.body;
 
-	let sql =
-		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
-	const userResponse = await client.query(sql, [userUUID]);
-
-	if (userResponse.rowCount === 0) {
-		res.status(404).json({
-			detail: `User with uuid: ${userUUID} does not exist`,
-		});
-		return;
-	}
-
-	// Do not update values that are not sent to the backend
-	const email = userData.email || userResponse.rows[0].email;
-	const name = userData.name || userResponse.rows[0].name;
-	const phone = userData.phone || userResponse.rows[0].phone;
-	const is_supplier =
-		userData.is_supplier === undefined
-			? userResponse.rows[0].is_supplier
-			: userData.is_supplier;
-
-	let values = [];
-
-	// Since we can not read the password then if the user doesn't send it then it will not update the password
-	if (userData.password) {
-		sql =
-			'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
-
-		const hashedPassword = await hashPassword(userData.password);
-
-		values = [email, hashedPassword, name, phone, is_supplier, userUUID];
-	} else {
-		sql =
-			'update users set email=$1, name=$2, phone=$3, is_supplier=$4 where uuid=$5';
-
-		values = [email, name, phone, is_supplier, userUUID];
-	}
-
-	try {
-		await client.query('BEGIN');
-		await client.query(sql, values);
-		// If the request have an array of cities, then it saves them
-		if (userData.cities && userData.cities.length > 0) {
-			if (!(await saveCities(userData.cities, userUUID))) {
-				await client.query('ROLLBACK');
-				res.status(406).json({ detail: 'Invalid city uuid' });
-				return;
-			}
-		}
-
-		// If the request have an array of trades, then it saves them
-		console.log('userData:', userData);
-		if (userData.trades && userData.trades.length > 0) {
-			if (!(await saveTrades(userData.trades, userUUID))) {
-				await client.query('ROLLBACK');
-				res.status(406).json({ detail: 'Invalid trade uuid' });
-				return;
-			}
-		}
-
-		await client.query('COMMIT'); // Saves all the information to the database
-
-		// if saving was succefsull then we get the saved information
-
-		sql =
+		let sql =
 			'select uuid, email, is_supplier, name, phone from users where uuid = $1';
-		const userResponse = await (await client.query(sql, [userUUID])).rows;
+		const userResponse = await client.query(sql, [userUUID]);
 
-		const responseData = await formatOneUserResponse(userResponse[0]);
+		if (userResponse.rowCount === 0) {
+			res.status(404).json({
+				detail: `User with uuid: ${userUUID} does not exist`,
+			});
+			return;
+		}
 
-		res.status(200).json({
-			data: responseData,
-		});
-	} catch (err) {
-		await client.query('ROLLBACK');
-		console.error(err);
-		res.status(409).json({ detail: 'Conflict' });
+		// Do not update values that are not sent to the backend
+		const email = userData.email || userResponse.rows[0].email;
+		const name = userData.name || userResponse.rows[0].name;
+		const phone = userData.phone || userResponse.rows[0].phone;
+		const is_supplier =
+			userData.is_supplier === undefined
+				? userResponse.rows[0].is_supplier
+				: userData.is_supplier;
+
+		let values = [];
+
+		// Since we can not read the password then if the user doesn't send it then it will not update the password
+		if (userData.password) {
+			sql =
+				'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
+
+			const hashedPassword = await hashPassword(userData.password);
+
+			values = [
+				email,
+				hashedPassword,
+				name,
+				phone,
+				is_supplier,
+				userUUID,
+			];
+		} else {
+			sql =
+				'update users set email=$1, name=$2, phone=$3, is_supplier=$4 where uuid=$5';
+
+			values = [email, name, phone, is_supplier, userUUID];
+		}
+
+		try {
+			await client.query('BEGIN');
+			await client.query(sql, values);
+			// If the request have an array of cities, then it saves them
+			if (userData.cities && userData.cities.length > 0) {
+				if (!(await saveCities(userData.cities, userUUID))) {
+					await client.query('ROLLBACK');
+					res.status(406).json({ detail: 'Invalid city uuid' });
+					return;
+				}
+			}
+
+			// If the request have an array of trades, then it saves them
+			console.log('userData:', userData);
+			if (userData.trades && userData.trades.length > 0) {
+				if (!(await saveTrades(userData.trades, userUUID))) {
+					await client.query('ROLLBACK');
+					res.status(406).json({ detail: 'Invalid trade uuid' });
+					return;
+				}
+			}
+
+			await client.query('COMMIT'); // Saves all the information to the database
+
+			// if saving was succefsull then we get the saved information
+
+			sql =
+				'select uuid, email, is_supplier, name, phone from users where uuid = $1';
+			const userResponse = await (
+				await client.query(sql, [userUUID])
+			).rows;
+
+			const responseData = await formatOneUserResponse(userResponse[0]);
+
+			res.status(200).json({
+				data: responseData,
+			});
+		} catch (err) {
+			await client.query('ROLLBACK');
+			console.error(err);
+			res.status(409).json({ detail: 'Conflict' });
+		}
 	}
-});
+);
 
 module.exports = route;

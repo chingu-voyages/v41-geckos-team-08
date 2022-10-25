@@ -21,6 +21,13 @@ describe('Test the users path', () => {
 				expect(response.statusCode).toBe(401);
 			});
 
+			it('should return 401 when passing an invalid password', async () => {
+				response = await request(baseUrl)
+					.post('/users')
+					.send({ email: 'user@mail.com', password: 'pa$sWord123' });
+				expect(response.statusCode).toBe(400);
+			});
+
 			it('should return 400 when trying to create user with incomplete JSON', async () => {
 				let response = await request(baseUrl)
 					.post('/users')
@@ -29,19 +36,19 @@ describe('Test the users path', () => {
 
 				response = await request(baseUrl)
 					.post('/users')
-					.send({ email: 'user@mail.com', password: 'password123' });
+					.send({ email: 'user@mail.com', password: 'pa$sWord123' });
 				expect(response.statusCode).toBe(400);
 
 				response = await request(baseUrl).post('/users').send({
 					email: 'user@mail.com',
-					password: 'password123',
+					password: 'pa$sWord123',
 					name: 'The name of the user',
 				});
 				expect(response.statusCode).toBe(400);
 
 				response = await request(baseUrl).post('/users').send({
 					email: 'user@mail.com',
-					password: 'password123',
+					password: 'pa$sWord123',
 					name: 'The name of the user',
 					is_supplier: true,
 				});
@@ -53,7 +60,7 @@ describe('Test the users path', () => {
 			it('should return 201 when creating a supplier', async () => {
 				response = await createUser(
 					'supplier@mail.com',
-					'thisIsaValidOne',
+					'pa$sWord123',
 					true
 				);
 				expect(response.statusCode).toBe(201);
@@ -76,7 +83,7 @@ describe('Test the users path', () => {
 			it('should return 201 when creating a non supplier user', async () => {
 				response = await createUser(
 					'nonsupplier@mail.com',
-					'thisIsaValidOne',
+					'pa$sWord123',
 					true
 				);
 				expect(response.statusCode).toBe(201);
@@ -99,14 +106,14 @@ describe('Test the users path', () => {
 			it('should return 409 when trying to create a user with existing email', async () => {
 				response = await createUser(
 					'supplier@mail.com',
-					'thisIsaValidOne',
+					'pa$sWord123',
 					true
 				);
 				expect(response.statusCode).toBe(409);
 
 				response = await createUser(
 					'nonsupplier@mail.com',
-					'thisIsaValidOne',
+					'pa$sWord123',
 					true
 				);
 				expect(response.statusCode).toBe(409);
@@ -278,7 +285,7 @@ describe('Test the users path', () => {
 				const url = `/users/${userUUID}`;
 				const response = await request(baseUrl)
 					.put(url)
-					.send({ password: 'passWord123' });
+					.send({ password: 'pa$sWord123' });
 
 				expect(response.statusCode).toBe(200);
 			});
