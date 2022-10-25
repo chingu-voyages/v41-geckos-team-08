@@ -9,10 +9,10 @@ import Pagination from './Components/Pagination';
 function App() {
   return (
     <div className="App">
-    <Logo />
-    <Footer/>
+    {/* <Logo /> */}
+    {/* <Footer/> */}
     <ProfileCard/>
-    <Pagination />
+    {/* <Pagination /> */}
     {/* <Logo /> */}
     {/* <Footer/> */}
       
