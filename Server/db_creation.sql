@@ -138,3 +138,6 @@ ALTER TABLE IF EXISTS public.city
     ON UPDATE NO ACTION
     ON DELETE RESTRICT
     NOT VALID;
+
+ALTER TABLE IF EXISTS public.trades
+    ADD CONSTRAINT uq_trades_description UNIQUE (description);
