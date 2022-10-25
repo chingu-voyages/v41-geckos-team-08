@@ -1,12 +1,11 @@
 import React from 'react';
 
-const Logo = () => {
+const Logo = (height, width) => {
   return (
-    <div className='h-11 w-23'>
-     {/* I'm having trouble showing the inner div classes below: */}
-     <div className='bg-primary-200 absolute top-0 right-0.3573/1 bottom-0.4911/1 left-0.1486/1 scale-x-0.81 skew-y-0.61 -skew-x-0.57 scale-y-0.81 translate-x-0 translate-y-0'></div>
-     <div className='bg-primary-200 absolute top-0 -right-0.3455/1 bottom-0.4911/1 left-0.8514/1 -scale-x-0.81 skew-y-0.61 skew-x-0.57 scale-y-0.81 translate-x-0 translate-y-0'></div>
-    </div>
+    <svg height="553" width="1032" viewBox="0 0 1032 553" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M153.357 0L516.816 390.9L408.634 552.998L249.729 427.313C124.158 327.992 83.0778 145.844 153.357 0Z" fill="#AADFE7"/>
+      <path d="M878.634 0L515.176 390.9L623.357 552.998L782.262 427.313C907.834 327.992 948.913 145.844 878.634 0Z" fill="#AADFE7"/>
+    </svg>
   );
 }
 
