@@ -2,8 +2,11 @@ const validateEmail = (req, res, next) => {
 	const { email } = req.body;
 
 	if (email ? !validEmail(email) : null) {
-		return res.status(401).json("You have entered an invalid email address!");
+		return res
+			.status(401)
+			.json('You have entered an invalid email address!');
 	}
+
 	next();
 };
 

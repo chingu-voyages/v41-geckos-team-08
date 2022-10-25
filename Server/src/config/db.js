@@ -18,7 +18,7 @@ const client = new Client({
 client.connect((err) => {
 	if (err) throw new Error((mesage = err));
 
-	console.log('Database successfully connected');
+	console.log(`Database successfully connected with db ${database_name}`);
 });
 
 module.exports = client;
