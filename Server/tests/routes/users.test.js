@@ -75,6 +75,7 @@ describe('Test the users path', () => {
 				expect(typeof response.body.data.phone).toBe('string');
 				expect(response.body.data).toHaveProperty('is_supplier');
 				expect(typeof response.body.data.is_supplier).toBe('boolean');
+				expect(response.body.data.is_supplier).toBe(true);
 				expect(response.body.data).toHaveProperty('trades');
 				expect(typeof response.body.data.trades).toBe('object');
 				expect(response.body.data).toHaveProperty('cities');
@@ -85,7 +86,7 @@ describe('Test the users path', () => {
 				response = await createUser(
 					'nonsupplier@mail.com',
 					'pa$sWord123',
-					true
+					false
 				);
 				expect(response.statusCode).toBe(201);
 				expect(response.body.data).toHaveProperty('uuid');
@@ -98,6 +99,7 @@ describe('Test the users path', () => {
 				expect(typeof response.body.data.phone).toBe('string');
 				expect(response.body.data).toHaveProperty('is_supplier');
 				expect(typeof response.body.data.is_supplier).toBe('boolean');
+				expect(response.body.data.is_supplier).toBe(false);
 				expect(response.body.data).toHaveProperty('trades');
 				expect(typeof response.body.data.trades).toBe('object');
 				expect(response.body.data).toHaveProperty('cities');
