@@ -149,7 +149,7 @@ describe('Test jobs', () => {
 					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					description: 'asdfghjklñdgdghdghd',
-					high_price: '0',
+					high_price: 0,
 					low_price: 0,
 					expiration_date: '2022-13-15',
 				});
@@ -160,7 +160,7 @@ describe('Test jobs', () => {
 					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					description: 'asdfghjklñdgdghdghd',
-					high_price: '0',
+					high_price: 0,
 					low_price: 0,
 					expiration_date: '2022-12-50',
 				});
@@ -170,11 +170,44 @@ describe('Test jobs', () => {
 					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					description: 'asdfghjklñdgdghdghd',
-					high_price: '0',
+					high_price: 0,
 					low_price: 0,
 					expiration_date: '123456-12-15',
 				});
 				expect(response.statusCode).toBe(422);
+			});
+			it('should return 406 if the expiration date is in the past', async () => {
+				response = await request(baseUrl).post(endpoint).send({
+					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					description: 'asdfghjklñdgdghdghd',
+					high_price: 0,
+					low_price: 0,
+					expiration_date: '2020-12-15',
+				});
+				expect(response.statusCode).toBe(406);
+			});
+			it('should return 201 if the job is created', async () => {
+				response = await request(baseUrl).post(endpoint).send({
+					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					description: 'asdfghjklñdgdghdghd',
+					high_price: 0,
+					low_price: 0,
+					expiration_date: '2023-12-15',
+				});
+				expect(response.statusCode).toBe(201);
+
+				const job = response.body.data[0];
+				expect(job).toHaveProperty('uuid');
+				expect(job).toHaveProperty('description');
+				expect(job).toHaveProperty('low_price');
+				expect(job).toHaveProperty('high_price');
+				expect(job).toHaveProperty('expiration_date');
+				expect(job).toHaveProperty('is_taken');
+				expect(job).toHaveProperty('is_completed');
 			});
 		});
 	});

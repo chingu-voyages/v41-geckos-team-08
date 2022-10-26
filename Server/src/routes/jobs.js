@@ -74,7 +74,15 @@ route.post('/', async (req, res) => {
 			detail: 'Invalid expiration date, it must be in the format YYYY-MM-DD',
 		});
 
-	res.status(200).json({ data: [] });
+	const expDate = moment(expiration_date, 'YYYY-MM-DD', true);
+	const now = moment(new Date());
+
+	if (expDate - now <= 0)
+		return res
+			.status(406)
+			.json({ detail: 'Expiration date can not be in the past' });
+
+	res.status(201).json({ data: [] });
 });
 
 module.exports = route;
