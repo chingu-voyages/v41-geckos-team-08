@@ -1,11 +1,10 @@
 const validateUUID = (req, res, next) => {
 	const uuid = req.params.uuid;
 
-	if (isValidUUID(uuid)) {
-		next();
-	} else {
+	if (!isValidUUID(uuid))
 		return res.status(400).json({ detail: 'Invalid UUID' });
-	}
+
+	next();
 };
 
 const isValidUUID = (uuid) => {

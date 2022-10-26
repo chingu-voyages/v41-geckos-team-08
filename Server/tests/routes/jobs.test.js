@@ -18,7 +18,7 @@ describe('Test jobs', () => {
 		).body.data;
 
 		customer = await (
-			await createUser('customre@mail.com', 'Pas$W0rd123', false)
+			await createUser('customer@mail.com', 'Pas$W0rd123', false)
 		).body.data;
 
 		trade = await (await createTrade('new trade')).body.data;
@@ -218,7 +218,7 @@ describe('Test jobs', () => {
 				expect(response.statusCode).toBe(406);
 			});
 			it('should return 200 if it exists', async () => {
-				const url = `${endpoint}?city=Quito`;
+				const url = `${endpoint}?city=quito`;
 				const response = await request(baseUrl).get(url);
 
 				expect(response.statusCode).toBe(200);
@@ -248,6 +248,21 @@ describe('Test jobs', () => {
 					expect(job).toHaveProperty('supplier');
 					expect(job.supplier).toBe(null);
 				});
+			});
+		});
+	});
+	describe('Getting one job by its uuid', () => {
+		describe('Given they pass an invalid uuid', () => {
+			it('should return 400', async () => {
+				const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
+				const response = await request(baseUrl).get(url);
+				expect(response.statusCode).toBe(400);
+			});
+			it('should return 404 if no trade is found', async () => {
+				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
+				const url = `${endpoint}/${badUUID}`;
+				const response = await request(baseUrl).get(url);
+				expect(response.statusCode).toBe(404);
 			});
 		});
 	});
