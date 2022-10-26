@@ -133,7 +133,7 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 	const jobUUID = req.params.uuid;
 
 	const jobsSQL =
-		'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where lower(city.name) = $1';
+		'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1';
 
 	const response = await client.query(jobsSQL, [jobUUID]);
 
@@ -141,6 +141,10 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 		return res
 			.status(404)
 			.json({ detail: `The job with UUID: ${jobUUID} does not exist` });
+
+	const formatResponse = formatOneJobRespnse(response.rows[0]);
+
+	return res.status(200).json({ data: formatResponse });
 });
 
 module.exports = route;

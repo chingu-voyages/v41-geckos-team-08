@@ -252,6 +252,12 @@ describe('Test jobs', () => {
 		});
 	});
 	describe('Getting one job by its uuid', () => {
+		let queryJob;
+		beforeAll(async () => {
+			queryJob = await (
+				await request(baseUrl).get(`${endpoint}?city=quito`)
+			).body.data[0];
+		});
 		describe('Given they pass an invalid uuid', () => {
 			it('should return 400', async () => {
 				const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
@@ -263,6 +269,37 @@ describe('Test jobs', () => {
 				const url = `${endpoint}/${badUUID}`;
 				const response = await request(baseUrl).get(url);
 				expect(response.statusCode).toBe(404);
+			});
+		});
+		describe('Given they pass a valid uuid', () => {
+			it('should return 200', async () => {
+				const url = `${endpoint}/${queryJob.uuid}`;
+
+				const response = await request(baseUrl).get(url);
+				expect(response.statusCode).toBe(200);
+
+				const job = response.body.data;
+
+				expect(job).toHaveProperty('uuid');
+				expect(job).toHaveProperty('description');
+				expect(job).toHaveProperty('low_price');
+				expect(job).toHaveProperty('high_price');
+				expect(job).toHaveProperty('expiration_date');
+				expect(job).toHaveProperty('is_taken');
+				expect(job).toHaveProperty('is_completed');
+				expect(job).toHaveProperty('trade');
+				expect(job.trade).toHaveProperty('uuid');
+				expect(job.trade).toHaveProperty('description');
+				expect(job).toHaveProperty('customer');
+				expect(job.customer).toHaveProperty('uuid');
+				expect(job.customer).toHaveProperty('email');
+				expect(job.customer).toHaveProperty('name');
+				expect(job.customer).toHaveProperty('phone');
+				expect(job).toHaveProperty('city');
+				expect(job.city).toHaveProperty('uuid');
+				expect(job.city).toHaveProperty('name');
+				expect(job).toHaveProperty('supplier');
+				expect(job.supplier).toBe(null);
 			});
 		});
 	});
