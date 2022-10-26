@@ -3,44 +3,40 @@ const request = require('supertest');
 const baseUrl = require('../../app');
 const client = require('../../src/config/db');
 const { initializeDB } = require('../common/initializeDB');
+const createUser = require('../common/create-user');
+const createTrade = require('../common/create-trade');
 
 const endpoint = '/jobs';
+let supplier, customer, trade, city;
 
 describe('Test jobs', () => {
 	beforeAll(async () => {
 		await initializeDB(client);
+
+		supplier = await (
+			await createUser('supplier@mail.com', 'Pas$W0rd123', true)
+		).body.data;
+
+		customer = await (
+			await createUser('customre@mail.com', 'Pas$W0rd123', false)
+		).body.data;
+
+		trade = await (await createTrade('new trade')).body.data;
+
+		const countries = await (
+			await request(baseUrl).get('/locations')
+		).body.data;
+
+		const country = countries.find((pais) => pais.name === 'Ecuador');
+
+		const cities = await (
+			await request(baseUrl).get(`/locations/${country.uuid}`)
+		).body.data;
+
+		city = cities.find((ciudad) => ciudad.name === 'Quito');
 	});
 	afterAll(async () => {
 		await client.end();
-	});
-	describe('Getting all of the jobs', () => {
-		describe('Given the city query parameter', () => {
-			it('should return 406 when it does not exist', async () => {
-				const response = await request(baseUrl).get(endpoint);
-
-				expect(response.statusCode).toBe(406);
-			});
-			it('should return 200 if it exists', async () => {
-				const url = `${endpoint}?city=quito`;
-				console.log(url);
-				const response = await request(baseUrl).get(url);
-
-				expect(response.statusCode).toBe(200);
-				expect(typeof response.body.data).toBe('object');
-
-				const jobs = response.body.data;
-
-				jobs.forEach((job) => {
-					expect(job).toHaveProperty('uuid');
-					expect(job).toHaveProperty('description');
-					expect(job).toHaveProperty('low_price');
-					expect(job).toHaveProperty('high_price');
-					expect(job).toHaveProperty('expiration_date');
-					expect(job).toHaveProperty('is_taken');
-					expect(job).toHaveProperty('is_completed');
-				});
-			});
-		});
 	});
 	describe('Create a job', () => {
 		describe('Given the json is incomplete', () => {
@@ -190,9 +186,9 @@ describe('Test jobs', () => {
 			});
 			it('should return 201 if the job is created', async () => {
 				response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					trade_uuid: trade.uuid,
+					customer_uuid: customer.uuid,
+					city_uuid: city.uuid,
 					description: 'asdfghjklñdgdghdghd',
 					high_price: 0,
 					low_price: 0,
@@ -200,7 +196,10 @@ describe('Test jobs', () => {
 				});
 				expect(response.statusCode).toBe(201);
 
-				const job = response.body.data[0];
+				const job = response.body.data;
+				expect(typeof job).toBe('object');
+				expect(job).toHaveProperty('supplier');
+				expect(job.supplier).toBe(null);
 				expect(job).toHaveProperty('uuid');
 				expect(job).toHaveProperty('description');
 				expect(job).toHaveProperty('low_price');
@@ -208,6 +207,47 @@ describe('Test jobs', () => {
 				expect(job).toHaveProperty('expiration_date');
 				expect(job).toHaveProperty('is_taken');
 				expect(job).toHaveProperty('is_completed');
+			});
+		});
+	});
+	describe('Getting all of the jobs', () => {
+		describe('Given the city query parameter', () => {
+			it('should return 406 when it does not exist', async () => {
+				const response = await request(baseUrl).get(endpoint);
+
+				expect(response.statusCode).toBe(406);
+			});
+			it('should return 200 if it exists', async () => {
+				const url = `${endpoint}?city=Quito`;
+				const response = await request(baseUrl).get(url);
+
+				expect(response.statusCode).toBe(200);
+				expect(typeof response.body.data).toBe('object');
+
+				const jobs = response.body.data;
+
+				jobs.forEach((job) => {
+					expect(job).toHaveProperty('uuid');
+					expect(job).toHaveProperty('description');
+					expect(job).toHaveProperty('low_price');
+					expect(job).toHaveProperty('high_price');
+					expect(job).toHaveProperty('expiration_date');
+					expect(job).toHaveProperty('is_taken');
+					expect(job).toHaveProperty('is_completed');
+					expect(job).toHaveProperty('trade');
+					expect(job.trade).toHaveProperty('uuid');
+					expect(job.trade).toHaveProperty('description');
+					expect(job).toHaveProperty('customer');
+					expect(job.customer).toHaveProperty('uuid');
+					expect(job.customer).toHaveProperty('email');
+					expect(job.customer).toHaveProperty('name');
+					expect(job.customer).toHaveProperty('phone');
+					expect(job).toHaveProperty('city');
+					expect(job.city).toHaveProperty('uuid');
+					expect(job.city).toHaveProperty('name');
+					expect(job).toHaveProperty('supplier');
+					expect(job.supplier).toBe(null);
+				});
 			});
 		});
 	});
