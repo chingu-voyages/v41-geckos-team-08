@@ -7,7 +7,7 @@ const createUser = require('../common/create-user');
 const createTrade = require('../common/create-trade');
 
 const endpoint = '/jobs';
-let supplier, customer, trade, city;
+let supplier, customer, trade, city, country, updateTrade, updateCity;
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 
@@ -24,18 +24,20 @@ describe('Test jobs', () => {
 		).body.data;
 
 		trade = await (await createTrade('new trade')).body.data;
+		updateTrade = await (await createTrade('another trade')).body.data;
 
 		const countries = await (
 			await request(baseUrl).get('/locations')
 		).body.data;
 
-		const country = countries.find((pais) => pais.name === 'Ecuador');
+		country = countries.find((pais) => pais.name === 'Ecuador');
 
 		const cities = await (
 			await request(baseUrl).get(`/locations/${country.uuid}`)
 		).body.data;
 
 		city = cities.find((ciudad) => ciudad.name === 'Quito');
+		updateCity = cities.find((ciudad) => ciudad.name === 'Guayaquil');
 	});
 	afterAll(async () => {
 		await client.end();
@@ -368,7 +370,7 @@ describe('Test jobs', () => {
 				expect(job.supplier).toBe(null);
 			});
 
-			describe('Given an invalid trade UUID', () => {
+			describe('Given a trade UUID', () => {
 				it('should return 400 if the trade UUID is invalid', async () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
@@ -385,8 +387,22 @@ describe('Test jobs', () => {
 
 					expect(result.statusCode).toBe(404);
 				});
+				it('should return 200 if the trade is updated', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ trade_uuid: updateTrade.uuid });
+
+					expect(result.statusCode).toBe(200);
+
+					const job = result.body.data;
+
+					expect(job.trade.uuid).toBe(updateTrade.uuid);
+					expect(job.trade.description).toBe(updateTrade.description);
+				});
 			});
-			describe('Given an invalid city UUID', () => {
+			describe('Given a city UUID', () => {
 				it('should return 400 if the city UUID is invalid', async () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
@@ -403,8 +419,22 @@ describe('Test jobs', () => {
 
 					expect(result.statusCode).toBe(404);
 				});
+				it('should return 200 if the trade is updated', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ city_uuid: updateCity.uuid });
+
+					expect(result.statusCode).toBe(200);
+
+					const job = result.body.data;
+
+					expect(job.city.uuid).toBe(updateCity.uuid);
+					expect(job.city.description).toBe(updateCity.description);
+				});
 			});
-			describe('Given an invalid supplier UUID', () => {
+			describe('Given a supplier UUID', () => {
 				it('should return 400 if the supplier UUID is invalid', async () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
@@ -421,8 +451,26 @@ describe('Test jobs', () => {
 
 					expect(result.statusCode).toBe(404);
 				});
+				it('should return 200 if the supplier is updated', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ supplier_uuid: supplier.uuid });
+
+					expect(result.statusCode).toBe(200);
+
+					const job = result.body.data;
+
+					expect(job).toHaveProperty('supplier');
+					expect(job.supplier).not.toBe(null);
+					expect(job.supplier.uuid).toBe(supplier.uuid);
+					expect(job.supplier.email).toBe(supplier.email);
+					expect(job.supplier.name).toBe(supplier.name);
+					expect(job.supplier.phone).toBe(supplier.phone);
+				});
 			});
-			describe('Given it sends the is_taken', () => {
+			describe('Given it the is_taken', () => {
 				it('should return 406 if the value is not a boolean', async () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
@@ -430,6 +478,22 @@ describe('Test jobs', () => {
 						.send({ is_taken: 'whatever value' });
 
 					expect(result.statusCode).toBe(406);
+				});
+				it('should return 200 if the value is  a boolean', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.send({ is_taken: true });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.is_taken).toBe(true);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ is_taken: false });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.is_taken).toBe(false);
 				});
 			});
 			describe('Given it sends the is_completed', () => {
@@ -441,8 +505,23 @@ describe('Test jobs', () => {
 
 					expect(result.statusCode).toBe(406);
 				});
-			});
+				it('should return 200 if the value is  a boolean', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.send({ is_completed: true });
 
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.is_completed).toBe(true);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ is_completed: false });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.is_completed).toBe(false);
+				});
+			});
 			describe('Given it sends the low_price', () => {
 				it('should return 406 if the value is not a number', async () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
@@ -451,6 +530,22 @@ describe('Test jobs', () => {
 						.send({ low_price: 'whatever value' });
 
 					expect(result.statusCode).toBe(406);
+				});
+				it('should return 200 if the value is a number', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.send({ low_price: 200 });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.low_price).toBe(200);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ low_price: 200.53 });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.low_price).toBe(200.53);
 				});
 			});
 			describe('Given it sends the high_price', () => {
@@ -461,6 +556,22 @@ describe('Test jobs', () => {
 						.send({ high_price: 'whatever value' });
 
 					expect(result.statusCode).toBe(406);
+				});
+				it('should return 200 if the value is a number', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.send({ high_price: 500 });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.high_price).toBe(500);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ high_price: 500.45 });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.high_price).toBe(500.45);
 				});
 			});
 			describe('Given it sends the expiration_date', () => {
@@ -496,6 +607,17 @@ describe('Test jobs', () => {
 
 					expect(result.statusCode).toBe(406);
 				});
+				it('should return 200 if the value is a valid date', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: '2023-12-15' });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.expiration_date).toBe(
+						'2023-12-15T05:00:00.000Z'
+					);
+				});
 			});
 			describe('Given it sends a description', () => {
 				it('should return 406 if its length is less than 10', async () => {
@@ -505,6 +627,17 @@ describe('Test jobs', () => {
 						.send({ description: 'value' });
 
 					expect(result.statusCode).toBe(406);
+				});
+				it('should return 200 if its length is greater than 10', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ description: 'this is a valid description' });
+
+					expect(result.statusCode).toBe(200);
+					expect(result.body.data.description).toBe(
+						'this is a valid description'
+					);
 				});
 			});
 		});

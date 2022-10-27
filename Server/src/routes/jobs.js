@@ -163,6 +163,7 @@ route.put('/:uuid', validateUUID, async (req, res) => {
 
 	if (trade_uuid && !isValidUUID(trade_uuid))
 		return res.status(400).json({ detail: 'Invalid trade UUID' });
+
 	if (city_uuid && !isValidUUID(city_uuid))
 		return res.status(400).json({ detail: 'Invalid city UUID' });
 	if (supplier_uuid && !isValidUUID(supplier_uuid))
@@ -186,11 +187,9 @@ route.put('/:uuid', validateUUID, async (req, res) => {
 			.json({ detail: 'The high_price key must be of type number' });
 
 	if (description && description.length < 10)
-		return res
-			.status(406)
-			.json({
-				detail: 'The description should be at least of 10 characters',
-			});
+		return res.status(406).json({
+			detail: 'The description should be at least of 10 characters',
+		});
 
 	if (
 		expiration_date &&
