@@ -8,6 +8,8 @@ const createTrade = require('../common/create-trade');
 
 const endpoint = '/jobs';
 let supplier, customer, trade, city;
+const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
+const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 
 describe('Test jobs', () => {
 	beforeAll(async () => {
@@ -300,6 +302,210 @@ describe('Test jobs', () => {
 				expect(job.city).toHaveProperty('name');
 				expect(job).toHaveProperty('supplier');
 				expect(job.supplier).toBe(null);
+			});
+		});
+	});
+	describe('Updating a job', () => {
+		describe('Given a bad UUID', () => {
+			// http://server/jobs/<uuid>
+			it('Should return 400 if the UUID is invalid', async () => {
+				const result = await request(baseUrl).put(
+					`${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`
+				);
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('Shoud return 404 if the UUID does not exist', async () => {
+				const result = await request(baseUrl).put(
+					`${endpoint}/a1bcdef2-1adc-d551-d701-74bacde40433`
+				);
+
+				expect(result.statusCode).toBe(404);
+			});
+		});
+		describe('Given an incomplete JSON', () => {
+			let queryJob;
+			beforeAll(async () => {
+				queryJob = await (
+					await request(baseUrl).get(`${endpoint}?city=quito`)
+				).body.data[0];
+			});
+			it('should return 200 if there is empty JSON', async () => {
+				const url = `${endpoint}/${queryJob.uuid}`;
+				const result = await request(baseUrl).put(url).send({});
+
+				expect(result.statusCode).toBe(200);
+
+				const job = result.body.data;
+
+				expect(job).toHaveProperty('uuid');
+				expect(job.uuid).toBe(queryJob.uuid);
+				expect(job).toHaveProperty('description');
+				expect(job.description).toBe(queryJob.description);
+				expect(job).toHaveProperty('low_price');
+				expect(job.low_price).toBe(queryJob.low_price);
+				expect(job).toHaveProperty('high_price');
+				expect(job.high_price).toBe(queryJob.high_price);
+				expect(job).toHaveProperty('expiration_date');
+				expect(job.expiration_date).toBe(queryJob.expiration_date);
+				expect(job).toHaveProperty('is_taken');
+				expect(job.is_taken).toBe(queryJob.is_taken);
+				expect(job).toHaveProperty('is_completed');
+				expect(job.is_completed).toBe(queryJob.is_completed);
+				expect(job).toHaveProperty('trade');
+				expect(job.trade).toHaveProperty('uuid');
+				expect(job.trade.uuid).toBe(queryJob.trade.uuid);
+				expect(job.trade).toHaveProperty('description');
+				expect(job).toHaveProperty('customer');
+				expect(job.customer).toHaveProperty('uuid');
+				expect(job.customer).toHaveProperty('email');
+				expect(job.customer).toHaveProperty('name');
+				expect(job.customer).toHaveProperty('phone');
+				expect(job).toHaveProperty('city');
+				expect(job.city).toHaveProperty('uuid');
+				expect(job.city).toHaveProperty('name');
+				expect(job).toHaveProperty('supplier');
+				expect(job.supplier).toBe(null);
+			});
+
+			describe('Given an invalid trade UUID', () => {
+				it('should return 400 if the trade UUID is invalid', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ trade_uuid: invalidUUID });
+
+					expect(result.statusCode).toBe(400);
+				});
+				it('should return 404 if the trade UUID does not exist', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ trade_uuid: inExistentUUID });
+
+					expect(result.statusCode).toBe(404);
+				});
+			});
+			describe('Given an invalid city UUID', () => {
+				it('should return 400 if the city UUID is invalid', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ city_uuid: invalidUUID });
+
+					expect(result.statusCode).toBe(400);
+				});
+				it('should return 404 if the city UUID does not exist', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ city_uuid: inExistentUUID });
+
+					expect(result.statusCode).toBe(404);
+				});
+			});
+			describe('Given an invalid supplier UUID', () => {
+				it('should return 400 if the supplier UUID is invalid', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ supplier_uuid: invalidUUID });
+
+					expect(result.statusCode).toBe(400);
+				});
+				it('should return 404 if the supplier UUID does not exist', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ supplier_uuid: inExistentUUID });
+
+					expect(result.statusCode).toBe(404);
+				});
+			});
+			describe('Given it sends the is_taken', () => {
+				it('should return 406 if the value is not a boolean', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ is_taken: 'whatever value' });
+
+					expect(result.statusCode).toBe(406);
+				});
+			});
+			describe('Given it sends the is_completed', () => {
+				it('should return 406 if the value is not a boolean', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ is_completed: 'whatever value' });
+
+					expect(result.statusCode).toBe(406);
+				});
+			});
+
+			describe('Given it sends the low_price', () => {
+				it('should return 406 if the value is not a number', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ low_price: 'whatever value' });
+
+					expect(result.statusCode).toBe(406);
+				});
+			});
+			describe('Given it sends the high_price', () => {
+				it('should return 406 if the value is not a number', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ high_price: 'whatever value' });
+
+					expect(result.statusCode).toBe(406);
+				});
+			});
+			describe('Given it sends the expiration_date', () => {
+				it('should return 406 if the value is not a valid date', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: 'whatever value' });
+
+					expect(result.statusCode).toBe(406);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: '2022-13-15' });
+
+					expect(result.statusCode).toBe(406);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: '2022-12-50' });
+
+					expect(result.statusCode).toBe(406);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: '2022231-12-50' });
+
+					expect(result.statusCode).toBe(406);
+
+					result = await request(baseUrl)
+						.put(url)
+						.send({ expiration_date: '2020-12-15' });
+
+					expect(result.statusCode).toBe(406);
+				});
+			});
+			describe('Given it sends a description', () => {
+				it('should return 406 if its length is less than 10', async () => {
+					const url = `${endpoint}/${queryJob.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.send({ description: 'value' });
+
+					expect(result.statusCode).toBe(406);
+				});
 			});
 		});
 	});
