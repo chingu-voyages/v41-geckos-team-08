@@ -7,6 +7,7 @@ import { ProfileCard } from './Components/ProfileCard';
 import Pagination from './Components/Pagination';
 import LoginPage from "./Pages/LoginPage";
 import {JobCard} from './Components/JobCard'
+import {LandingTop} from './Components/LandignTop'
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
     <Pagination /> */}
     {/* <Logo /> */}
     {/* <Footer/> */}
-    <JobCard/>
+    {/* <JobCard/> */}
+    <LandingTop/>
       
      
     </div>
