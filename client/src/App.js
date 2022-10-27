@@ -12,7 +12,7 @@ import {LandingTop} from './Components/LandignTop'
 function App() {
   return (
     <div className="App">
-      {/* <LoginPage /> */}
+      <LoginPage />
     {/* <Logo />
     <Footer/>
     <ProfileCard/>
@@ -20,7 +20,7 @@ function App() {
     {/* <Logo /> */}
     {/* <Footer/> */}
     {/* <JobCard/> */}
-    <LandingTop/>
+    {/* <LandingTop/> */}
       
      
     </div>
