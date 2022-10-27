@@ -74,7 +74,7 @@ export default function Example() {
             </div>
 
             <div>
-              <button
+              <Button
                 type="submit"
                 className="group relative flex w-full justify-center rounded-md border border-transparent bg-primary-200 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
@@ -82,7 +82,7 @@ export default function Example() {
                   <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
                 </span>
                 Sign in
-              </button>
+              </Button>
             </div>
           </form>
         </div>

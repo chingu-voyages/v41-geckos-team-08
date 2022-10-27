@@ -6,17 +6,19 @@ import Logo from './Components/Logo';
 import { ProfileCard } from './Components/ProfileCard';
 import Pagination from './Components/Pagination';
 import LoginPage from "./Pages/LoginPage";
+import {JobCard} from './Components/JobCard'
 
 function App() {
   return (
     <div className="App">
-      <LoginPage />
+      {/* <LoginPage /> */}
     {/* <Logo />
     <Footer/>
     <ProfileCard/>
     <Pagination /> */}
     {/* <Logo /> */}
     {/* <Footer/> */}
+    <JobCard/>
       
      
     </div>
