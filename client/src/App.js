@@ -8,11 +8,13 @@ import Pagination from './Components/Pagination';
 import LoginPage from "./Pages/LoginPage";
 import {JobCard} from './Components/JobCard'
 import {LandingTop} from './Components/LandignTop'
+import {LandingBottom} from './Components/LandingBottom'
 
 function App() {
   return (
     <div className="App">
-      <LoginPage />
+      <LandingBottom/>
+      {/* <LoginPage /> */}
     {/* <Logo />
     <Footer/>
     <ProfileCard/>
