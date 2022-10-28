@@ -29,4 +29,49 @@ const formatOneUserResponse = async (user) => {
 		cities,
 	};
 };
+
+/**
+ *
+ * Given the UUID of a job, it will return the formatted version of what the API is expected to return
+ *
+ * @param {uuid} jobUUID
+ * @returns {FormatedResponse}
+ */
+const formatOneJobRespnse = (job) => {
+	const supplier = !job.supplier_uuid
+		? null
+		: {
+				uuid: job.supplier_uuid,
+				email: job.supplier_email,
+				name: job.supplier_name,
+				phone: job.supplier_phone,
+		  };
+
+	return {
+		uuid: job.uuid,
+		description: job.description,
+		low_price: job.low_price,
+		high_price: job.high_price,
+		expiration_date: job.expiration_date,
+		is_taken: job.is_taken,
+		is_completed: job.is_completed,
+		trade: {
+			uuid: job.trades_uuid,
+			description: job.trades_description,
+		},
+		city: {
+			uuid: job.city_uuid,
+			name: job.city_name,
+		},
+		customer: {
+			uuid: job.customer_uuid,
+			email: job.customer_email,
+			name: job.customer_name,
+			phone: job.customer_phone,
+		},
+		supplier,
+	};
+};
+
 module.exports.formatOneUserResponse = formatOneUserResponse;
+module.exports.formatOneJobRespnse = formatOneJobRespnse;
