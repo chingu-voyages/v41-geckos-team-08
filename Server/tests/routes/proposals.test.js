@@ -17,11 +17,11 @@ describe('Test the Proposals Rout', () => {
 		await initializeDB(client);
 
 		customer = await (
-			await createUser('customer@mail.com', 'Pas$W0rd123', false)
+			await createUser('customer@mail.com', 'Pas$wordForCust0mer', false)
 		).body.data;
 
 		supplier = await (
-			await createUser('supplier@mail.com', 'Pas$W0rd123', true)
+			await createUser('supplier@mail.com', 'Pas$W0rd', true)
 		).body.data;
 
 		trade = await (await createTrade('New trade')).body.data;
@@ -141,12 +141,26 @@ describe('Test the Proposals Rout', () => {
 			});
 		});
 		describe('Given the user sends a valid JSON', () => {
-			it.todo(
-				'should return 404 when the user sends an nonexistent supplier_uuid'
-			);
-			it.todo(
-				'should return 404 when the user sends an nonexistent job_uuid'
-			);
+			it('should return 404 when the user sends an nonexistent supplier_uuid', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: inExistentUUID,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(404);
+			});
+			it('should return 404 when the user sends an nonexistent job_uuid', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: inExistentUUID,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(404);
+			});
 			it.todo('should return 201 if the proposal was created correctly');
 			it.todo(
 				'should return 409 if the supplier is trying to create another proposal for the same job'
