@@ -161,10 +161,47 @@ describe('Test the Proposals Rout', () => {
 
 				expect(result.statusCode).toBe(404);
 			});
-			it.todo('should return 201 if the proposal was created correctly');
-			it.todo(
-				'should return 409 if the supplier is trying to create another proposal for the same job'
-			);
+			it('should return 201 if the proposal was created correctly', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(201);
+
+				const proposal = result.body.data;
+
+				expect(proposal).toHaveProperty('price');
+				expect(proposal.price).toBe(500);
+				expect(proposal).toHaveProperty('expiration_date');
+				expect(proposal.expiration_date).toBe(
+					'2023-12-13T05:00:00.000Z'
+				);
+				expect(proposal).toHaveProperty('is_accepted');
+				expect(proposal.is_accepted).toBe(false);
+				expect(proposal).toHaveProperty('supplier');
+				expect(proposal.supplier).toHaveProperty('uuid');
+				expect(proposal.supplier.uuid).toBe(supplier.uuid);
+				expect(proposal.supplier).not.toHaveProperty('password');
+				expect(proposal.supplier).toHaveProperty('email');
+				expect(proposal.supplier.email).toBe(supplier.email);
+				expect(proposal.supplier).toHaveProperty('name');
+				expect(proposal.supplier.name).toBe(supplier.name);
+				expect(proposal.supplier).toHaveProperty('phone');
+				expect(proposal.supplier.phone).toBe(supplier.phone);
+			});
+			it('should return 409 if the supplier is trying to create another proposal for the same job', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(409);
+			});
 		});
 	});
 	describe('Getting the proposals', () => {

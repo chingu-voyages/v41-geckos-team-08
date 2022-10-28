@@ -32,9 +32,9 @@ const formatOneUserResponse = async (user) => {
 
 /**
  *
- * Given the UUID of a job, it will return the formatted version of what the API is expected to return
+ * Given a job, it will return the formatted version of what the API is expected to return
  *
- * @param {uuid} jobUUID
+ * @param {job} jobUUID
  * @returns {FormatedResponse}
  */
 const formatOneJobRespnse = (job) => {
@@ -73,5 +73,28 @@ const formatOneJobRespnse = (job) => {
 	};
 };
 
+/**
+ *
+ * Given a job, it will return the formatted version of what the API is expected to return
+ *
+ * @param {proposal} proposal
+ * @returns {FormatedResponse}
+ */
+const formatOneProposalResponse = (proposal) => {
+	console.log('proposal: ', proposal);
+	return {
+		price: proposal.price,
+		expiration_date: proposal.expiration_date,
+		is_accepted: proposal.is_accepted,
+		supplier: {
+			uuid: proposal.supplier_uuid,
+			email: proposal.supplier_email,
+			name: proposal.supplier_name,
+			phone: proposal.supplier_phone,
+		},
+	};
+};
+
 module.exports.formatOneUserResponse = formatOneUserResponse;
 module.exports.formatOneJobRespnse = formatOneJobRespnse;
+module.exports.formatOneProposalResponse = formatOneProposalResponse;

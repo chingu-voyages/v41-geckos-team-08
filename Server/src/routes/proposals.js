@@ -2,6 +2,7 @@ const route = require('express').Router();
 const { isValidUUID } = require('../middleware/validateUUID');
 const moment = require('moment');
 const client = require('../config/db');
+const { formatOneProposalResponse } = require('../components/format');
 
 route.get('/', (req, res) => {
 	res.json({
@@ -58,12 +59,24 @@ route.post('/', async (req, res) => {
 
 		await client.query('COMMIT');
 
-		return res.sendStatus(202);
+		const resultSQL =
+			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
+		const result = await (
+			await client.query(resultSQL, [job_uuid, supplier_uuid])
+		).rows[0];
+
+		const formatedResponse = formatOneProposalResponse(result);
+		console.log(formatedResponse);
+
+		return res.status(201).json({ data: formatedResponse });
 	} catch (err) {
 		await client.query('ROLLBACK');
 		console.log(err);
 		if (err.code === '23503')
 			return res.status(404).json({ detail: err.detail });
+
+		if (err.code === '23505')
+			return res.status(409).json({ detail: 'Conflict' });
 
 		return res.status(422).json({ detail: 'Unprocessable entity' });
 	}
