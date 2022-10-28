@@ -3,42 +3,142 @@ const baseUrl = require('../../app');
 const client = require('../../src/config/db');
 const { initializeDB } = require('../common/initializeDB');
 const createUser = require('../common/create-user');
+const createJobs = require('../common/create-jobs');
+const createTrade = require('../common/create-trade');
 
 const endpoint = '/proposals';
+const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
+const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
+
+let supplier, customer, trade, job;
 
 describe('Test the Proposals Rout', () => {
 	beforeAll(async () => {
 		await initializeDB(client);
 
-		const customer = createUser(
-			'customer@mail.com',
-			'Pas$wordForCust0mer',
-			false
-		);
-		const supplier = createUser(
-			'supplier@mail.com',
-			'Pas$wordForCust0mer',
-			true
-		);
+		customer = await (
+			await createUser('customer@mail.com', 'Pas$W0rd123', false)
+		).body.data;
+
+		supplier = await (
+			await createUser('supplier@mail.com', 'Pas$W0rd123', true)
+		).body.data;
+
+		trade = await (await createTrade('New trade')).body.data;
+
+		job = await (
+			await createJobs(
+				trade.uuid,
+				customer.uuid,
+				'first job for this test'
+			)
+		).body.data;
 	});
 	afterAll(async () => {
 		await client.end();
 	});
 	describe('Creating a proposal', () => {
 		describe('Given the user send an invalid JSON', () => {
-			it.todo('should return 400 when the JSON is empty');
-			it.todo(
-				'should return 400 when the user sends an invalid supplier_uuid'
-			);
-			it.todo(
-				'should return 400 when the user sends an invalid job_uuid'
-			);
-			it.todo(
-				'should return 400 when the user sends a non numeric price'
-			);
-			it.todo('should return 400 when the user sends an invalid date');
-			it.todo('should return 400 when the user sends a past date');
-			it.todo('should return 400 if the user is missing any field');
+			it('should return 400 when the JSON is empty', async () => {
+				const result = await request(baseUrl).post(endpoint).send({});
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 when the user sends an invalid supplier_uuid', async () => {
+				const result = await request(baseUrl)
+					.post(endpoint)
+					.send({ supplier_uuid: invalidUUID });
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 when the user sends an invalid job_uuid', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: invalidUUID,
+				});
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 when the user sends a non numeric price', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 'Invalid price',
+				});
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 when the user sends an invalid date', async () => {
+				let result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2022-15-13',
+				});
+
+				expect(result.statusCode).toBe(400);
+
+				result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2022-12-60',
+				});
+
+				expect(result.statusCode).toBe(400);
+
+				result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '1231231-12-15',
+				});
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 when the user sends a past date', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2020-12-13',
+				});
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 if the user is missing any field', async () => {
+				let result = await request(baseUrl).post(endpoint).send({
+					job_uuid: job.uuid,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(400);
+
+				result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					price: 500,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(400);
+
+				result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					expiration_date: '2023-12-13',
+				});
+
+				expect(result.statusCode).toBe(400);
+
+				result = await request(baseUrl).post(endpoint).send({
+					supplier_uuid: supplier.uuid,
+					job_uuid: job.uuid,
+					price: 500,
+				});
+
+				expect(result.statusCode).toBe(400);
+			});
 		});
 		describe('Given the user sends a valid JSON', () => {
 			it.todo(
