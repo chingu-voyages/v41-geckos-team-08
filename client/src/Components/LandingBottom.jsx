@@ -3,7 +3,7 @@ import React from 'react';
 export const LandingBottom = () => {
   return (
     // <div className='container my-24 px-6 mx-auto'>
-    <section classNameName='mb-32 text-black'>
+    <section className='mb-32 text-black'>
       <div className='block bg-quaternary-100'>
       <div className='flex justify-center items-center lg:justify-start px-12 py-0  md:px-9'>
             <h2 className='text-xl font-bold mb-4 pr-0 text-center lg:text-left lg:pr-96 lg:mr-40'>

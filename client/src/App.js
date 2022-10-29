@@ -1,34 +1,18 @@
 import './App.css';
-// import LoginForm from './Components/LoginForm';
-// import {NavBar} from './Components/NavBar'
-import {Footer} from './Components/Footer.jsx'
-import Logo from './Components/Logo';
-import { ProfileCard } from './Components/ProfileCard';
-import Pagination from './Components/Pagination';
-import LoginPage from "./Pages/LoginPage";
-import {JobCard} from './Components/JobCard'
-import {LandingTop} from './Components/LandignTop'
-import {LandingBottom} from './Components/LandingBottom'
-// import {SignupForm} from './Components/SignupFom'
-import {JobForm} from './Components/JobForm'
+import React from 'react'
+import {LoginPage} from './Pages/LoginPage'
+import {LandingPage }from './Pages/LandingPage';
+import {SignUpPage}from './Pages/SignUpPage';
+import {AvailableJobsPage} from './Pages/AvailableJobsPage'
+import {ContractorProfile} from './Pages/ContractorProfile'
+import {JobFormPage} from './Pages/JobFormPage'
+import {OfferFromContractorPage} from './Pages/OfferFromContractorPage'
+import {UserProfile} from './Pages/UserProfile'
 
 function App() {
   return (
     <div className="App">
-      <JobForm/>
-      {/* <SignupForm/> */}
-      {/* <LandingBottom/> */}
-      {/* <LoginPage /> */}
-    {/* <Logo />
-    <Footer/>
-    <ProfileCard/>
-    <Pagination /> */}
-    {/* <Logo /> */}
-    {/* <Footer/> */}
-    {/* <JobCard/> */}
-    {/* <LandingTop/> */}
-      
-     
+     <LandingPage />
     </div>
   );
 }
