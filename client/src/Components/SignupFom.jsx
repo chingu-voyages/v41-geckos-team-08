@@ -9,13 +9,13 @@ export function SignupForm() {
       <form className='flex flex-col justify-center' action='/' method='post'>
         <div className='flex flex-col mb-4'>
           <label
-            className='mb-2 font-bold text-lg text-gray-900'
+            className='mb-2 font-bold text-lg text-black'
             htmlFor='first_name'
           >
             First Name
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
+            className='border py-2 px-3 text-black rounded'
             type='text'
             name='first_name'
             id='first_name'
@@ -23,66 +23,66 @@ export function SignupForm() {
         </div>
         <div className='flex flex-col mb-4'>
           <label
-            className='mb-2 font-bold text-lg text-gray-900'
+            className='mb-2 font-bold text-lg text-black'
             htmlFor='last_name'
           >
             Last Name
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
+            className='border py-2 px-3 text-black rounded'
             type='text'
             name='last_name'
             id='last_name'
           />
         </div>
         <div className='flex flex-col mb-4'>
-          <label className='mb-2 font-bold text-lg text-gray-900'  htmlFor='email'>
+          <label className='mb-2 font-bold text-lg text-black'  htmlFor='email'>
             Trade
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
-            type='email'
-            name='email'
+            className='border py-2 px-3 text-black rounded'
+            type='text'
+            name='trade'
             id='trade'
           />
         </div>
         <div className='flex flex-col mb-4'>
           <label
-            className='mb-2 font-bold text-lg text-gray-900'
-            htmlFor='password'
+            className='mb-2 font-bold text-lg text-black'
+            htmlFor='location'
           >
             Location
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
-            type='password'
-            name='password'
+            className='border py-2 px-3 text-black rounded'
+            type='text'
+            name='location'
             id='location'
           />
         </div>
         <div className='flex flex-col mb-4'>
           <label
-            className='mb-2 font-bold text-lg text-gray-900'
-            htmlFor='password'
+            className='mb-2 font-bold text-lg text-black '
+            htmlFor='email'
           >
             E-mail
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
-            type='password'
-            name='password'
+            className='border py-2 px-3 text-black rounded' 
+            type='email'
+            name='email'
             id='email'
           />
         </div>
         <div className='flex flex-col mb-4'>
           <label
-            className='mb-2 font-bold text-lg text-gray-900'
+            className='mb-2 font-bold text-lg text-black '
             htmlFor='password'
           >
             Password
           </label>
           <input
-            className='border py-2 px-3 text-grey-800'
+            className='border py-2 px-3 text-black rounded'
             type='password'
             name='password'
             id='password'
