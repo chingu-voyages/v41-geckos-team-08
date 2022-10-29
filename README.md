@@ -2,6 +2,14 @@
 
 v41-geckos-team-08
 
+## Meet the Team
+
+- [Hector Agudelo](https://github.com/HectorAgudelo)
+- [Jonah Berlyne](https://github.com/jonahBerlyne)
+- Fred
+- [Lincoln Gibson](https://github.com/lincoln1883)
+- [Andrés Court](https://github.com/alcb1310)
+
 ## Tech Stack
 
 [![Version](https://img.shields.io/badge/version-dev-green.svg)](https://shields.io/)
