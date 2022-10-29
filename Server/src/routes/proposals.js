@@ -4,9 +4,34 @@ const moment = require('moment');
 const client = require('../config/db');
 const { formatOneProposalResponse } = require('../components/format');
 
-route.get('/', (req, res) => {
-	res.json({
-		data: 'Proposal working',
+route.get('/', async (req, res) => {
+	const { job } = req.query;
+	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
+
+	if (!isValidUUID(job))
+		return res.status(400).json({ detail: 'The job uuid' });
+
+	const jobSQL = 'select * from job where uuid = $1';
+	const jobResult = await client.query(jobSQL, [job]);
+
+	if (jobResult.rowCount === 0)
+		return res
+			.status(404)
+			.json({ detail: `There are no jobs with UUID: ${job}` });
+
+	const proposalsSQL =
+		'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1';
+
+	const proposalsResult = await client.query(proposalsSQL, [job]);
+
+	const allProposals = proposalsResult.rows;
+
+	const proposalResponse = allProposals.map((oneJob) =>
+		formatOneProposalResponse(oneJob)
+	);
+
+	res.status(200).json({
+		data: proposalResponse,
 	});
 });
 
@@ -66,12 +91,11 @@ route.post('/', async (req, res) => {
 		).rows[0];
 
 		const formatedResponse = formatOneProposalResponse(result);
-		console.log(formatedResponse);
 
 		return res.status(201).json({ data: formatedResponse });
 	} catch (err) {
 		await client.query('ROLLBACK');
-		console.log(err);
+		// console.log(err);
 		if (err.code === '23503')
 			return res.status(404).json({ detail: err.detail });
 

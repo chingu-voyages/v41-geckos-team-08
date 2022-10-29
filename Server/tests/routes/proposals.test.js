@@ -206,14 +206,49 @@ describe('Test the Proposals Rout', () => {
 	});
 	describe('Getting the proposals', () => {
 		describe('Given the user sends an invalid job_uuid', () => {
-			it.todo('should return 400 if the user does not send the job uuid');
-			it.todo('should return 400 if the user sends and invalid job uuid');
-			it.todo(
-				'should return 404 if the user sends a non existen job uuid'
-			);
+			it('should return 400 if the user does not send the job uuid', async () => {
+				const result = await request(baseUrl).get(endpoint);
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 if the user sends and invalid job uuid', async () => {
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.query({ job: invalidUUID });
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 404 if the user sends a non existen job uuid', async () => {
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.query({ job: inExistentUUID });
+
+				expect(result.statusCode).toBe(404);
+			});
 		});
 		describe('Given the user sends a valid job_uuid', () => {
-			it.todo('should return 200');
+			it('should return 200', async () => {
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.query({ job: job.uuid });
+
+				expect(result.statusCode).toBe(200);
+
+				const proposals = result.body.data;
+				console.log(proposals);
+
+				proposals.forEach((proposal) => {
+					expect(proposal).toHaveProperty('price');
+					expect(proposal).toHaveProperty('expiration_date');
+					expect(proposal).toHaveProperty('is_accepted');
+					expect(proposal).toHaveProperty('supplier');
+					expect(proposal.supplier).toHaveProperty('uuid');
+					expect(proposal.supplier).not.toHaveProperty('password');
+					expect(proposal.supplier).toHaveProperty('email');
+					expect(proposal.supplier).toHaveProperty('name');
+					expect(proposal.supplier).toHaveProperty('phone');
+				});
+			});
 		});
 		describe('Given the user sends a supplier_uuid', () => {
 			it.todo(

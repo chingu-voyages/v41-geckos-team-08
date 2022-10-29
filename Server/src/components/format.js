@@ -81,7 +81,6 @@ const formatOneJobRespnse = (job) => {
  * @returns {FormatedResponse}
  */
 const formatOneProposalResponse = (proposal) => {
-	console.log('proposal: ', proposal);
 	return {
 		price: proposal.price,
 		expiration_date: proposal.expiration_date,
