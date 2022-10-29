@@ -4,7 +4,7 @@ const baseUrl = require('../../app');
 
 const endpoint = '/jobs';
 
-module.exports = async (trade, customer, description) => {
+module.exports = async (trade, customer, description, TOKEN) => {
 	const countries = await (
 		await request(baseUrl).get('/locations')
 	).body.data;
@@ -17,13 +17,16 @@ module.exports = async (trade, customer, description) => {
 
 	const city = cities.find((ciudad) => ciudad.name === 'Quito');
 
-	return await request(baseUrl).post(endpoint).send({
-		trade_uuid: trade,
-		customer_uuid: customer,
-		city_uuid: city.uuid,
-		description,
-		low_price: 0,
-		high_price: 1000,
-		expiration_date: '2023-10-12',
-	});
+	return await request(baseUrl)
+		.post(endpoint)
+		.send({
+			trade_uuid: trade,
+			customer_uuid: customer,
+			city_uuid: city.uuid,
+			description,
+			low_price: 0,
+			high_price: 1000,
+			expiration_date: '2023-10-12',
+		})
+		.set('Authorization', `Bearer ${TOKEN}`);
 };

@@ -10,10 +10,12 @@ const login = require('../common/login');
 const endpoint = '/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
+const invalidTOKEN =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiOGQ5NjBiMTgtYjZkYy00NWVmLWJlNGUtMTZjYzQxYWRlOGJhIiwiaWF0IjoxNjY3MDYwMzI1LCJleHAiOjE2NjcwNjM5MjV9.wcDLFZvCX6gwdz_6uHiQL2SQv1UbUgazyK-p25Ngbto';
 
 let supplier, customer, trade, job, supplier2, TOKEN;
 
-describe('Test the Proposals Rout', () => {
+describe('Test the Proposals Route', () => {
 	beforeAll(async () => {
 		await initializeDB(client);
 
@@ -21,25 +23,26 @@ describe('Test the Proposals Rout', () => {
 			await createUser('customer@mail.com', 'Pas$wordForCust0mer', false)
 		).body.data;
 
-		supplier2 = await (
-			await createUser('supplier2@mail.com', 'Pas$wordForCust0mer', true)
-		).body.data;
-
 		supplier = await (
 			await createUser('supplier@mail.com', 'Pas$W0rd', true)
 		).body.data;
 
-		trade = await (await createTrade('New trade')).body.data;
+		supplier2 = await (
+			await createUser('supplier2@mail.com', 'Pas$wordForCust0mer', true)
+		).body.data;
+
+		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
+
+		trade = await (await createTrade('New trade', TOKEN)).body.data;
 
 		job = await (
 			await createJobs(
 				trade.uuid,
 				customer.uuid,
-				'first job for this test'
+				'first job for this test',
+				TOKEN
 			)
 		).body.data;
-
-		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
 	});
 	afterAll(async () => {
 		await client.end();
@@ -53,6 +56,21 @@ describe('Test the Proposals Rout', () => {
 					price: 500,
 					expiration_date: '2023-12-13',
 				});
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe.skip('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						supplier_uuid: supplier.uuid,
+						job_uuid: job.uuid,
+						price: 500,
+						expiration_date: '2023-12-13',
+					})
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -272,21 +290,25 @@ describe('Test the Proposals Rout', () => {
 	describe('Getting the proposals', () => {
 		describe('Given the user sends an invalid job_uuid', () => {
 			it('should return 400 if the user does not send the job uuid', async () => {
-				const result = await request(baseUrl).get(endpoint);
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
 			it('should return 400 if the user sends and invalid job uuid', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.query({ job: invalidUUID });
+					.query({ job: invalidUUID })
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
 			it('should return 404 if the user sends a non existen job uuid', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.query({ job: inExistentUUID });
+					.query({ job: inExistentUUID })
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -295,7 +317,8 @@ describe('Test the Proposals Rout', () => {
 			it('should return 200', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.query({ job: job.uuid });
+					.query({ job: job.uuid })
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(200);
 
@@ -360,6 +383,7 @@ describe('Test the Proposals Rout', () => {
 					.query({ job: job.uuid });
 
 				expect(result.statusCode).toBe(200);
+
 				const proposal = result.body.data;
 
 				expect(proposal).toHaveProperty('price');
