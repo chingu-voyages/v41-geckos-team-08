@@ -3,6 +3,7 @@ const { isValidUUID } = require('../middleware/validateUUID');
 const moment = require('moment');
 const client = require('../config/db');
 const { formatOneProposalResponse } = require('../components/format');
+const validateUUID = require('../middleware/validateUUID');
 
 route.get('/', async (req, res) => {
 	const { job } = req.query;
@@ -104,6 +105,40 @@ route.post('/', async (req, res) => {
 
 		return res.status(422).json({ detail: 'Unprocessable entity' });
 	}
+});
+
+route.get('/:uuid', validateUUID, async (req, res) => {
+	const { uuid } = req.params;
+	const { job } = req.query;
+
+	if (!job)
+		return res.status(400).json({ detail: 'The job uuid is required' });
+
+	if (!isValidUUID(job))
+		return res
+			.status(400)
+			.json({ detail: `The job UUID: ${job} is invalid` });
+
+	const supplierSQL =
+		'select * from users where uuid = $1 and is_supplier=true';
+
+	const supplierResult = await client.query(supplierSQL, [uuid]);
+
+	if (supplierResult.rowCount === 0)
+		return res.status(404).json({ detail: 'No supplier with that uuid' });
+
+	const proposalSQL =
+		'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and supplier.uuid = $2';
+	const proposalResult = await client.query(proposalSQL, [job, uuid]);
+
+	if (proposalResult.rowCount === 0)
+		return res.status(404).json({
+			detail: `Supplier ${supplierResult.rows[0].name} havent sent a proposal yet`,
+		});
+
+	const proposalResponse = proposalResult.rows[0];
+
+	res.status(200).json({ data: formatOneProposalResponse(proposalResponse) });
 });
 
 module.exports = route;

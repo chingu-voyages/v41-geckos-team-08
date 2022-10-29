@@ -10,7 +10,7 @@ const endpoint = '/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 
-let supplier, customer, trade, job;
+let supplier, customer, trade, job, supplier2;
 
 describe('Test the Proposals Rout', () => {
 	beforeAll(async () => {
@@ -18,6 +18,10 @@ describe('Test the Proposals Rout', () => {
 
 		customer = await (
 			await createUser('customer@mail.com', 'Pas$wordForCust0mer', false)
+		).body.data;
+
+		supplier2 = await (
+			await createUser('supplier2@mail.com', 'Pas$wordForCust0mer', true)
 		).body.data;
 
 		supplier = await (
@@ -235,7 +239,6 @@ describe('Test the Proposals Rout', () => {
 				expect(result.statusCode).toBe(200);
 
 				const proposals = result.body.data;
-				console.log(proposals);
 
 				proposals.forEach((proposal) => {
 					expect(proposal).toHaveProperty('price');
@@ -251,18 +254,63 @@ describe('Test the Proposals Rout', () => {
 			});
 		});
 		describe('Given the user sends a supplier_uuid', () => {
-			it.todo(
-				'should return 400 if the user sends and invalid supplier uuid'
-			);
-			it.todo(
-				'should return 400 if the user sends a non existent supplier uuid'
-			);
-			it.todo(
-				"should return 404 if the user sends a supplier_uuid that haven't sent a proposal"
-			);
-			it.todo(
-				'should send a 200 if a proposal was found for that supplier in that job'
-			);
+			it("should return 400 if the user doesn't send a job uuid", async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl).get(url);
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 if the user sends and invalid job uuid', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.query({ job: invalidUUID });
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 if the user sends and invalid supplier uuid', async () => {
+				const url = `${endpoint}/${invalidUUID}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.query({ job: job.uuid });
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 404 if the user sends a non existent supplier uuid', async () => {
+				const url = `${endpoint}/${inExistentUUID}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.query({ job: job.uuid });
+
+				expect(result.statusCode).toBe(404);
+			});
+			it("should return 404 if the user sends a supplier_uuid that haven't sent a proposal", async () => {
+				const url = `${endpoint}/${supplier2.uuid}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.query({ job: job.uuid });
+
+				expect(result.statusCode).toBe(404);
+			});
+			it('should send a 200 if a proposal was found for that supplier in that job', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.query({ job: job.uuid });
+
+				expect(result.statusCode).toBe(200);
+				const proposal = result.body.data;
+
+				expect(proposal).toHaveProperty('price');
+				expect(proposal).toHaveProperty('expiration_date');
+				expect(proposal).toHaveProperty('is_accepted');
+				expect(proposal).toHaveProperty('supplier');
+				expect(proposal.supplier).toHaveProperty('uuid');
+				expect(proposal.supplier).not.toHaveProperty('password');
+				expect(proposal.supplier).toHaveProperty('email');
+				expect(proposal.supplier).toHaveProperty('name');
+				expect(proposal.supplier).toHaveProperty('phone');
+			});
 		});
 	});
 	describe('Updating the proposal', () => {
