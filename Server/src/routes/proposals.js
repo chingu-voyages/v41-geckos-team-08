@@ -4,6 +4,7 @@ const moment = require('moment');
 const client = require('../config/db');
 const { formatOneProposalResponse } = require('../components/format');
 const validateUUID = require('../middleware/validateUUID');
+const authorzation = require('../middleware/authorization');
 
 route.get('/', async (req, res) => {
 	const { job } = req.query;
@@ -36,7 +37,7 @@ route.get('/', async (req, res) => {
 	});
 });
 
-route.post('/', async (req, res) => {
+route.post('/', authorzation, async (req, res) => {
 	if (req.body.constructor === Object && Object.keys(req.body).length === 0)
 		return res.status(400).json({ detail: "Haven't received any data" });
 
