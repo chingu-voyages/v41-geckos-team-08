@@ -28,7 +28,7 @@ route.post("/", validatePassword, validateEmail, async (req, res) => {
 			return res.status(401).json("Password is incorrect.");
 		}
 		//4 give access
-		const token = jwtGenerator(user.rows[0].uuid);
+		const token = jwtGenerator(user.rows[0].uuid, user.rows[0].is_supplier);
 		res.status(200).json({ token });
 	} catch (error) {
 		console.error(error.message);
