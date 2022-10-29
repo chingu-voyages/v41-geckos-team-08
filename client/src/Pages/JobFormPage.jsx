@@ -1,13 +1,13 @@
 import React from 'react';
-import { SignUpForm } from '../Components/SignUpForm';
+import { JobForm } from '../Components/JobForm';
 import { NavBar } from '../Components/NavBar';
 import { Footer } from './../Components/Footer';
 
-export const SignUpPage = () => {
+export const JobFormPage = () => {
   return (
     <>
       <NavBar />
-      <SignUpForm />
+      <JobForm />
       <Footer />
     </>
   );

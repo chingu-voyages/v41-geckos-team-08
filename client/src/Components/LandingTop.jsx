@@ -4,7 +4,7 @@ import { Button } from './Button';
 export const LandingTop = () => {
   return (
     // <div className='container my-24 px-6 mx-auto'>
-      <section classNameName='mb-32 text-black'>
+      <section className='mb-32 text-black'>
         <div className='block bg-quaternary-100'>
           <div className='flex flex-wrap items-center'>
             <div className='py-40 grow-0 shrink-0 basis-auto w-full md:w-6/12 lg:w-6/12 xl:w-6/12'>

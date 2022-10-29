@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from './Button';
 
-export const SignupForm = () => {
+export const SignUpForm = () => {
   return (
     <div className='w-1/2 bg-white p-8 m-0'>
       <h1 className='block w-full text-center text-gray-800 text-2xl font-bold mb-6'>

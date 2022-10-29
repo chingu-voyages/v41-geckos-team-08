@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Pagination = (props) => {
+export const Pagination = (props) => {
   return (
     <nav aria-label="Page navigation example">
      <ul className="inline-flex items-center -space-x-px">
@@ -36,4 +36,3 @@ const Pagination = (props) => {
   );
 }
 
-export default Pagination;
