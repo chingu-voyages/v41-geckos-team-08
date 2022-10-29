@@ -9,11 +9,13 @@ import LoginPage from "./Pages/LoginPage";
 import {JobCard} from './Components/JobCard'
 import {LandingTop} from './Components/LandignTop'
 import {LandingBottom} from './Components/LandingBottom'
+import {SignupForm, SingupForm} from './Components/SignupFom'
 
 function App() {
   return (
     <div className="App">
-      <LandingBottom/>
+      <SignupForm/>
+      {/* <LandingBottom/> */}
       {/* <LoginPage /> */}
     {/* <Logo />
     <Footer/>

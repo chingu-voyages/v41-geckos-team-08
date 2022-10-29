@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavBar } from "../Components/NavBar";
-import LoginForm from "../Components/LoginForm";
+import {LoginForm} from "../Components/LoginForm";
 import { Footer } from "../Components/Footer";
 
 function LoginPage() {
