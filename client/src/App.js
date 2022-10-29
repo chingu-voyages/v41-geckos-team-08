@@ -8,10 +8,12 @@ import Pagination from './Components/Pagination';
 import LoginPage from "./Pages/LoginPage";
 import {JobCard} from './Components/JobCard'
 import {LandingTop} from './Components/LandignTop'
+import {LandingBottom} from './Components/LandingBottom'
 
 function App() {
   return (
     <div className="App">
+      <LandingBottom/>
       {/* <LoginPage /> */}
     {/* <Logo />
     <Footer/>
@@ -20,7 +22,7 @@ function App() {
     {/* <Logo /> */}
     {/* <Footer/> */}
     {/* <JobCard/> */}
-    <LandingTop/>
+    {/* <LandingTop/> */}
       
      
     </div>
