@@ -2,7 +2,7 @@ import { LockClosedIcon } from '@heroicons/react/20/solid';
 import {Button} from './Button'
 // import { Link } from 'react-router-dom';
 
-export default function Example() {
+export function LoginForm() {
   return (
     <>
       {/*
