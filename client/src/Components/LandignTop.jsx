@@ -17,11 +17,11 @@ export const LandingTop = () => {
               </div>
             </div>
             <div className='hidden md:flex grow-0 shrink-0 basis-90 md:w-6/12 lg:w-6/12 xl:w-6/12'>
-              {/* <img
+              <img
                 src='https://mdbootstrap.com/img/new/ecommerce/vertical/088.jpg'
                 alt='Trendy Pants and Shoes'
                 className='w-full'
-              /> */}
+              />
             </div>
           </div>
         </div>
