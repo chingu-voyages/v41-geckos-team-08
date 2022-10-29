@@ -1,6 +1,7 @@
+import React from 'react'
 import { Button } from './Button';
 
-export function SignupForm() {
+export const SignupForm = () => {
   return (
     <div className='w-1/2 bg-white p-8 m-0'>
       <h1 className='block w-full text-center text-gray-800 text-2xl font-bold mb-6'>
@@ -19,6 +20,7 @@ export function SignupForm() {
             type='text'
             name='first_name'
             id='first_name'
+            // value={'any'}
           />
         </div>
         <div className='flex flex-col mb-4'>
@@ -33,6 +35,7 @@ export function SignupForm() {
             type='text'
             name='last_name'
             id='last_name'
+            // value={'any'}
           />
         </div>
         <div className='flex flex-col mb-4'>
@@ -44,6 +47,7 @@ export function SignupForm() {
             type='text'
             name='trade'
             id='trade'
+            // value={'any'}
           />
         </div>
         <div className='flex flex-col mb-4'>
@@ -58,6 +62,7 @@ export function SignupForm() {
             type='text'
             name='location'
             id='location'
+            // value={'any'}
           />
         </div>
         <div className='flex flex-col mb-4'>
@@ -72,6 +77,7 @@ export function SignupForm() {
             type='email'
             name='email'
             id='email'
+            // value={'any'}
           />
         </div>
         <div className='flex flex-col mb-4'>
@@ -86,6 +92,7 @@ export function SignupForm() {
             type='password'
             name='password'
             id='password'
+            // value={'any'}
           />
         </div>
         <div className='flex justify-center'>
