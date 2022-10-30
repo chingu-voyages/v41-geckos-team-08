@@ -180,7 +180,10 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 			.status(400)
 			.json({ detail: 'The is_accepted must be true or false' });
 
-	if (!moment(expiration_date, 'YYYY-MM-DD', true).isValid())
+	if (
+		expiration_date &&
+		!moment(expiration_date, 'YYYY-MM-DD', true).isValid()
+	)
 		return res.status(400).json({
 			detail: 'Invalid expiration date, it must be in the format YYYY-MM-DD',
 		});
@@ -193,7 +196,62 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 			.status(400)
 			.json({ detail: 'Expiration date can not be in the past' });
 
-	return res.sendStatus(204);
+	try {
+		await client.query('BEGIN');
+		const existentProposal =
+			'select price, is_accepted, expiration_date from proposal where job_uuid = $1 and supplier_uuid = $2';
+
+		const resultExistentProposal = await client.query(existentProposal, [
+			job,
+			supplierUUID,
+		]);
+
+		if (resultExistentProposal.rowCount === 0)
+			res.status(404).json({
+				detail: `No proposal for supplier with UUID: ${supplierUUID} for the job with UUID: ${job}`,
+			});
+
+		const updatedPrice = price || resultExistentProposal.rows[0].price;
+		const updatedIsAccepted =
+			is_accepted === undefined
+				? resultExistentProposal.rows[0].is_accepted
+				: is_accepted;
+		const updatedExpirationDate =
+			expiration_date || resultExistentProposal.rows[0].expiration_date;
+
+		const updateSQL =
+			'update proposal set price=$1, is_accepted=$2, expiration_date=$3 where job_uuid = $4 and supplier_uuid = $5';
+		await client.query(updateSQL, [
+			updatedPrice,
+			updatedIsAccepted,
+			updatedExpirationDate,
+			job,
+			supplierUUID,
+		]);
+
+		if (is_accepted) {
+			// console.log(is_accepted);
+			const updateJob =
+				'update job set is_taken=true, supplier_uuid=$1 where uuid=$2';
+			await client.query(updateJob, [supplierUUID, job]);
+		}
+
+		await client.query('COMMIT');
+
+		const resultSQL =
+			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
+		const result = await (
+			await client.query(resultSQL, [job, supplierUUID])
+		).rows[0];
+
+		const formatedResponse = formatOneProposalResponse(result);
+
+		return res.status(200).json({ data: formatedResponse });
+	} catch (err) {
+		await client.query('ROLLBACK');
+		console.log(err);
+		return res.sendStatus(422);
+	}
 });
 
 module.exports = route;
