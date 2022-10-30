@@ -1,9 +1,19 @@
 import React from 'react';
+import {LandingTop} from '../Components/LandingTop'
+import { NavBar } from '../Components/NavBar';
+import {LandingBottom} from './../Components/LandingBottom'
+import {Footer} from './../Components/Footer'
 
-function LandingPage() {
+
+
+export const LandingPage = () => {
   return (
-    <div>LandingPage</div>
+    <>
+    <NavBar/>
+    <LandingTop/>
+    <LandingBottom/>
+    <Footer/>
+    </>
   );
 }
 
-export default LandingPage;

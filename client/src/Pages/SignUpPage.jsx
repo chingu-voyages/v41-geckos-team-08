@@ -1,9 +1,14 @@
 import React from 'react';
+import { SignUpForm } from '../Components/SignUpForm';
+import { NavBar } from '../Components/NavBar';
+import { Footer } from './../Components/Footer';
 
-function SignUpPage() {
+export const SignUpPage = () => {
   return (
-    <div>SignUpPage</div>
+    <>
+      <NavBar />
+      <SignUpForm />
+      <Footer />
+    </>
   );
-}
-
-export default SignUpPage;
+};

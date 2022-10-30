@@ -11,10 +11,11 @@ module.exports = async (req, res, next) => {
 
 		const { uuid, is_supplier } = decodedToken.user;
 
-		req.user = {
+		const user = {
 			user: uuid,
 			is_supplier,
 		};
+
 		next();
 	} catch (error) {
 		// console.error(error.message);
