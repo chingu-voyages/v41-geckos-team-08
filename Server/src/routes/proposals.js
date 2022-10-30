@@ -4,9 +4,9 @@ const moment = require('moment');
 const client = require('../config/db');
 const { formatOneProposalResponse } = require('../components/format');
 const validateUUID = require('../middleware/validateUUID');
-const authorzation = require('../middleware/authorization');
+const authorization = require('../middleware/authorization');
 
-route.get('/', async (req, res) => {
+route.get('/', authorization, async (req, res) => {
 	const { job } = req.query;
 	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
 
@@ -37,7 +37,7 @@ route.get('/', async (req, res) => {
 	});
 });
 
-route.post('/', authorzation, async (req, res) => {
+route.post('/', authorization, async (req, res) => {
 	if (req.body.constructor === Object && Object.keys(req.body).length === 0)
 		return res.status(400).json({ detail: "Haven't received any data" });
 
@@ -108,7 +108,7 @@ route.post('/', authorzation, async (req, res) => {
 	}
 });
 
-route.get('/:uuid', validateUUID, async (req, res) => {
+route.get('/:uuid', authorization, validateUUID, async (req, res) => {
 	const { uuid } = req.params;
 	const { job } = req.query;
 
@@ -140,6 +140,13 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 	const proposalResponse = proposalResult.rows[0];
 
 	res.status(200).json({ data: formatOneProposalResponse(proposalResponse) });
+});
+
+route.put('/:uuid', authorization, async (req, res) => {
+	const { job } = req.query;
+	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
+
+	return res.sendStatus(204);
 });
 
 module.exports = route;

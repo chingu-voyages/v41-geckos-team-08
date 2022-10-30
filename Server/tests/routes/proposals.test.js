@@ -10,8 +10,7 @@ const login = require('../common/login');
 const endpoint = '/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
-const invalidTOKEN =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiOGQ5NjBiMTgtYjZkYy00NWVmLWJlNGUtMTZjYzQxYWRlOGJhIiwiaWF0IjoxNjY3MDYwMzI1LCJleHAiOjE2NjcwNjM5MjV9.wcDLFZvCX6gwdz_6uHiQL2SQv1UbUgazyK-p25Ngbto';
+const invalidTOKEN = 'thisis.aninvalidtokenthat.ivejustmadeup';
 
 let supplier, customer, trade, job, supplier2, TOKEN;
 
@@ -60,7 +59,7 @@ describe('Test the Proposals Route', () => {
 				expect(result.statusCode).toBe(403);
 			});
 		});
-		describe.skip('Given the user is sending an invalid token', () => {
+		describe('Given the user is sending an invalid token', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
@@ -288,6 +287,22 @@ describe('Test the Proposals Route', () => {
 		});
 	});
 	describe('Getting the proposals', () => {
+		describe('Given the user is not sending a token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl).get(endpoint);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
 		describe('Given the user sends an invalid job_uuid', () => {
 			it('should return 400 if the user does not send the job uuid', async () => {
 				const result = await request(baseUrl)
@@ -338,9 +353,29 @@ describe('Test the Proposals Route', () => {
 			});
 		});
 		describe('Given the user sends a supplier_uuid', () => {
+			describe('Given the user is not sending a token', () => {
+				it('should return 403', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					const result = await request(baseUrl).get(url);
+
+					expect(result.statusCode).toBe(403);
+				});
+			});
+			describe('Given the user is sending an invalid token', () => {
+				it('should return 403', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					const result = await request(baseUrl)
+						.get(url)
+						.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+					expect(result.statusCode).toBe(403);
+				});
+			});
 			it("should return 400 if the user doesn't send a job uuid", async () => {
 				const url = `${endpoint}/${supplier.uuid}`;
-				const result = await request(baseUrl).get(url);
+				const result = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -348,60 +383,103 @@ describe('Test the Proposals Route', () => {
 				const url = `${endpoint}/${supplier.uuid}`;
 				const result = await request(baseUrl)
 					.get(url)
-					.query({ job: invalidUUID });
+					.query({ job: invalidUUID })
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
-			it('should return 400 if the user sends and invalid supplier uuid', async () => {
-				const url = `${endpoint}/${invalidUUID}`;
-				const result = await request(baseUrl)
-					.get(url)
-					.query({ job: job.uuid });
+			describe('Given the user sends a valid token', () => {
+				it('should return 400 if the user sends and invalid supplier uuid', async () => {
+					const url = `${endpoint}/${invalidUUID}`;
+					const result = await request(baseUrl)
+						.get(url)
+						.query({ job: job.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
-				expect(result.statusCode).toBe(400);
-			});
-			it('should return 404 if the user sends a non existent supplier uuid', async () => {
-				const url = `${endpoint}/${inExistentUUID}`;
-				const result = await request(baseUrl)
-					.get(url)
-					.query({ job: job.uuid });
+					expect(result.statusCode).toBe(400);
+				});
+				it('should return 404 if the user sends a non existent supplier uuid', async () => {
+					const url = `${endpoint}/${inExistentUUID}`;
+					const result = await request(baseUrl)
+						.get(url)
+						.query({ job: job.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
-				expect(result.statusCode).toBe(404);
-			});
-			it("should return 404 if the user sends a supplier_uuid that haven't sent a proposal", async () => {
-				const url = `${endpoint}/${supplier2.uuid}`;
-				const result = await request(baseUrl)
-					.get(url)
-					.query({ job: job.uuid });
+					expect(result.statusCode).toBe(404);
+				});
+				it("should return 404 if the user sends a supplier_uuid that haven't sent a proposal", async () => {
+					const url = `${endpoint}/${supplier2.uuid}`;
+					const result = await request(baseUrl)
+						.get(url)
+						.query({ job: job.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
-				expect(result.statusCode).toBe(404);
-			});
-			it('should send a 200 if a proposal was found for that supplier in that job', async () => {
-				const url = `${endpoint}/${supplier.uuid}`;
-				const result = await request(baseUrl)
-					.get(url)
-					.query({ job: job.uuid });
+					expect(result.statusCode).toBe(404);
+				});
+				it('should send a 200 if a proposal was found for that supplier in that job', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					const result = await request(baseUrl)
+						.get(url)
+						.query({ job: job.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
-				expect(result.statusCode).toBe(200);
+					expect(result.statusCode).toBe(200);
 
-				const proposal = result.body.data;
+					const proposal = result.body.data;
 
-				expect(proposal).toHaveProperty('price');
-				expect(proposal).toHaveProperty('expiration_date');
-				expect(proposal).toHaveProperty('is_accepted');
-				expect(proposal).toHaveProperty('supplier');
-				expect(proposal.supplier).toHaveProperty('uuid');
-				expect(proposal.supplier).not.toHaveProperty('password');
-				expect(proposal.supplier).toHaveProperty('email');
-				expect(proposal.supplier).toHaveProperty('name');
-				expect(proposal.supplier).toHaveProperty('phone');
+					expect(proposal).toHaveProperty('price');
+					expect(proposal).toHaveProperty('expiration_date');
+					expect(proposal).toHaveProperty('is_accepted');
+					expect(proposal).toHaveProperty('supplier');
+					expect(proposal.supplier).toHaveProperty('uuid');
+					expect(proposal.supplier).not.toHaveProperty('password');
+					expect(proposal.supplier).toHaveProperty('email');
+					expect(proposal.supplier).toHaveProperty('name');
+					expect(proposal.supplier).toHaveProperty('phone');
+				});
 			});
 		});
 	});
 	describe('Updating the proposal', () => {
+		describe('Given the user is not sending a token', () => {
+			it('should return 403', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl).put(url).send({});
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.send({})
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
 		describe('Given the user sends an invalid job_uuid', () => {
-			it.todo("should return 400 if the user doesn't send the job_uuid");
-			it.todo('should return 400 if the user sends an invalid job_uuid');
+			it("should return 400 if the user doesn't send the job_uuid", async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 400 if the user sends an invalid job_uuid', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: invalidUUID })
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+			});
 			it.todo(
 				'should return 404 if the user send a non existent job_uuid'
 			);
