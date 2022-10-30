@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavBar } from "../Components/NavBar";
-import {LoginForm} from "../Components/LoginForm";
+import { LoginForm } from "../Components/LoginForm";
 import { Footer } from "../Components/Footer";
 
 export const LoginPage=()=> {
   return (
     <div className='bg-white  rounded-sm border-none flex flex-col'>
       <NavBar />
-      <section classNameName='mb-0 text-black'>
+      <section className='mb-0 text-black'>
         <div className='block bg-quaternary-100'>
           <div className='flex flex-wrap items-center'>
             <div className='py-0 grow-0 shrink-0 basis-auto w-full lg:w-6/12 xl:w-6/12'>
