@@ -7,19 +7,15 @@ module.exports = async (req, res, next) => {
 
 		if (!token) return res.status(403).json("Invalid token!");
 
-		if (token) {
-			const decodedToken = jwt.verify(token, secret_key);
+		const decodedToken = jwt.verify(token, secret_key);
 
-			const uuid = decodedToken.uuid;
-			const is_supplier = decodedToken.is_supplier;
+		const { uuid, is_supplier } = decodedToken.user;
 
-			if (req.body.uuid && req.body.uuid !== uuid) {
-				res.status(401).json("Unathorized user!");
-			}
-			if (req.body.is_supplier && req.body.is_supplier !== is_supplier) {
-				res.status(401).json("Unathorized user!");
-			}
-		}
+		const user = {
+			user: uuid,
+			is_supplier,
+		};
+
 		next();
 	} catch (error) {
 		console.error(error.message);
