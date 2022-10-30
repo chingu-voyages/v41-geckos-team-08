@@ -12,7 +12,7 @@ import {UserProfile} from './Pages/UserProfile'
 function App() {
   return (
     <div className="App">
-     <LandingPage />
+     <LandingPage/>
     </div>
   );
 }
