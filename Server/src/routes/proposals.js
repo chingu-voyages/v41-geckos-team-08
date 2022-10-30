@@ -142,9 +142,56 @@ route.get('/:uuid', authorization, validateUUID, async (req, res) => {
 	res.status(200).json({ data: formatOneProposalResponse(proposalResponse) });
 });
 
-route.put('/:uuid', authorization, async (req, res) => {
+route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 	const { job } = req.query;
+	const { price, is_accepted, expiration_date } = req.body;
+	const supplierUUID = req.params.uuid;
 	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
+
+	if (!isValidUUID(job))
+		return res.status(400).json({ detail: 'The job uuid is invalid' });
+
+	const jobSQL = 'select * from job where uuid = $1';
+	const jobResult = await client.query(jobSQL, [job]);
+
+	if (jobResult.rowCount === 0)
+		return res
+			.status(404)
+			.json({ detail: `Job with UUID: ${job} does not exist` });
+
+	const supplierSQL =
+		'select * from users where uuid = $1 and is_supplier=true';
+	const supplierResult = await client.query(supplierSQL, [supplierUUID]);
+
+	if (supplierResult.rowCount === 0)
+		return res.status(404).json({
+			detail: `Supplier with UUID: ${supplierUUID} does not exist`,
+		});
+
+	if (price && typeof price !== 'number')
+		return res
+			.status(400)
+			.json({ detail: 'The price value must be numeric' });
+
+	// console.log(is_accepted, is_accepted === undefined);
+
+	if (is_accepted !== undefined && typeof is_accepted !== 'boolean')
+		return res
+			.status(400)
+			.json({ detail: 'The is_accepted must be true or false' });
+
+	if (!moment(expiration_date, 'YYYY-MM-DD', true).isValid())
+		return res.status(400).json({
+			detail: 'Invalid expiration date, it must be in the format YYYY-MM-DD',
+		});
+
+	const expDate = moment(expiration_date, 'YYYY-MM-DD', true);
+	const now = moment(new Date());
+
+	if (expDate - now <= 0)
+		return res
+			.status(400)
+			.json({ detail: 'Expiration date can not be in the past' });
 
 	return res.sendStatus(204);
 });

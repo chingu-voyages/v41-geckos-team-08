@@ -480,26 +480,122 @@ describe('Test the Proposals Route', () => {
 
 				expect(result.statusCode).toBe(400);
 			});
-			it.todo(
-				'should return 404 if the user send a non existent job_uuid'
-			);
+			it('should return 404 if the user send a non existent job_uuid', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: inExistentUUID })
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(404);
+			});
 		});
 		describe('Given the user sends an invalid supplier_uuid', () => {
-			it.todo(
-				"should return 404 if the user doesn't send a supplier_uuid"
-			);
-			it.todo(
-				'should return 400 if the user sends an invalid supplier_uuid'
-			);
-			it.todo(
-				'should return 404 if the user sends a non existen supplier_uuid'
-			);
+			it('should return 400 if the user sends an invalid supplier_uuid', async () => {
+				const url = `${endpoint}/${invalidUUID}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: job.uuid })
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+			});
+			it('should return 404 if the user sends a non existen supplier_uuid', async () => {
+				const url = `${endpoint}/${inExistentUUID}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: job.uuid })
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(404);
+			});
 		});
 		describe('Given the user sends an invalid JSON', () => {
-			it.todo('should return 400 if the user sends a non numeric price');
-			it.todo('should return 400 if the user sends an invalid date');
-			it.todo('should return 400 if the user sends a date in the past');
-			it.todo('should return 400 if the is_accepted is not a boolean');
+			it('should return 400 if the user sends a non numeric price', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: job.uuid })
+					.send({ price: 'whatever value' })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'The price value must be numeric'
+				);
+			});
+			it('should return 400 if the user sends an invalid date', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				let result = await request(baseUrl)
+					.put(url)
+					.send({
+						expiration_date: '2022-15-13',
+					})
+					.query({ job: job.uuid })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'Invalid expiration date, it must be in the format YYYY-MM-DD'
+				);
+
+				result = await request(baseUrl)
+					.put(url)
+					.send({
+						expiration_date: '2022-12-60',
+					})
+					.query({ job: job.uuid })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'Invalid expiration date, it must be in the format YYYY-MM-DD'
+				);
+
+				result = await request(baseUrl)
+					.put(url)
+					.send({
+						expiration_date: '1231231-12-15',
+					})
+					.query({ job: job.uuid })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'Invalid expiration date, it must be in the format YYYY-MM-DD'
+				);
+			});
+			it('should return 400 if the user sends a date in the past', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				let result = await request(baseUrl)
+					.put(url)
+					.send({
+						expiration_date: '2020-12-13',
+					})
+					.query({ job: job.uuid })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'Expiration date can not be in the past'
+				);
+			});
+			it('should return 400 if the is_accepted is not a boolean', async () => {
+				const url = `${endpoint}/${supplier.uuid}`;
+				const result = await request(baseUrl)
+					.put(url)
+					.query({ job: job.uuid })
+					.send({ is_accepted: 'whatever value' })
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(result.statusCode).toBe(400);
+				expect(result.body.detail).toBe(
+					'The is_accepted must be true or false'
+				);
+			});
 		});
 		describe('Given the user sends a valid JSON', () => {
 			it.todo('should return 200');
