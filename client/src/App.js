@@ -13,9 +13,7 @@ import SortAndSearch from './Components/SortAndSearch';
 function App() {
   return (
     <div className="App">
-     <div className=''>
-      <SortAndSearch />
-     </div>
+     <LandingPage/>
     </div>
   );
 }
