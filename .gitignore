@@ -1,4 +1,4 @@
 .env
 /Server/node_modules/
 /Server/package-lock.json
-/node_modules/
+/Server/.env.test
