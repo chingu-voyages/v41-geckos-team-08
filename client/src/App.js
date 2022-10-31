@@ -13,6 +13,7 @@ import SortAndSearch from './Components/SortAndSearch';
 function App() {
   return (
     <div className="App">
+     <ContractorProfile/>
      <AvailableJobsPage />
     </div>
   );
