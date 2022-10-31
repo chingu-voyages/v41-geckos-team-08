@@ -3,7 +3,7 @@ import { Button } from './Button';
 
 export const JobCard = () => {
   return (
-    <div className='container mx-auto px-20'>
+    <div className='container mx-auto px-3 sm:px-20 mb-5'>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
