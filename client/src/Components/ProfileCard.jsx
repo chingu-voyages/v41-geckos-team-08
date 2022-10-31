@@ -2,7 +2,7 @@ import React from 'react';
 
 export const ProfileCard = () => {
   return (
-   
+  
       <div className='w-5/6 h-72 rounded-lg bg-tertiary-100 max-w-2xl max-h-96 text-center m-0 flex flex-col justify-center shadow-customShadow'>
         <div className='p-6 '>
           <h5 className='text-primary-100 text-xl font-extrabold mb-2'>
@@ -20,6 +20,6 @@ export const ProfileCard = () => {
           </p>
         </div>
       </div>
- 
+
   );
 };
