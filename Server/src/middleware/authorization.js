@@ -1,11 +1,11 @@
-const jwt = require("jsonwebtoken");
-const { secret_key } = require("../../environment.js");
+const jwt = require('jsonwebtoken');
+const { secret_key } = require('../../environment.js');
 
 module.exports = async (req, res, next) => {
 	try {
-		const token = req.headers.authorization.split(" ")[1];
+		const token = req.headers.authorization.split(' ')[1];
 
-		if (!token) return res.status(403).json("Invalid token!");
+		if (!token) return res.status(403).json('Invalid token!');
 
 		const decodedToken = jwt.verify(token, secret_key);
 
@@ -18,7 +18,7 @@ module.exports = async (req, res, next) => {
 
 		next();
 	} catch (error) {
-		console.error(error.message);
-		return res.status(403).json("Unauthorized access!");
+		// console.error(error.message);
+		return res.status(403).json('Unauthorized access!');
 	}
 };
