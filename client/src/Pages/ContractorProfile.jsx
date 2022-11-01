@@ -8,9 +8,7 @@ import UserProfilePic from './../assets/images/retroTools.jpg';
 
 export const ContractorProfile = () => {
   return (
-    <div className='bg-white  rounded-sm border-none'>
-    <NavBar />
-    
+    <div className='bg-white  rounded-sm border-none'>   
       <section className=' flex justify-center py-32' style={{backgroundImage: `url(${UserProfilePic})`, backgroundSize: 'cover'}}>
         <ProfileCard />
       </section>
@@ -29,7 +27,6 @@ export const ContractorProfile = () => {
           </div>
         </div>
       </section>
-      <Footer />
     </div>
 
   );

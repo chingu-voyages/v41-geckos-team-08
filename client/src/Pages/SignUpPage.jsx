@@ -6,9 +6,7 @@ import { Footer } from './../Components/Footer';
 export const SignUpPage = () => {
   return (
     <>
-      <NavBar />
       <SignUpForm />
-      <Footer />
     </>
   );
 };

@@ -10,8 +10,6 @@ import SortAndSearch from '../Components/SortAndSearch';
 export const UserProfile = () => {
   return (
     <div className='bg-white  rounded-sm border-none'>
-      <NavBar />
-      
         <section className=' flex justify-center py-32' style={{backgroundImage: `url(${UserProfilePic})`, backgroundSize: 'cover'}}>
           <ProfileCard />
         </section>
@@ -31,7 +29,6 @@ export const UserProfile = () => {
             </div>
           </div>
         </section>
-        <Footer />
       </div>
   
   );
