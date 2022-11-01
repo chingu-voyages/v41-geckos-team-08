@@ -12,6 +12,7 @@ import {UserProfile} from './Pages/UserProfile'
 import SortAndSearch from './Components/SortAndSearch';
 import { NavBar } from './Components/NavBar';
 import { Footer } from './Components/Footer';
+import PageNotFound from './Pages/PageNotFound';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path='/offer/:id' element={<OfferFromContractorPage />} />
         <Route path='/signup' element={<SignUpPage />} />
         <Route path='/user/:id' element={<UserProfile />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Footer />
      </Router>

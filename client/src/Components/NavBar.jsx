@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
 import Logo from './Logo';
+import { Link } from "react-router-dom";
 
 export const NavBar = (props) => {
   const [navBarOpen, setNavBarOpen] = useState(true);
@@ -8,9 +9,9 @@ export const NavBar = (props) => {
     <nav className='relative flex flex-wrap justify-between items-center bg-quaternary-100 px-2 py mb-0'>
       <div className='container px-4 mx-auto flex flex-wrap items-center justify-between'>
         <div className='w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start md:w-auto md:static md:block md:justify-start'>
-          <a className='inline-block mr-4 py-2 whitespace-nowrap ' href='#home'>
+          <Link className='inline-block mr-4 py-2 whitespace-nowrap' to='/'>
             <Logo />
-          </a>
+          </Link>
           <button
             className='text-quaternary-100 cursor-pointer text-lg leading-none px-3 py-1 border-solid border-transparent rounded bg-transparent block md:hidden outline-none focus:outline-none'
             type='button'
