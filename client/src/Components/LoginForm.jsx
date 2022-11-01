@@ -1,4 +1,3 @@
-
 import { Button } from './Button';
 import LandingImage from './../assets/images/Drill.jpg';
 // import { Link } from 'react-router-dom';
