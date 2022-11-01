@@ -6,9 +6,7 @@ import { Footer } from "../Components/Footer";
 export const LoginPage=()=> {
   return (
     <div className='bg-white  rounded-sm border-none flex flex-col'>
-      <NavBar />
       <LoginForm />
-      <Footer />
     </div>
   );
 }

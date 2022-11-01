@@ -7,10 +7,8 @@ import { Pagination } from './../Components/Pagination'
 export const OfferFromContractorPage = () => {
   return (
     <>
-      <NavBar />
       <JobCard />
-      <Pagination/>
-      <Footer />
+      <Pagination />
     </>
   );
 };
