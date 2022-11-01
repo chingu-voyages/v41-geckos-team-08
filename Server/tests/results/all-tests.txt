@@ -1,0 +1,4 @@
+
+> handyhub@1.0.0 test
+> NODE_ENV=test && jest --detectOpenHandles
+
