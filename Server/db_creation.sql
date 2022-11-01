@@ -43,8 +43,7 @@ CREATE TABLE public.city
     uuid uuid NOT NULL,
     name character varying NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT now(),
-    PRIMARY KEY (uuid),
-    CONSTRAINT uk_city_name UNIQUE (name)
+    PRIMARY KEY (uuid)
 );
 
 CREATE TABLE public.supplier_city

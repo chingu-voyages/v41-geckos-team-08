@@ -4,13 +4,16 @@ const uuid = require('uuid');
 const client = require('../config/db');
 
 router.get('/', async (req, res) => {
-	const countryArray = [];
-
 	await client.query('BEGIN');
 
 	try {
 		for (let i = 0; i < countries.length; i++) {
 			const country = countries[i];
+			console.log(
+				`Loading country ${i + 1} of ${countries.length}, name ${
+					country.country
+				}`
+			);
 			const countryUuid = uuid.v4();
 
 			const sql = 'insert into countries (uuid, name) values ($1, $2)';
@@ -35,8 +38,7 @@ router.get('/', async (req, res) => {
 		console.error(err);
 	}
 	res.json({
-		total: countryArray.length,
-		data: countryArray,
+		data: 'Process done',
 	});
 });
 
