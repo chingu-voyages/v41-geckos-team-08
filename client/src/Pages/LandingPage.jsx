@@ -7,16 +7,9 @@ import LandingImage from './../assets/images/Drill.jpg';
 
 export const LandingPage = () => {
   return (
-    <div className='bg-white  rounded-sm border-none flex flex-col'>
-      <NavBar />
-  
-     
-                <LandingTop />
-      
-
-       
-          <LandingBottom />
-      <Footer />
+    <div className='bg-white rounded-sm border-none flex flex-col'>
+      <LandingTop />      
+      <LandingBottom />
     </div>
   );
 };

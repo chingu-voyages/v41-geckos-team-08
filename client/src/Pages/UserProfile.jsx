@@ -5,12 +5,11 @@ import { NavBar } from '../Components/NavBar';
 import { Footer } from './../Components/Footer';
 import { Pagination } from './../Components/Pagination';
 import UserProfilePic from './../assets/images/measurements.jpg';
+import SortAndSearch from '../Components/SortAndSearch';
 
 export const UserProfile = () => {
   return (
     <div className='bg-white  rounded-sm border-none'>
-      <NavBar />
-      
         <section className=' flex justify-center py-32' style={{backgroundImage: `url(${UserProfilePic})`, backgroundSize: 'cover'}}>
           <ProfileCard />
         </section>
@@ -23,13 +22,13 @@ export const UserProfile = () => {
                 <h1 className='text-xl font-bold mb-0 text-center text-quaternary-300'>
                   Jobs Posted
                 </h1>
+                <SortAndSearch />
                 <JobCard />
                 <Pagination />
               </div>
             </div>
           </div>
         </section>
-        <Footer />
       </div>
   
   );

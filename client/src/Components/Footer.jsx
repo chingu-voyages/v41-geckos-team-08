@@ -1,5 +1,6 @@
 import React from 'react';
 import Logo from './Logo';
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -7,9 +8,8 @@ export const Footer = () => {
       <div className='container px-6 mx-auto space-y-6 divide-y divide-gray-400 md:space-y-12 divide-opacity-50'>
         <div className='grid grid-cols-12'>
           <div className='pb-6 col-span-full md:pb-0 md:col-span-6'>
-            <a
-              rel='noopener noreferrer'
-              href='#'
+            <Link
+              to='/'
               className='flex justify-center space-x-3 md:justify-start'
             >
               <div className='flex items-center justify-right w-12 h-12 rounded-full dark:bg-violet-400'>
@@ -18,7 +18,7 @@ export const Footer = () => {
               <span className='self-center text-2xl font-semibold'>
                 Brand name
               </span>
-            </a>
+            </Link>
           </div>
 
           <div className='col-span-full md:col-span-6 text-center md:text-right'>

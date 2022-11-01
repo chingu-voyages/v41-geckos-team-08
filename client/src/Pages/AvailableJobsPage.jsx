@@ -8,7 +8,6 @@ import {Pagination} from './../Components/Pagination'
 export const AvailableJobsPage = () => {
   return (
     <>
-      <NavBar />
       <SortAndSearch />
       <JobCard />
       <JobCard />
@@ -16,7 +15,6 @@ export const AvailableJobsPage = () => {
       <JobCard />
       <JobCard />
       <Pagination/>
-      <Footer />
     </>
   );
 };

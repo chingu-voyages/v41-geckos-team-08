@@ -6,9 +6,7 @@ import { Footer } from './../Components/Footer';
 export const JobFormPage = () => {
   return (
     <>
-      <NavBar />
       <JobForm />
-      <Footer />
     </>
   );
 };
