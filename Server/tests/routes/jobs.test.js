@@ -25,7 +25,7 @@ describe('Test jobs', () => {
 		).body.data;
 
 		TOKEN = await (
-			await login('supplier@mail.com', 'Pas$W0rd123')
+			await login('customer@mail.com', 'Pas$W0rd123')
 		).body.token;
 
 		trade = await (await createTrade('New trade', TOKEN)).body.data;
@@ -54,7 +54,6 @@ describe('Test jobs', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl).post(endpoint).send({
 					trade_uuid: trade.uuid,
-					customer_uuid: customer.uuid,
 					city_uuid: city.uuid,
 					description: 'asdfghjklñdgdghdghd',
 					high_price: 0,
@@ -71,7 +70,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: trade.uuid,
-						customer_uuid: customer.uuid,
 						city_uuid: city.uuid,
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,
@@ -83,6 +81,22 @@ describe('Test jobs', () => {
 				expect(result.statusCode).toBe(403);
 			});
 		});
+
+		describe('Given a supplier is trying to create a job', () => {
+			it('should return 401', async () => {
+				const supplierToken = await login(
+					'supplier@mail.com',
+					'Pas$W0rd123'
+				);
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({})
+					.set('Authorization', `Bearer ${supplierToken.body.token}`);
+
+				expect(response.statusCode).toBe(401);
+			});
+		});
+
 		describe('Given the json is incomplete', () => {
 			it('should return 400 if there is no trade_uuid', async () => {
 				const response = await request(baseUrl)
@@ -92,21 +106,11 @@ describe('Test jobs', () => {
 
 				expect(response.statusCode).toBe(400);
 			});
-			it('should return 400 if there is no customer_uuid', async () => {
-				const response = await request(baseUrl)
-					.post(endpoint)
-					.send({
-						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					})
-					.set('Authorization', `Bearer ${TOKEN}`);
-				expect(response.statusCode).toBe(400);
-			});
 			it('should return 400 if there is no city_uuid', async () => {
 				const response = await request(baseUrl)
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					})
 					.set('Authorization', `Bearer ${TOKEN}`);
 				expect(response.statusCode).toBe(400);
@@ -116,7 +120,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					})
 					.set('Authorization', `Bearer ${TOKEN}`);
@@ -129,22 +132,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						description: 'asdfghjklñdgdghdghd',
-						low_price: 0,
-						high_price: 0,
-						expiration_date: '2022-12-15',
-					})
-					.set('Authorization', `Bearer ${TOKEN}`);
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 400 if customer_uuid is invalid', async () => {
-				const response = await request(baseUrl)
-					.post(endpoint)
-					.send({
-						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						low_price: 0,
@@ -159,7 +146,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
 						description: 'asdfghjklñdgdghdghd',
 						low_price: 0,
@@ -174,7 +160,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfgh',
 						low_price: 0,
@@ -189,7 +174,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						low_price: 'ldalñjf',
@@ -204,7 +188,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 'ldalñjf',
@@ -219,7 +202,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,
@@ -233,7 +215,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,
@@ -246,7 +227,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,
@@ -261,7 +241,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-						customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,
@@ -276,7 +255,6 @@ describe('Test jobs', () => {
 					.post(endpoint)
 					.send({
 						trade_uuid: trade.uuid,
-						customer_uuid: customer.uuid,
 						city_uuid: city.uuid,
 						description: 'asdfghjklñdgdghdghd',
 						high_price: 0,

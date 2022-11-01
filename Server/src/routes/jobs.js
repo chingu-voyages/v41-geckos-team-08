@@ -33,7 +33,6 @@ route.get('/', authorization, async (req, res) => {
 route.post('/', authorization, async (req, res) => {
 	const {
 		trade_uuid,
-		customer_uuid,
 		city_uuid,
 		description,
 		low_price,
@@ -41,15 +40,18 @@ route.post('/', authorization, async (req, res) => {
 		expiration_date,
 	} = req.body;
 
+	const { is_supplier, user } = req.user;
+
+	if (is_supplier)
+		return res
+			.status(401)
+			.json({ detail: 'Only non-supplier users can create jobs' });
+	const customer_uuid = user;
+
 	if (!trade_uuid)
 		return res
 			.status(400)
 			.json({ detail: 'The trade is a required property' });
-
-	if (!customer_uuid)
-		return res
-			.status(400)
-			.json({ detail: 'The customer is a required property' });
 
 	if (!city_uuid)
 		return res
@@ -62,9 +64,6 @@ route.post('/', authorization, async (req, res) => {
 			.json({ detail: 'The description is a required property' });
 
 	if (!isValidUUID(trade_uuid))
-		return res.status(400).json({ detail: 'Invalid trade uuid' });
-
-	if (!isValidUUID(customer_uuid))
 		return res.status(400).json({ detail: 'Invalid trade uuid' });
 
 	if (!isValidUUID(city_uuid))

@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
 
 		const { uuid, is_supplier } = decodedToken.user;
 
-		const user = {
+		req.user = {
 			user: uuid,
 			is_supplier,
 		};
