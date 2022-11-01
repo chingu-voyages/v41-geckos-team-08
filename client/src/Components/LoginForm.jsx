@@ -74,7 +74,7 @@ export function LoginForm() {
             </div>
           </form>
         </div>
-        <div className='hidden grow-0 shrink-0 basis-90 lg:flex  lg:w-6/12 xl:w-6/12 '>
+        <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12 '>
           <img
             src={LandingImage}
             alt='Trendy Pants and Shoes'
