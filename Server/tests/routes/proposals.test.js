@@ -30,7 +30,9 @@ describe('Test the Proposals Route', () => {
 			await createUser('supplier2@mail.com', 'Pas$wordForCust0mer', true)
 		).body.data;
 
-		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
+		TOKEN = await (
+			await login('customer@mail.com', 'Pas$wordForCust0mer')
+		).body.token;
 
 		trade = await (await createTrade('New trade', TOKEN)).body.data;
 
@@ -42,6 +44,7 @@ describe('Test the Proposals Route', () => {
 				TOKEN
 			)
 		).body.data;
+		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
 	});
 	afterAll(async () => {
 		await client.end();

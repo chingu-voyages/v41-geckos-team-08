@@ -1,18 +1,18 @@
-const route = require("express").Router();
-const client = require("../config/db");
-const { isValidUUID } = require("../middleware/validateUUID");
-const moment = require("moment");
-const uuid = require("uuid");
-const { formatOneJobRespnse } = require("../components/format");
-const validateUUID = require("../middleware/validateUUID");
-const authorization = require("../middleware/authorization");
+const route = require('express').Router();
+const client = require('../config/db');
+const { isValidUUID } = require('../middleware/validateUUID');
+const moment = require('moment');
+const uuid = require('uuid');
+const { formatOneJobRespnse } = require('../components/format');
+const validateUUID = require('../middleware/validateUUID');
+const authorization = require('../middleware/authorization');
 
-route.get("/", async (req, res) => {
+route.get('/', authorization, async (req, res) => {
 	if (!req.query.city)
-		return res.status(406).json({ detail: "You need to send the city" });
+		return res.status(406).json({ detail: 'You need to send the city' });
 
 	const jobsSQL =
-		"select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where lower(city.name) = $1";
+		'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where lower(city.name) = $1';
 
 	const jobsResponse = await (
 		await client.query(jobsSQL, [req.query.city.toLowerCase()])
@@ -25,15 +25,14 @@ route.get("/", async (req, res) => {
 	});
 
 	res.json({
-		"total-result": jobsResponse.rowCount,
+		'total-result': jobsResponse.rowCount,
 		data: formattedJobs,
 	});
 });
 
-route.post("/", authorization, async (req, res) => {
+route.post('/', authorization, async (req, res) => {
 	const {
 		trade_uuid,
-		customer_uuid,
 		city_uuid,
 		description,
 		low_price,
@@ -41,57 +40,61 @@ route.post("/", authorization, async (req, res) => {
 		expiration_date,
 	} = req.body;
 
-	if (!trade_uuid)
-		return res.status(400).json({ detail: "The trade is a required property" });
+	const { is_supplier, user } = req.user;
 
-	if (!customer_uuid)
+	if (is_supplier)
+		return res
+			.status(401)
+			.json({ detail: 'Only non-supplier users can create jobs' });
+	const customer_uuid = user;
+
+	if (!trade_uuid)
 		return res
 			.status(400)
-			.json({ detail: "The customer is a required property" });
+			.json({ detail: 'The trade is a required property' });
 
 	if (!city_uuid)
-		return res.status(400).json({ detail: "The city is a required property" });
+		return res
+			.status(400)
+			.json({ detail: 'The city is a required property' });
 
 	if (!description)
 		return res
 			.status(400)
-			.json({ detail: "The description is a required property" });
+			.json({ detail: 'The description is a required property' });
 
 	if (!isValidUUID(trade_uuid))
-		return res.status(400).json({ detail: "Invalid trade uuid" });
-
-	if (!isValidUUID(customer_uuid))
-		return res.status(400).json({ detail: "Invalid trade uuid" });
+		return res.status(400).json({ detail: 'Invalid trade uuid' });
 
 	if (!isValidUUID(city_uuid))
-		return res.status(400).json({ detail: "Invalid trade uuid" });
+		return res.status(400).json({ detail: 'Invalid trade uuid' });
 
 	if (description.length < 10)
 		return res.status(400).json({
-			detail: "Description must be at least 10 characters long",
+			detail: 'Description must be at least 10 characters long',
 		});
 
-	if (low_price !== undefined && typeof low_price !== "number")
-		return res.status(422).json({ detail: "Low price must be a number" });
+	if (low_price !== undefined && typeof low_price !== 'number')
+		return res.status(422).json({ detail: 'Low price must be a number' });
 
-	if (high_price !== undefined && typeof high_price !== "number")
-		return res.status(422).json({ detail: "High price must be a number" });
+	if (high_price !== undefined && typeof high_price !== 'number')
+		return res.status(422).json({ detail: 'High price must be a number' });
 
-	if (!moment(expiration_date, "YYYY-MM-DD", true).isValid())
+	if (!moment(expiration_date, 'YYYY-MM-DD', true).isValid())
 		return res.status(422).json({
-			detail: "Invalid expiration date, it must be in the format YYYY-MM-DD",
+			detail: 'Invalid expiration date, it must be in the format YYYY-MM-DD',
 		});
 
-	const expDate = moment(expiration_date, "YYYY-MM-DD", true);
+	const expDate = moment(expiration_date, 'YYYY-MM-DD', true);
 	const now = moment(new Date());
 
 	if (expDate - now <= 0)
 		return res
 			.status(406)
-			.json({ detail: "Expiration date can not be in the past" });
+			.json({ detail: 'Expiration date can not be in the past' });
 
 	const sql =
-		"insert into job (uuid, trade_uuid, customer_uuid, city_uuid, description, low_price, high_price, expiration_date, is_taken, is_completed) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ";
+		'insert into job (uuid, trade_uuid, customer_uuid, city_uuid, description, low_price, high_price, expiration_date, is_taken, is_completed) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ';
 
 	const jobUUID = uuid.v4();
 
@@ -109,28 +112,28 @@ route.post("/", authorization, async (req, res) => {
 	];
 
 	try {
-		await client.query("BEGIN");
+		await client.query('BEGIN');
 		await client.query(sql, values);
 
-		await client.query("COMMIT");
+		await client.query('COMMIT');
 		const resultSql =
-			"select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1";
+			'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1';
 		const job = await (await client.query(resultSql, [jobUUID])).rows[0];
 		const formattedJob = formatOneJobRespnse(job);
 
 		return res.status(201).json({ data: formattedJob });
 	} catch (err) {
-		await client.query("ROLLBACK");
+		await client.query('ROLLBACK');
 		console.error(err);
-		return res.status(409).json({ detail: "Conflict" });
+		return res.status(409).json({ detail: 'Conflict' });
 	}
 });
 
-route.get("/:uuid", authorization, validateUUID, async (req, res) => {
+route.get('/:uuid', authorization, validateUUID, async (req, res) => {
 	const jobUUID = req.params.uuid;
 
 	const jobsSQL =
-		"select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1";
+		'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1';
 
 	const response = await client.query(jobsSQL, [jobUUID]);
 
@@ -144,7 +147,7 @@ route.get("/:uuid", authorization, validateUUID, async (req, res) => {
 	return res.status(200).json({ data: formatResponse });
 });
 
-route.put("/:uuid", authorization, validateUUID, async (req, res) => {
+route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 	const jobUUID = req.params.uuid;
 	const {
 		trade_uuid,
@@ -159,50 +162,53 @@ route.put("/:uuid", authorization, validateUUID, async (req, res) => {
 	} = req.body;
 
 	if (trade_uuid && !isValidUUID(trade_uuid))
-		return res.status(400).json({ detail: "Invalid trade UUID" });
+		return res.status(400).json({ detail: 'Invalid trade UUID' });
 
 	if (city_uuid && !isValidUUID(city_uuid))
-		return res.status(400).json({ detail: "Invalid city UUID" });
+		return res.status(400).json({ detail: 'Invalid city UUID' });
 	if (supplier_uuid && !isValidUUID(supplier_uuid))
-		return res.status(400).json({ detail: "Invalid supplier UUID" });
+		return res.status(400).json({ detail: 'Invalid supplier UUID' });
 
-	if (is_taken !== undefined && typeof is_taken !== "boolean")
+	if (is_taken !== undefined && typeof is_taken !== 'boolean')
 		return res
 			.status(406)
-			.json({ detail: "The is_taken key must be of type boolean" });
-	if (is_completed !== undefined && typeof is_completed !== "boolean")
+			.json({ detail: 'The is_taken key must be of type boolean' });
+	if (is_completed !== undefined && typeof is_completed !== 'boolean')
 		return res
 			.status(406)
-			.json({ detail: "The is_completed key must be of type boolean" });
-	if (low_price && typeof low_price !== "number")
+			.json({ detail: 'The is_completed key must be of type boolean' });
+	if (low_price && typeof low_price !== 'number')
 		return res
 			.status(406)
-			.json({ detail: "The low_price key must be of type number" });
-	if (high_price && typeof high_price !== "number")
+			.json({ detail: 'The low_price key must be of type number' });
+	if (high_price && typeof high_price !== 'number')
 		return res
 			.status(406)
-			.json({ detail: "The high_price key must be of type number" });
+			.json({ detail: 'The high_price key must be of type number' });
 
 	if (description && description.length < 10)
 		return res.status(406).json({
-			detail: "The description should be at least of 10 characters",
+			detail: 'The description should be at least of 10 characters',
 		});
 
-	if (expiration_date && !moment(expiration_date, "YYYY-MM-DD", true).isValid())
+	if (
+		expiration_date &&
+		!moment(expiration_date, 'YYYY-MM-DD', true).isValid()
+	)
 		return res.status(406).json({
-			detail: "Invalid expiration date, it must be in the format YYYY-MM-DD",
+			detail: 'Invalid expiration date, it must be in the format YYYY-MM-DD',
 		});
 
-	const expDate = moment(expiration_date, "YYYY-MM-DD", true);
+	const expDate = moment(expiration_date, 'YYYY-MM-DD', true);
 	const now = moment(new Date());
 
 	if (expDate - now <= 0)
 		return res
 			.status(406)
-			.json({ detail: "Expiration date can not be in the past" });
+			.json({ detail: 'Expiration date can not be in the past' });
 
 	const jobSQL =
-		"select uuid, description, low_price, high_price, expiration_date, is_taken, is_completed, trade_uuid, customer_uuid, city_uuid, supplier_uuid from job where uuid = $1";
+		'select uuid, description, low_price, high_price, expiration_date, is_taken, is_completed, trade_uuid, customer_uuid, city_uuid, supplier_uuid from job where uuid = $1';
 
 	const response = await client.query(jobSQL, [jobUUID]);
 
@@ -225,9 +231,9 @@ route.put("/:uuid", authorization, validateUUID, async (req, res) => {
 	const update_supplier_uuid = supplier_uuid || job.supplier_uuid;
 
 	try {
-		await client.query("BEGIN");
+		await client.query('BEGIN');
 		const updateSQL =
-			"update job set description = $1, low_price=$2, high_price=$3, expiration_date=$4, is_taken=$5, is_completed=$6, trade_uuid=$7, city_uuid=$8, supplier_uuid=$9 where uuid=$10";
+			'update job set description = $1, low_price=$2, high_price=$3, expiration_date=$4, is_taken=$5, is_completed=$6, trade_uuid=$7, city_uuid=$8, supplier_uuid=$9 where uuid=$10';
 
 		await client.query(updateSQL, [
 			update_description,
@@ -241,19 +247,19 @@ route.put("/:uuid", authorization, validateUUID, async (req, res) => {
 			update_supplier_uuid,
 			jobUUID,
 		]);
-		await client.query("COMMIT");
+		await client.query('COMMIT');
 
 		const resultSql =
-			"select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1";
+			'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where job.uuid = $1';
 		const job = await (await client.query(resultSql, [jobUUID])).rows[0];
 		const formattedJob = formatOneJobRespnse(job);
 
 		return res.status(200).json({ data: formattedJob });
 	} catch (err) {
-		await client.query("ROLLBACK");
-		if (err.code === "23503")
+		await client.query('ROLLBACK');
+		if (err.code === '23503')
 			return res.status(404).json({ detail: err.detail });
-		return res.status(422).json({ detail: "Unprocesable entity" });
+		return res.status(422).json({ detail: 'Unprocesable entity' });
 	}
 });
 

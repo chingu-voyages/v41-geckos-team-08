@@ -1,15 +1,16 @@
 const request = require('supertest');
-// const baseUrl = require('../../test-config');
 const baseUrl = require('../../app');
 const client = require('../../src/config/db');
 const { initializeDB } = require('../common/initializeDB');
 const createUser = require('../common/create-user');
 const createTrade = require('../common/create-trade');
+const login = require('../common/login');
 
 const endpoint = '/jobs';
-let supplier, customer, trade, city, country, updateTrade, updateCity;
+let supplier, customer, trade, city, country, updateTrade, updateCity, TOKEN;
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
+const invalidTOKEN = 'thisis.aninvalidtokenthat.ivejustmadeup';
 
 describe('Test jobs', () => {
 	beforeAll(async () => {
@@ -23,8 +24,14 @@ describe('Test jobs', () => {
 			await createUser('customer@mail.com', 'Pas$W0rd123', false)
 		).body.data;
 
-		trade = await (await createTrade('new trade')).body.data;
-		updateTrade = await (await createTrade('another trade')).body.data;
+		TOKEN = await (
+			await login('customer@mail.com', 'Pas$W0rd123')
+		).body.token;
+
+		trade = await (await createTrade('New trade', TOKEN)).body.data;
+		updateTrade = await (
+			await createTrade('another trade', TOKEN)
+		).body.data;
 
 		const countries = await (
 			await request(baseUrl).get('/locations')
@@ -43,161 +50,218 @@ describe('Test jobs', () => {
 		await client.end();
 	});
 	describe('Create a job', () => {
-		describe('Given the json is incomplete', () => {
-			it('should return 400 if there is no trade_uuid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 400 if there is no customer_uuid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 400 if there is no city_uuid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should reurn 400 if there is no description', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-		});
-		describe('Given the json is complete', () => {
-			it('should return 400 if trade_uuid is invalid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					low_price: 0,
-					high_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 400 if customer_uuid is invalid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					low_price: 0,
-					high_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 400 if city_uuid is invalid', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
-					description: 'asdfghjklñdgdghdghd',
-					low_price: 0,
-					high_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it("should reurn 400 if there is no description doesn't have at least 10 characters", async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfgh',
-					low_price: 0,
-					high_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(400);
-			});
-			it('should return 422 if the low price is not a number', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					low_price: 'ldalñjf',
-					high_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(422);
-			});
-			it('should return 422 if the high price is not a number', async () => {
-				const response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					high_price: 'ldalñjf',
-					low_price: 0,
-					expiration_date: '2022-12-15',
-				});
-				expect(response.statusCode).toBe(422);
-			});
-			it('should return 422 if the user sends an invalid date', async () => {
-				let response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					high_price: 0,
-					low_price: 0,
-					expiration_date: '2022-13-15',
-				});
-				expect(response.statusCode).toBe(422);
-
-				response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					high_price: 0,
-					low_price: 0,
-					expiration_date: '2022-12-50',
-				});
-				expect(response.statusCode).toBe(422);
-				response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					high_price: 0,
-					low_price: 0,
-					expiration_date: '123456-12-15',
-				});
-				expect(response.statusCode).toBe(422);
-			});
-			it('should return 406 if the expiration date is in the past', async () => {
-				response = await request(baseUrl).post(endpoint).send({
-					trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					customer_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
-					description: 'asdfghjklñdgdghdghd',
-					high_price: 0,
-					low_price: 0,
-					expiration_date: '2020-12-15',
-				});
-				expect(response.statusCode).toBe(406);
-			});
-			it('should return 201 if the job is created', async () => {
-				response = await request(baseUrl).post(endpoint).send({
+		describe('Given the user is not sending a token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl).post(endpoint).send({
 					trade_uuid: trade.uuid,
-					customer_uuid: customer.uuid,
 					city_uuid: city.uuid,
 					description: 'asdfghjklñdgdghdghd',
 					high_price: 0,
 					low_price: 0,
 					expiration_date: '2023-12-15',
 				});
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: trade.uuid,
+						city_uuid: city.uuid,
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '2023-12-15',
+					})
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+
+		describe('Given a supplier is trying to create a job', () => {
+			it('should return 401', async () => {
+				const supplierToken = await login(
+					'supplier@mail.com',
+					'Pas$W0rd123'
+				);
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({})
+					.set('Authorization', `Bearer ${supplierToken.body.token}`);
+
+				expect(response.statusCode).toBe(401);
+			});
+		});
+
+		describe('Given the json is incomplete', () => {
+			it('should return 400 if there is no trade_uuid', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
+
+				expect(response.statusCode).toBe(400);
+			});
+			it('should return 400 if there is no city_uuid', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(400);
+			});
+			it('should reurn 400 if there is no description', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(400);
+			});
+		});
+		describe('Given the json is complete', () => {
+			it('should return 400 if trade_uuid is invalid', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						low_price: 0,
+						high_price: 0,
+						expiration_date: '2022-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(400);
+			});
+			it('should return 400 if city_uuid is invalid', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'thisanin-vali-duui-dsoi-treturn404nf',
+						description: 'asdfghjklñdgdghdghd',
+						low_price: 0,
+						high_price: 0,
+						expiration_date: '2022-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(400);
+			});
+			it("should reurn 400 if there is no description doesn't have at least 10 characters", async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfgh',
+						low_price: 0,
+						high_price: 0,
+						expiration_date: '2022-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(400);
+			});
+			it('should return 422 if the low price is not a number', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						low_price: 'ldalñjf',
+						high_price: 0,
+						expiration_date: '2022-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(422);
+			});
+			it('should return 422 if the high price is not a number', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 'ldalñjf',
+						low_price: 0,
+						expiration_date: '2022-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(422);
+			});
+			it('should return 422 if the user sends an invalid date', async () => {
+				let response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '2022-13-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(422);
+
+				response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '2022-12-50',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(422);
+				response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '123456-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(422);
+			});
+			it('should return 406 if the expiration date is in the past', async () => {
+				response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '2020-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
+				expect(response.statusCode).toBe(406);
+			});
+			it('should return 201 if the job is created', async () => {
+				const response = await request(baseUrl)
+					.post(endpoint)
+					.send({
+						trade_uuid: trade.uuid,
+						city_uuid: city.uuid,
+						description: 'asdfghjklñdgdghdghd',
+						high_price: 0,
+						low_price: 0,
+						expiration_date: '2023-12-15',
+					})
+					.set('Authorization', `Bearer ${TOKEN}`);
 				expect(response.statusCode).toBe(201);
 
 				const job = response.body.data;
@@ -215,15 +279,35 @@ describe('Test jobs', () => {
 		});
 	});
 	describe('Getting all of the jobs', () => {
+		describe('Given the user is not sending a token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl).get(endpoint);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const result = await request(baseUrl)
+					.get(endpoint)
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
 		describe('Given the city query parameter', () => {
 			it('should return 406 when it does not exist', async () => {
-				const response = await request(baseUrl).get(endpoint);
+				const response = await request(baseUrl)
+					.get(endpoint)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(response.statusCode).toBe(406);
 			});
 			it('should return 200 if it exists', async () => {
 				const url = `${endpoint}?city=quito`;
-				const response = await request(baseUrl).get(url);
+				const response = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(response.statusCode).toBe(200);
 				expect(typeof response.body.data).toBe('object');
@@ -258,28 +342,53 @@ describe('Test jobs', () => {
 	describe('Getting one job by its uuid', () => {
 		let queryJob;
 		beforeAll(async () => {
-			queryJob = await (
-				await request(baseUrl).get(`${endpoint}?city=quito`)
-			).body.data[0];
+			const getJob = await request(baseUrl)
+				.get(`${endpoint}?city=quito`)
+				.set('Authorization', `Bearer ${TOKEN}`);
+			queryJob = getJob.body.data[0];
+		});
+		describe('Given the user is not sending a token', () => {
+			it('should return 403', async () => {
+				const url = `${endpoint}/${queryJob.uuid}`;
+				const result = await request(baseUrl).get(url);
+
+				expect(result.statusCode).toBe(403);
+			});
+		});
+		describe('Given the user is sending an invalid token', () => {
+			it('should return 403', async () => {
+				const url = `${endpoint}/${queryJob.uuid}`;
+				const result = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${invalidTOKEN}`);
+
+				expect(result.statusCode).toBe(403);
+			});
 		});
 		describe('Given they pass an invalid uuid', () => {
 			it('should return 400', async () => {
 				const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
-				const response = await request(baseUrl).get(url);
+				const response = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 404 if no trade is found', async () => {
 				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 				const url = `${endpoint}/${badUUID}`;
-				const response = await request(baseUrl).get(url);
+				const response = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${TOKEN}`);
 				expect(response.statusCode).toBe(404);
 			});
 		});
 		describe('Given they pass a valid uuid', () => {
 			it('should return 200', async () => {
 				const url = `${endpoint}/${queryJob.uuid}`;
+				const response = await request(baseUrl)
+					.get(url)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
-				const response = await request(baseUrl).get(url);
 				expect(response.statusCode).toBe(200);
 
 				const job = response.body.data;
@@ -311,16 +420,16 @@ describe('Test jobs', () => {
 		describe('Given a bad UUID', () => {
 			// http://server/jobs/<uuid>
 			it('Should return 400 if the UUID is invalid', async () => {
-				const result = await request(baseUrl).put(
-					`${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`
-				);
+				const result = await request(baseUrl)
+					.put(`${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
 			it('Shoud return 404 if the UUID does not exist', async () => {
-				const result = await request(baseUrl).put(
-					`${endpoint}/a1bcdef2-1adc-d551-d701-74bacde40433`
-				);
+				const result = await request(baseUrl)
+					.put(`${endpoint}/a1bcdef2-1adc-d551-d701-74bacde40433`)
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -329,12 +438,17 @@ describe('Test jobs', () => {
 			let queryJob;
 			beforeAll(async () => {
 				queryJob = await (
-					await request(baseUrl).get(`${endpoint}?city=quito`)
+					await request(baseUrl)
+						.get(`${endpoint}?city=quito`)
+						.set('Authorization', `Bearer ${TOKEN}`)
 				).body.data[0];
 			});
 			it('should return 200 if there is empty JSON', async () => {
 				const url = `${endpoint}/${queryJob.uuid}`;
-				const result = await request(baseUrl).put(url).send({});
+				const result = await request(baseUrl)
+					.put(url)
+					.send({})
+					.set('Authorization', `Bearer ${TOKEN}`);
 
 				expect(result.statusCode).toBe(200);
 
@@ -375,7 +489,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ trade_uuid: invalidUUID });
+						.send({ trade_uuid: invalidUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -383,7 +498,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ trade_uuid: inExistentUUID });
+						.send({ trade_uuid: inExistentUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -392,7 +508,8 @@ describe('Test jobs', () => {
 
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ trade_uuid: updateTrade.uuid });
+						.send({ trade_uuid: updateTrade.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -407,7 +524,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ city_uuid: invalidUUID });
+						.send({ city_uuid: invalidUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -415,7 +533,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ city_uuid: inExistentUUID });
+						.send({ city_uuid: inExistentUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -424,7 +543,8 @@ describe('Test jobs', () => {
 
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ city_uuid: updateCity.uuid });
+						.send({ city_uuid: updateCity.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -439,7 +559,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ supplier_uuid: invalidUUID });
+						.send({ supplier_uuid: invalidUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -447,7 +568,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ supplier_uuid: inExistentUUID });
+						.send({ supplier_uuid: inExistentUUID })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -456,7 +578,8 @@ describe('Test jobs', () => {
 
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ supplier_uuid: supplier.uuid });
+						.send({ supplier_uuid: supplier.uuid })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -475,7 +598,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ is_taken: 'whatever value' });
+						.send({ is_taken: 'whatever value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -483,14 +607,16 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
-						.send({ is_taken: true });
+						.send({ is_taken: true })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_taken).toBe(true);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ is_taken: false });
+						.send({ is_taken: false })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_taken).toBe(false);
@@ -501,7 +627,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ is_completed: 'whatever value' });
+						.send({ is_completed: 'whatever value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -509,14 +636,16 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
-						.send({ is_completed: true });
+						.send({ is_completed: true })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_completed).toBe(true);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ is_completed: false });
+						.send({ is_completed: false })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_completed).toBe(false);
@@ -527,7 +656,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ low_price: 'whatever value' });
+						.send({ low_price: 'whatever value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -535,14 +665,16 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
-						.send({ low_price: 200 });
+						.send({ low_price: 200 })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.low_price).toBe(200);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ low_price: 200.53 });
+						.send({ low_price: 200.53 })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.low_price).toBe(200.53);
@@ -553,7 +685,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ high_price: 'whatever value' });
+						.send({ high_price: 'whatever value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -561,14 +694,16 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
-						.send({ high_price: 500 });
+						.send({ high_price: 500 })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.high_price).toBe(500);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ high_price: 500.45 });
+						.send({ high_price: 500.45 })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.high_price).toBe(500.45);
@@ -579,31 +714,36 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: 'whatever value' });
+						.send({ expiration_date: 'whatever value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: '2022-13-15' });
+						.send({ expiration_date: '2022-13-15' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: '2022-12-50' });
+						.send({ expiration_date: '2022-12-50' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: '2022231-12-50' });
+						.send({ expiration_date: '2022231-12-50' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: '2020-12-15' });
+						.send({ expiration_date: '2020-12-15' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -611,7 +751,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ expiration_date: '2023-12-15' });
+						.send({ expiration_date: '2023-12-15' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.expiration_date).toBe(
@@ -624,7 +765,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ description: 'value' });
+						.send({ description: 'value' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -632,7 +774,8 @@ describe('Test jobs', () => {
 					const url = `${endpoint}/${queryJob.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
-						.send({ description: 'this is a valid description' });
+						.send({ description: 'this is a valid description' })
+						.set('Authorization', `Bearer ${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.description).toBe(
