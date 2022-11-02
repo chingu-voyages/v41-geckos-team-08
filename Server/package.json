@@ -5,18 +5,21 @@
   "main": "server.js",
   "scripts": {
     "test": "NODE_ENV=test && jest --detectOpenHandles",
-    "start": "node server.js",
+    "client": "cd ../client && npm start",
+    "start": "concurrently \" nodemon server.js\" \"npm run client\"",
     "watch": "nodemon server.js"
   },
   "author": "Chingu-Geckos-Team-08",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "concurrently": "^7.5.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
+    "nodemon": "^2.0.20",
     "pg": "^8.8.0",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0",
