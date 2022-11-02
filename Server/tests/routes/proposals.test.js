@@ -6,6 +6,7 @@ const createUser = require('../common/create-user');
 const createJobs = require('../common/create-jobs');
 const createTrade = require('../common/create-trade');
 const login = require('../common/login');
+const { TokenExpiredError } = require('jsonwebtoken');
 
 const endpoint = '/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
@@ -53,7 +54,6 @@ describe('Test the Proposals Route', () => {
 		describe('Given the user is not sending a token', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl).post(endpoint).send({
-					supplier_uuid: supplier.uuid,
 					job_uuid: job.uuid,
 					price: 500,
 					expiration_date: '2023-12-13',
@@ -67,7 +67,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -86,19 +85,10 @@ describe('Test the Proposals Route', () => {
 
 				expect(result.statusCode).toBe(400);
 			});
-			it('should return 400 when the user sends an invalid supplier_uuid', async () => {
-				const result = await request(baseUrl)
-					.post(endpoint)
-					.send({ supplier_uuid: invalidUUID })
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(400);
-			});
 			it('should return 400 when the user sends an invalid job_uuid', async () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: invalidUUID,
 					})
 					.set('Authorization', `Bearer ${TOKEN}`);
@@ -109,7 +99,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 'Invalid price',
 					})
@@ -121,7 +110,6 @@ describe('Test the Proposals Route', () => {
 				let result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2022-15-13',
@@ -133,7 +121,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2022-12-60',
@@ -145,7 +132,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '1231231-12-15',
@@ -158,7 +144,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2020-12-13',
@@ -171,7 +156,6 @@ describe('Test the Proposals Route', () => {
 				let result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
@@ -182,18 +166,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
-						price: 500,
-						expiration_date: '2023-12-13',
-					})
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(400);
-
-				result = await request(baseUrl)
-					.post(endpoint)
-					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						expiration_date: '2023-12-13',
 					})
@@ -204,7 +176,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 					})
@@ -214,24 +185,25 @@ describe('Test the Proposals Route', () => {
 			});
 		});
 		describe('Given the user sends a valid JSON', () => {
-			it('should return 404 when the user sends an nonexistent supplier_uuid', async () => {
+			it('should return 401 if the user is a non supplier user', async () => {
+				const customerToken = await (
+					await login('customer@mail.com', 'Pas$wordForCust0mer')
+				).body.token;
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: inExistentUUID,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `Bearer ${customerToken}`);
 
-				expect(result.statusCode).toBe(404);
+				expect(result.statusCode).toBe(401);
 			});
 			it('should return 404 when the user sends an nonexistent job_uuid', async () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: inExistentUUID,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -244,7 +216,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -278,7 +249,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -601,103 +571,161 @@ describe('Test the Proposals Route', () => {
 			});
 		});
 		describe('Given the user sends a valid JSON', () => {
-			it('should return 200', async () => {
-				const url = `${endpoint}/${supplier.uuid}`;
-				let result = await request(baseUrl)
-					.put(url)
-					.query({ job: job.uuid })
-					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(200);
-
-				let proposal = result.body.data;
-
-				expect(proposal).toHaveProperty('price');
-				expect(proposal.price).toBe(500);
-				expect(proposal).toHaveProperty('expiration_date');
-				expect(proposal.expiration_date).toBe(
-					'2023-12-13T05:00:00.000Z'
-				);
-				expect(proposal).toHaveProperty('is_accepted');
-				expect(proposal.is_accepted).toBe(false);
-				expect(proposal).toHaveProperty('supplier');
-				expect(proposal.supplier).toHaveProperty('uuid');
-				expect(proposal.supplier.uuid).toBe(supplier.uuid);
-				expect(proposal.supplier).not.toHaveProperty('password');
-				expect(proposal.supplier).toHaveProperty('email');
-				expect(proposal.supplier.email).toBe(supplier.email);
-				expect(proposal.supplier).toHaveProperty('name');
-				expect(proposal.supplier.name).toBe(supplier.name);
-				expect(proposal.supplier).toHaveProperty('phone');
-				expect(proposal.supplier.phone).toBe(supplier.phone);
-
-				result = await request(baseUrl)
-					.put(url)
-					.query({ job: job.uuid })
-					.send({ price: 455.76 })
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(200);
-
-				proposal = result.body.data;
-
-				expect(proposal).toHaveProperty('price');
-				expect(proposal.price).toBe(455.76);
-				expect(proposal).toHaveProperty('expiration_date');
-				expect(proposal.expiration_date).toBe(
-					'2023-12-13T05:00:00.000Z'
-				);
-				expect(proposal).toHaveProperty('is_accepted');
-				expect(proposal.is_accepted).toBe(false);
-				expect(proposal).toHaveProperty('supplier');
-				expect(proposal.supplier).toHaveProperty('uuid');
-				expect(proposal.supplier.uuid).toBe(supplier.uuid);
-				expect(proposal.supplier).not.toHaveProperty('password');
-				expect(proposal.supplier).toHaveProperty('email');
-				expect(proposal.supplier.email).toBe(supplier.email);
-				expect(proposal.supplier).toHaveProperty('name');
-				expect(proposal.supplier.name).toBe(supplier.name);
-				expect(proposal.supplier).toHaveProperty('phone');
-				expect(proposal.supplier.phone).toBe(supplier.phone);
-
-				result = await request(baseUrl)
-					.put(url)
-					.query({ job: job.uuid })
-					.send({ expiration_date: '2023-01-25' })
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(200);
-
-				proposal = result.body.data;
-
-				expect(proposal).toHaveProperty('price');
-				expect(proposal.price).toBe(455.76);
-				expect(proposal).toHaveProperty('expiration_date');
-				expect(proposal.expiration_date).toBe(
-					'2023-01-25T05:00:00.000Z'
-				);
-				expect(proposal).toHaveProperty('is_accepted');
-				expect(proposal.is_accepted).toBe(false);
-				expect(proposal).toHaveProperty('supplier');
-				expect(proposal.supplier).toHaveProperty('uuid');
-				expect(proposal.supplier.uuid).toBe(supplier.uuid);
-				expect(proposal.supplier).not.toHaveProperty('password');
-				expect(proposal.supplier).toHaveProperty('email');
-				expect(proposal.supplier.email).toBe(supplier.email);
-				expect(proposal.supplier).toHaveProperty('name');
-				expect(proposal.supplier.name).toBe(supplier.name);
-				expect(proposal.supplier).toHaveProperty('phone');
-				expect(proposal.supplier.phone).toBe(supplier.phone);
-			});
-			describe('Given the user updates the is_accepted', () => {
-				it('should return 200 and the job updated with the accepted supplier', async () => {
+			describe('Given the user is a supplier', () => {
+				it('should return 401 if the user tries to update the is accepted', async () => {
 					const url = `${endpoint}/${supplier.uuid}`;
 					const result = await request(baseUrl)
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ is_accepted: true })
 						.set('Authorization', `Bearer ${TOKEN}`);
+
+					expect(result.statusCode).toBe(401);
+				});
+				it('should return if it tries to update other suppliers proposal', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					const supplierToken = await (
+						await login('supplier2@mail.com', 'Pas$wordForCust0mer')
+					).body.token;
+
+					let result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ price: 455.76 })
+						.set('Authorization', `Bearer ${supplierToken}`);
+
+					expect(result.statusCode).toBe(401);
+
+					result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ expiration_date: '2023-01-25' })
+						.set('Authorization', `Bearer ${supplierToken}`);
+
+					expect(result.statusCode).toBe(401);
+				});
+				it("should return 200 if it doesn't update the is accepted", async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({})
+						.set('Authorization', `Bearer ${TOKEN}`);
+
+					expect(result.statusCode).toBe(200);
+
+					let proposal = result.body.data;
+
+					expect(proposal).toHaveProperty('price');
+					expect(proposal.price).toBe(500);
+					expect(proposal).toHaveProperty('expiration_date');
+					expect(proposal.expiration_date).toBe(
+						'2023-12-13T05:00:00.000Z'
+					);
+					expect(proposal).toHaveProperty('is_accepted');
+					expect(proposal.is_accepted).toBe(false);
+					expect(proposal).toHaveProperty('supplier');
+					expect(proposal.supplier).toHaveProperty('uuid');
+					expect(proposal.supplier.uuid).toBe(supplier.uuid);
+					expect(proposal.supplier).not.toHaveProperty('password');
+					expect(proposal.supplier).toHaveProperty('email');
+					expect(proposal.supplier.email).toBe(supplier.email);
+					expect(proposal.supplier).toHaveProperty('name');
+					expect(proposal.supplier.name).toBe(supplier.name);
+					expect(proposal.supplier).toHaveProperty('phone');
+					expect(proposal.supplier.phone).toBe(supplier.phone);
+
+					result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ price: 455.76 })
+						.set('Authorization', `Bearer ${TOKEN}`);
+
+					expect(result.statusCode).toBe(200);
+
+					proposal = result.body.data;
+
+					expect(proposal).toHaveProperty('price');
+					expect(proposal.price).toBe(455.76);
+					expect(proposal).toHaveProperty('expiration_date');
+					expect(proposal.expiration_date).toBe(
+						'2023-12-13T05:00:00.000Z'
+					);
+					expect(proposal).toHaveProperty('is_accepted');
+					expect(proposal.is_accepted).toBe(false);
+					expect(proposal).toHaveProperty('supplier');
+					expect(proposal.supplier).toHaveProperty('uuid');
+					expect(proposal.supplier.uuid).toBe(supplier.uuid);
+					expect(proposal.supplier).not.toHaveProperty('password');
+					expect(proposal.supplier).toHaveProperty('email');
+					expect(proposal.supplier.email).toBe(supplier.email);
+					expect(proposal.supplier).toHaveProperty('name');
+					expect(proposal.supplier.name).toBe(supplier.name);
+					expect(proposal.supplier).toHaveProperty('phone');
+					expect(proposal.supplier.phone).toBe(supplier.phone);
+
+					result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ expiration_date: '2023-01-25' })
+						.set('Authorization', `Bearer ${TOKEN}`);
+
+					expect(result.statusCode).toBe(200);
+
+					proposal = result.body.data;
+
+					expect(proposal).toHaveProperty('price');
+					expect(proposal.price).toBe(455.76);
+					expect(proposal).toHaveProperty('expiration_date');
+					expect(proposal.expiration_date).toBe(
+						'2023-01-25T05:00:00.000Z'
+					);
+					expect(proposal).toHaveProperty('is_accepted');
+					expect(proposal.is_accepted).toBe(false);
+					expect(proposal).toHaveProperty('supplier');
+					expect(proposal.supplier).toHaveProperty('uuid');
+					expect(proposal.supplier.uuid).toBe(supplier.uuid);
+					expect(proposal.supplier).not.toHaveProperty('password');
+					expect(proposal.supplier).toHaveProperty('email');
+					expect(proposal.supplier.email).toBe(supplier.email);
+					expect(proposal.supplier).toHaveProperty('name');
+					expect(proposal.supplier.name).toBe(supplier.name);
+					expect(proposal.supplier).toHaveProperty('phone');
+					expect(proposal.supplier.phone).toBe(supplier.phone);
+				});
+			});
+			describe('Given the user updates is non supplier', () => {
+				let customerToken;
+				beforeAll(async () => {
+					customerToken = await (
+						await login('customer@mail.com', 'Pas$wordForCust0mer')
+					).body.token;
+				});
+				it('should return 401 if try to update any other field', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					let result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ price: 455.76 })
+						.set('Authorization', `Bearer ${customerToken}`);
+
+					expect(result.statusCode).toBe(401);
+
+					result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ expiration_date: '2023-01-25' })
+						.set('Authorization', `Bearer ${customerToken}`);
+
+					expect(result.statusCode).toBe(401);
+				});
+				it('should return 200 and the job updated with the accepted supplier', async () => {
+					const url = `${endpoint}/${supplier.uuid}`;
+					const result = await request(baseUrl)
+						.put(url)
+						.query({ job: job.uuid })
+						.send({ is_accepted: true })
+						.set('Authorization', `Bearer ${customerToken}`);
 
 					expect(result.statusCode).toBe(200);
 

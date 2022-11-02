@@ -7,7 +7,6 @@
     "test": "NODE_ENV=test && jest --detectOpenHandles",
     "client": "cd ../client && npm start",
     "start": "concurrently \" nodemon server.js\" \"npm run client\"",
-    "start-test": "NODE_ENV=test && node server.js",
     "watch": "nodemon server.js"
   },
   "author": "Chingu-Geckos-Team-08",

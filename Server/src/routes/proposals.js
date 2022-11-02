@@ -38,13 +38,19 @@ route.get('/', authorization, async (req, res) => {
 });
 
 route.post('/', authorization, async (req, res) => {
+	const { is_supplier, user } = req.user;
+
+	if (!is_supplier)
+		return res
+			.status(401)
+			.json({ detail: 'Only supplier users can create jobs' });
+
+	const supplier_uuid = user;
+
 	if (req.body.constructor === Object && Object.keys(req.body).length === 0)
 		return res.status(400).json({ detail: "Haven't received any data" });
 
-	const { supplier_uuid, job_uuid, price, expiration_date } = req.body;
-
-	if (!isValidUUID(supplier_uuid))
-		return res.status(400).json({ detail: 'Invalid supplier uuid' });
+	const { job_uuid, price, expiration_date } = req.body;
 
 	if (!isValidUUID(job_uuid))
 		return res.status(400).json({ detail: 'Invalid job uuid' });
@@ -144,8 +150,10 @@ route.get('/:uuid', authorization, validateUUID, async (req, res) => {
 
 route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 	const { job } = req.query;
+	const { is_supplier, user } = req.user;
 	const { price, is_accepted, expiration_date } = req.body;
 	const supplierUUID = req.params.uuid;
+
 	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
 
 	if (!isValidUUID(job))
@@ -173,12 +181,10 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 			.status(400)
 			.json({ detail: 'The price value must be numeric' });
 
-	// console.log(is_accepted, is_accepted === undefined);
-
-	if (is_accepted !== undefined && typeof is_accepted !== 'boolean')
-		return res
-			.status(400)
-			.json({ detail: 'The is_accepted must be true or false' });
+	if (price && supplierUUID != user)
+		return res.status(401).json({
+			detail: 'Only the supplier who created the proposal can update its price',
+		});
 
 	if (
 		expiration_date &&
@@ -196,8 +202,24 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 			.status(400)
 			.json({ detail: 'Expiration date can not be in the past' });
 
+	if (expiration_date && supplierUUID != user)
+		return res.status(401).json({
+			detail: 'Only the supplier who created the proposal can update its expiration date',
+		});
+
+	if (is_accepted !== undefined && typeof is_accepted !== 'boolean')
+		return res
+			.status(400)
+			.json({ detail: 'The is_accepted must be true or false' });
+
+	if (is_accepted !== undefined && is_supplier) {
+		return res
+			.status(401)
+			.json({ detail: 'Only non suppliers can approve a proposal' });
+	}
 	try {
 		await client.query('BEGIN');
+
 		const existentProposal =
 			'select price, is_accepted, expiration_date from proposal where job_uuid = $1 and supplier_uuid = $2';
 
@@ -230,7 +252,6 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 		]);
 
 		if (is_accepted) {
-			// console.log(is_accepted);
 			const updateJob =
 				'update job set is_taken=true, supplier_uuid=$1 where uuid=$2';
 			await client.query(updateJob, [supplierUUID, job]);
