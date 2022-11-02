@@ -2,16 +2,52 @@ import React, {useState} from 'react'
 import DatePicker from 'react-date-picker'
 import { Button } from './Button';
 import LandingImage from './../assets/images/drillBits.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { createJob } from '../Redux/Actions/jobActions';
 
 export const JobForm = () => {
-  const [value, onChange] = useState(new Date());
+  const [date, changeDate] = useState(new Date());
+
+  const initialState = {
+    first_name: '',
+    last_name: '',
+    job_title: '',
+    description: '',
+    date
+  };
+
+  const [newJob, setNewJob] = useState(initialState);
+
+  const { first_name, last_name, job_title, description } = newJob;
+
+  const handleChange = e => setNewJob({
+    ...newJob,
+    [e.target.name]: e.target.value
+  });
+
+  useEffect(() => {
+    setNewJob({
+      ...newJob,
+      date
+    });
+  }, [date]);
+
+  const { auth } = useSelector((state) => state);
+  const dispatch = useDispatch();
+
+  const handleSubmit = async () => {
+    if (!auth.access_token) return;
+    dispatch(createJob(newJob, auth.access_token));
+  }
+
   return (
     <div className='flex flex-wrap lg:h-full'>
       <div className='w-full lg:w-1/2 bg-white p-8 m-0'>
         <h1 className='block w-full text-center text-gray-800 text-3xl tracking-tight font-bold mb-6'>
           New Job
         </h1>
-        <form className='flex flex-col justify-center' action='/' method='post'>
+        <form className='flex flex-col justify-center' action='/' method='POST' onSubmit={handleSubmit}>
           <div className='flex flex-col mb-4'>
             <label
               className='mb-2 font-bold text-lg text-black'
@@ -24,7 +60,9 @@ export const JobForm = () => {
               type='text'
               name='first_name'
               id='first_name'
-              // value={'any'}
+              value={first_name}
+              onChange={handleChange}
+              required
             />
           </div>
           <div className='flex flex-col mb-4'>
@@ -39,7 +77,9 @@ export const JobForm = () => {
               type='text'
               name='last_name'
               id='last_name'
-              // value={'any'}
+              value={last_name}
+              onChange={handleChange}
+              required
             />
           </div>
           <div className='flex flex-col mb-4'>
@@ -54,7 +94,9 @@ export const JobForm = () => {
               type='text'
               name='job_title'
               id='job_title'
-              // value={'any'}
+              value={job_title}
+              onChange={handleChange}
+              required
             />
           </div>
           <div className='flex flex-col mb-4'>
@@ -69,7 +111,9 @@ export const JobForm = () => {
               type='text'
               name='description'
               id='description'
-              // value={'description'}
+              value={description}
+              onChange={handleChange}
+              required
             />
           </div>
           <div className='flex flex-col mb-4'>
@@ -80,7 +124,11 @@ export const JobForm = () => {
               I Need this Done by
             </label>
             <div>
-              <DatePicker onChange={onChange} value={value} />
+              <DatePicker
+                value={date}
+                onChange={changeDate}
+                required 
+              />
             </div>
           </div>
           <div className='mt-3 -ml-6'>
