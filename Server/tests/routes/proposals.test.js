@@ -6,6 +6,7 @@ const createUser = require('../common/create-user');
 const createJobs = require('../common/create-jobs');
 const createTrade = require('../common/create-trade');
 const login = require('../common/login');
+const { TokenExpiredError } = require('jsonwebtoken');
 
 const endpoint = '/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
@@ -53,7 +54,6 @@ describe('Test the Proposals Route', () => {
 		describe('Given the user is not sending a token', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl).post(endpoint).send({
-					supplier_uuid: supplier.uuid,
 					job_uuid: job.uuid,
 					price: 500,
 					expiration_date: '2023-12-13',
@@ -67,7 +67,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -86,19 +85,10 @@ describe('Test the Proposals Route', () => {
 
 				expect(result.statusCode).toBe(400);
 			});
-			it('should return 400 when the user sends an invalid supplier_uuid', async () => {
-				const result = await request(baseUrl)
-					.post(endpoint)
-					.send({ supplier_uuid: invalidUUID })
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(400);
-			});
 			it('should return 400 when the user sends an invalid job_uuid', async () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: invalidUUID,
 					})
 					.set('Authorization', `Bearer ${TOKEN}`);
@@ -109,7 +99,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 'Invalid price',
 					})
@@ -121,7 +110,6 @@ describe('Test the Proposals Route', () => {
 				let result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2022-15-13',
@@ -133,7 +121,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2022-12-60',
@@ -145,7 +132,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '1231231-12-15',
@@ -158,7 +144,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2020-12-13',
@@ -171,7 +156,6 @@ describe('Test the Proposals Route', () => {
 				let result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
@@ -182,18 +166,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
-						price: 500,
-						expiration_date: '2023-12-13',
-					})
-					.set('Authorization', `Bearer ${TOKEN}`);
-
-				expect(result.statusCode).toBe(400);
-
-				result = await request(baseUrl)
-					.post(endpoint)
-					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						expiration_date: '2023-12-13',
 					})
@@ -204,7 +176,6 @@ describe('Test the Proposals Route', () => {
 				result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 					})
@@ -214,24 +185,25 @@ describe('Test the Proposals Route', () => {
 			});
 		});
 		describe('Given the user sends a valid JSON', () => {
-			it('should return 404 when the user sends an nonexistent supplier_uuid', async () => {
+			it('should return 401 if the user is a non supplier user', async () => {
+				const customerToken = await (
+					await login('customer@mail.com', 'Pas$wordForCust0mer')
+				).body.token;
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: inExistentUUID,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `Bearer ${customerToken}`);
 
-				expect(result.statusCode).toBe(404);
+				expect(result.statusCode).toBe(401);
 			});
 			it('should return 404 when the user sends an nonexistent job_uuid', async () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: inExistentUUID,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -244,7 +216,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
@@ -278,7 +249,6 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({
-						supplier_uuid: supplier.uuid,
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',

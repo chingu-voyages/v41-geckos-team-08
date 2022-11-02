@@ -38,13 +38,19 @@ route.get('/', authorization, async (req, res) => {
 });
 
 route.post('/', authorization, async (req, res) => {
+	const { is_supplier, user } = req.user;
+
+	if (!is_supplier)
+		return res
+			.status(401)
+			.json({ detail: 'Only supplier users can create jobs' });
+
+	const supplier_uuid = user;
+
 	if (req.body.constructor === Object && Object.keys(req.body).length === 0)
 		return res.status(400).json({ detail: "Haven't received any data" });
 
-	const { supplier_uuid, job_uuid, price, expiration_date } = req.body;
-
-	if (!isValidUUID(supplier_uuid))
-		return res.status(400).json({ detail: 'Invalid supplier uuid' });
+	const { job_uuid, price, expiration_date } = req.body;
 
 	if (!isValidUUID(job_uuid))
 		return res.status(400).json({ detail: 'Invalid job uuid' });
