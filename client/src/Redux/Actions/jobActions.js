@@ -3,7 +3,7 @@ import { CREATE_JOB_BY_USER_ID } from "../ActionTypes";
 
 export const createJob = (newJob, token) => async dispatch => {
  try {
-  const res = await postAPI('login', newJob, token);
+  const res = await postAPI('jobs', newJob, token);
 
   dispatch({
    type: CREATE_JOB_BY_USER_ID,
