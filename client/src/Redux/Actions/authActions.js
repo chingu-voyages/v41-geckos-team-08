@@ -16,16 +16,16 @@ export const login = userLogin => async dispatch => {
  }
 }
 
-export const signup = userSignup => async dispatch => {
+export const signUp = userSignup => async dispatch => {
  try {
-  const res = await postAPI('signup', userSignup);
-
-  dispatch({
-   type: AUTH,
-   payload: res.data
-  });
-
-  localStorage.setItem('logged', 'true');
+  const res = await postAPI('http://localhost:8080/users', userSignup);
+console.log(res)
+//   dispatch({
+//    type: AUTH,
+//    payload: res.data.data
+//   });
+ 
+//   localStorage.setItem('logged', 'true');
  } catch (error) {
   console.log(error);
  }
