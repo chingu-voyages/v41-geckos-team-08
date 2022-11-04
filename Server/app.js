@@ -1,6 +1,7 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./src/documentation/swagger.json');
+const cors = require('cors');
 
 const login = require('./src/auth/login');
 const jobs = require('./src/routes/jobs');
@@ -11,7 +12,7 @@ const users = require('./src/routes/users');
 const load = require('./src/load/load');
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
 
 app.use('/login', login);
