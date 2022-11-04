@@ -58,7 +58,7 @@ route.get('/', async (req, res) => {
 
 route.post('/', validateEmail, validatePassword, async (req, res) => {
 	const userData = req.body;
-
+console.log(userData)
 	if (!req.body.email)
 		return res.status(400).json({ detail: 'Email is a required property' });
 	if (!req.body.password)
