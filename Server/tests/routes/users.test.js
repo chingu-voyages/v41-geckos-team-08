@@ -58,6 +58,20 @@ describe('Test the users path', () => {
 		});
 
 		describe('Given the JSON body is complete', () => {
+			it('should return 201 when creating a supplier with trades', async () => {
+				const result = await request(baseUrl)
+					.post('/users')
+					.send({
+						email: 'test@supplier.com',
+						password: 'Pas$W0rd123',
+						name: 'The name of the user',
+						is_supplier: true,
+						phone: '123 456 7890',
+						trades: ['trade 1', 'trade 2'],
+					});
+
+				expect(result.statusCode).toBe(201);
+			});
 			it('should return 201 when creating a supplier', async () => {
 				response = await createUser(
 					'supplier@mail.com',
