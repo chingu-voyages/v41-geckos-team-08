@@ -1,0 +1,1163 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "handyHub",
+    "description": "**CHINGU Geckos Team 08**\n\nEnables working with the handyHub API, giving you the customers, suppliers, jobs and  proposals",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/alcb1310/handyHub/0.1.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "security": [
+    {
+      "password": [
+        "read",
+        "write"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication"
+    },
+    {
+      "name": "Jobs",
+      "description": "Jobs Operations"
+    },
+    {
+      "name": "Location",
+      "description": "Location Operations"
+    },
+    {
+      "name": "Proposals",
+      "description": "Proposals Operations"
+    },
+    {
+      "name": "Trades",
+      "description": "Trades Operations"
+    },
+    {
+      "name": "Users",
+      "description": "Users operations"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Gets a list of the users of the API",
+        "description": "Retrieves a list of all of the users whether its a supplier of a customer\n- ***supplier*** This required parameter specifies if we are looking for a suplier(true) or a customer(false)",
+        "parameters": [
+          {
+            "name": "supplier",
+            "in": "query",
+            "description": "If true it will query for all the suppliers and if false all the customers",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Returns the specified number of results",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Represents the page number of the results",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Creates a new user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Trades uuid or cities uuid does not exist"
+          },
+          "409": {
+            "description": "Conflict - User already exists"
+          }
+        },
+        "security": []
+      }
+    },
+    "/users/{uuid}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Retrieves an specific user",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Updates a specific user",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "406": {
+            "description": "Trades uuid or cities uuid does not exist"
+          },
+          "409": {
+            "description": "Conflict - User already exists"
+          }
+        }
+      }
+    },
+    "/trades": {
+      "get": {
+        "tags": [
+          "Trades"
+        ],
+        "summary": "List all of the available trades",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TradesResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Trades"
+        ],
+        "summary": "Creates a new trade",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TradesCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradesResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Trade already exists"
+          }
+        }
+      }
+    },
+    "/trades/{uuid}": {
+      "get": {
+        "tags": [
+          "Trades"
+        ],
+        "summary": "Retrieves a specifc trade",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Trades"
+        ],
+        "summary": "Updates a specific trade",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TradesCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trade not found"
+          },
+          "409": {
+            "description": "Conflict - Trade already exists"
+          }
+        }
+      }
+    },
+    "/jobs": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "List of all of the jobs",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "description": "The name of the city we are looking a job post for",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "taken",
+            "in": "query",
+            "description": "If false then we are searching for available jobs, if true for jobs that already have been taken and if it is not present then it will return all of the jobs in the city",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "will list all of the jobs that have an expiration date less than or equal to the given date",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobsResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Creates a new job",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobsCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/JobsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/jobs/{uuid}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Retrieves an specific job",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Job not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Updates an specific job",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Job not found"
+          }
+        }
+      }
+    },
+    "/proposals": {
+      "get": {
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Retrieves all of the proposals",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "query",
+            "description": "The ***uuid*** of the job we want to query all of the proposals for",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found - No jobs with the uuid provided"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Creates a new proposal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalsCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalsResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Proposal already exists"
+          }
+        }
+      }
+    },
+    "/proposals/{uuid}": {
+      "get": {
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Retrieves an specific proposal",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "UUID of the supplier",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Proposals"
+        ],
+        "summary": "Updates an specific proposal",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "UUID of the supplier",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "job",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "Gets all of the countries",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LocationResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations/{uuid}": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "Get all of the cities of a specified country",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Country uuid",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "appliction/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CityResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login to the app",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Auth"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Auth"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthToken"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Auth": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthToken": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          }
+        }
+      },
+      "CitiesResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "JobsResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "low_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "high_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "is_taken": {
+            "type": "boolean"
+          },
+          "is_completed": {
+            "type": "boolean"
+          },
+          "trade": {
+            "$ref": "#/components/schemas/TradesResponse"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/UserSimpleResponse"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/UserSimpleResponse"
+          },
+          "city": {
+            "$ref": "#/components/schemas/CitiesResponse"
+          }
+        }
+      },
+      "JobsCreate": {
+        "type": "object",
+        "properties": {
+          "trade_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customer_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "city_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "low_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "high_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "JobsUpdate": {
+        "type": "object",
+        "properties": {
+          "supplier_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "city_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          },
+          "low_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "high_price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "is_completed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "LocationResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CityResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "$ref": "#/components/schemas/LocationResponse"
+          }
+        }
+      },
+      "ProposalsResponse": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "is_accepted": {
+            "type": "boolean"
+          },
+          "supplier": {
+            "$ref": "#/components/schemas/UserSimpleResponse"
+          }
+        }
+      },
+      "ProposalsCreate": {
+        "type": "object",
+        "properties": {
+          "supplier_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "job_uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "ProposalsUpdate": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "format": "float"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "is_accepted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TradesCreate": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "TradesResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          },
+          "is_supplier": {
+            "type": "boolean"
+          },
+          "phone": {
+            "pattern": "^\\d{3}-\\d{3}-\\d{4}$",
+            "type": "string",
+            "format": "phone"
+          },
+          "trades": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TradesResponse"
+            }
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CitiesResponse"
+            }
+          }
+        }
+      },
+      "UserCreate": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "is_supplier": {
+            "type": "boolean"
+          },
+          "phone": {
+            "pattern": "^\\d{3}-\\d{3}-\\d{4}$",
+            "type": "string",
+            "format": "phone"
+          },
+          "trades": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "UserSimpleResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "pattern": "^\\d{3}-\\d{3}-\\d{4}$",
+            "type": "string",
+            "format": "phone"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "password": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "tokenUrl": "http://example.com/oauth/token",
+            "scopes": {
+              "write": "allows modifying resources",
+              "read": "allows reading resources"
+            }
+          }
+        }
+      }
+    }
+  }
+}

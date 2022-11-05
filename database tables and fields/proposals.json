@@ -1,0 +1,92 @@
+[
+	{
+		"id": 1,
+		"supplier_id": 9,
+		"job_id": 3,
+		"price": "$661.18",
+		"expiration_date": "2021/11/08",
+		"is_active": false,
+		"customer_id": 5
+	},
+	{
+		"id": 2,
+		"supplier_id": 1,
+		"job_id": 7,
+		"price": "$455.77",
+		"expiration_date": "2022/07/17",
+		"is_active": true,
+		"customer_id": 1
+	},
+	{
+		"id": 3,
+		"supplier_id": 9,
+		"job_id": 10,
+		"price": "$923.37",
+		"expiration_date": "2021/12/25",
+		"is_active": false,
+		"customer_id": 1
+	},
+	{
+		"id": 4,
+		"supplier_id": 7,
+		"job_id": 1,
+		"price": "$428.85",
+		"expiration_date": "2022/04/05",
+		"is_active": false,
+		"customer_id": 2
+	},
+	{
+		"id": 5,
+		"supplier_id": 6,
+		"job_id": 6,
+		"price": "$1670.40",
+		"expiration_date": "2022/10/08",
+		"is_active": true,
+		"customer_id": 9
+	},
+	{
+		"id": 6,
+		"supplier_id": 3,
+		"job_id": 1,
+		"price": "$903.57",
+		"expiration_date": "2022/05/22",
+		"is_active": true,
+		"customer_id": 4
+	},
+	{
+		"id": 7,
+		"supplier_id": 3,
+		"job_id": 9,
+		"price": "$566.77",
+		"expiration_date": "2022/07/30",
+		"is_active": true,
+		"customer_id": 2
+	},
+	{
+		"id": 8,
+		"supplier_id": 2,
+		"job_id": 6,
+		"price": "$416.59",
+		"expiration_date": "2022/04/21",
+		"is_active": false,
+		"customer_id": 7
+	},
+	{
+		"id": 9,
+		"supplier_id": 7,
+		"job_id": 4,
+		"price": "$753.77",
+		"expiration_date": "2022/07/30",
+		"is_active": true,
+		"customer_id": 10
+	},
+	{
+		"id": 10,
+		"supplier_id": 1,
+		"job_id": 6,
+		"price": "$1332.09",
+		"expiration_date": "2022/04/21",
+		"is_active": false,
+		"customer_id": 3
+	}
+]
