@@ -302,7 +302,10 @@ describe('Test the users path', () => {
 				const url = `/users/${userUUID}`;
 				const response = await request(baseUrl)
 					.put(url)
-					.send({ password: 'pa$sWord123' });
+					.send({
+						password: 'pa$sWord123',
+						trades: ['trade 1', 'trade 246'],
+					});
 
 				expect(response.statusCode).toBe(200);
 			});
