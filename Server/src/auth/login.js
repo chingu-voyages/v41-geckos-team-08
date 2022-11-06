@@ -15,7 +15,7 @@ route.post('/', validatePassword, validateEmail, async (req, res) => {
 			res.status(400).send('All fields are required.');
 		}
 		const user = await client.query(
-			'SELECT * FROM users WHERE email = $1',
+			'SELECT uuid, email, is_supplier, name, phone FROM users WHERE email = $1',
 			[email]
 		);
 
