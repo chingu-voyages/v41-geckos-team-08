@@ -10,7 +10,15 @@ export const login = userLogin => async dispatch => {
    payload: res.data
   });
 
-  localStorage.setItem('logged', 'true');
+  const uuid = res.data.user.uuid;
+
+  const userInfo = {
+    token: res.data.token,
+    uuid
+  };
+
+  localStorage.setItem('userInfo', JSON.stringify(userInfo));
+  window.location.href = `/user/${uuid}`;
  } catch (error) {
   console.log(error);
  }
@@ -19,7 +27,7 @@ export const login = userLogin => async dispatch => {
 export const signUp = userSignup => async dispatch => {
  try {
   const res = await postAPI('http://localhost:8080/users', userSignup);
-console.log(res)
+  console.log(res);
 //   dispatch({
 //    type: AUTH,
 //    payload: res.data.data
