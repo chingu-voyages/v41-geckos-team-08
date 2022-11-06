@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 export const postAPI = async (url, post, token) => {
-  const res = await axios.post(url, post, {
+  const res = await axios.post(`http://localhost:8080/${url}`, post, {
     headers: { Authorization: token ? token : '' },
   });
   return res;
 };
 
 export const getAPI = async (url, token) => {
-  const res = await axios.get(`/api/${url}`, {
+  const res = await axios.get(`http://localhost:8080/${url}`, {
     headers: { Authorization: token ? token : '' },
   });
 
@@ -16,7 +16,7 @@ export const getAPI = async (url, token) => {
 };
 
 export const patchAPI = async (url, post, token) => {
-  const res = await axios.patch(`/api/${url}`, post, {
+  const res = await axios.patch(`http://localhost:8080/${url}`, post, {
     headers: { Authorization: token ? token : '' },
   });
 
@@ -24,7 +24,7 @@ export const patchAPI = async (url, post, token) => {
 };
 
 export const deleteAPI = async (url, token) => {
-  const res = await axios.delete(`/api/${url}`, {
+  const res = await axios.delete(`http://localhost:8080/${url}`, {
     headers: { Authorization: token ? token : '' },
   });
 
@@ -32,7 +32,7 @@ export const deleteAPI = async (url, token) => {
 };
 
 export const putAPI = async (url, post, token) => {
-  const res = await axios.put(`/api/${url}`, post, {
+  const res = await axios.put(`http://localhost:8080/${url}`, post, {
     headers: { Authorization: token ? token : '' },
   });
 
