@@ -6,7 +6,8 @@
   "scripts": {
     "test": "NODE_ENV=test && jest --detectOpenHandles",
     "client": "cd ../client && npm start",
-    "start": "concurrently \"npm run watch\" \"npm run client\"",
+    "start": "npm server.js",
+    "dev": "concurrently \"npm run watch\" \"npm run client\"",
     "watch": "nodemon server.js"
   },
   "author": "Chingu-Geckos-Team-08",
