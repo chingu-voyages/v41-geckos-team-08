@@ -147,7 +147,7 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 
 	const sql =
 		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
-	const userResponse = await await client.query(sql, [userUUID]);
+	const userResponse = await client.query(sql, [userUUID]);
 
 	if (userResponse.rowCount === 0) {
 		res.status(404).json({
