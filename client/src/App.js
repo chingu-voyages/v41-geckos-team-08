@@ -17,6 +17,7 @@ import PageNotFound from './Pages/PageNotFound';
 import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH } from './Redux/ActionTypes';
+import AuthRoute from './AuthRoute';
 
 function App() {
 
@@ -46,6 +47,7 @@ function App() {
         setLoading(false);
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     }
 
@@ -59,7 +61,7 @@ function App() {
         <NavBar />
         <Routes>
           <Route path='/' element={<LandingPage />} />
-          <Route path='/jobs' element={<AvailableJobsPage />} />
+          <Route path='/jobs' element={<AuthRoute><AvailableJobsPage /></AuthRoute>} />
           <Route path='/supplier/:id' element={<ContractorProfile />} />
           <Route path='/new_job' element={<JobFormPage />} />
           <Route path='/login' element={<LoginPage />} />
