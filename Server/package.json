@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test && jest --detectOpenHandles",
     "client": "cd ../client && npm start",
-    "start": "npm server.js",
+    "start": "node server.js",
     "dev": "concurrently \"npm run watch\" \"npm run client\"",
     "watch": "nodemon server.js"
   },
