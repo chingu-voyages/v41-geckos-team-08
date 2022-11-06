@@ -15,7 +15,7 @@ route.post('/', validatePassword, validateEmail, async (req, res) => {
 			res.status(400).send('All fields are required.');
 		}
 		const user = await client.query(
-			'SELECT uuid, email, is_supplier, name, phone FROM users WHERE email = $1',
+			'SELECT * FROM users WHERE email = $1',
 			[email]
 		);
 
@@ -37,7 +37,16 @@ route.post('/', validatePassword, validateEmail, async (req, res) => {
 			user.rows[0].is_supplier,
 			user.rows[0].email
 		);
-		res.status(200).json({ token, user });
+		res.status(200).json({
+			token,
+			user: {
+				uuid: user.rows[0].uuid,
+				email: user.rows[0].email,
+				name: user.rows[0].name,
+				is_supplier: user.rows[0].is_supplier,
+				phone: user.rows[0].phone,
+			},
+		});
 	} catch (error) {
 		console.error(error.message);
 		res.status(500).json('Server error.');
