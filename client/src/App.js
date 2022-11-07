@@ -62,12 +62,12 @@ function App() {
         <Routes>
           <Route path='/' element={<LandingPage />} />
           <Route path='/jobs' element={<AuthRoute><AvailableJobsPage /></AuthRoute>} />
-          <Route path='/supplier/:id' element={<ContractorProfile />} />
-          <Route path='/new_job' element={<JobFormPage />} />
+          <Route path='/supplier/:id' element={<AuthRoute><ContractorProfile /></AuthRoute>} />
+          <Route path='/new_job' element={<AuthRoute><JobFormPage /></AuthRoute>} />
           <Route path='/login' element={<LoginPage />} />
-          <Route path='/offer/:id' element={<OfferFromContractorPage />} />
+          <Route path='/offer/:id' element={<AuthRoute><OfferFromContractorPage /></AuthRoute>} />
           <Route path='/signup' element={<SignUpPage />} />
-          <Route path='/user/:id' element={<UserProfile />} />
+          <Route path='/user/:id' element={<AuthRoute><UserProfile /></AuthRoute>} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
         <Footer />
