@@ -18,6 +18,7 @@ import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
+import {store} from './Redux/Store'
 
 function App() {
 
@@ -25,7 +26,10 @@ function App() {
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
+ console.log(store.getState())
+   
   useEffect(() => {
+
     if (auth.length !== undefined) {
       setLoading(false);
       return;

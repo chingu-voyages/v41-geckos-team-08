@@ -3,6 +3,7 @@ import { Button } from './Button';
 import Logo from './Logo';
 import { Link, useLocation } from 'react-router-dom';
 import { useRef } from 'react';
+import { resetStore } from '../Redux/Actions/authActions';
 
 export const NavBar = (props) => {
   const location = useLocation();
@@ -10,6 +11,7 @@ export const NavBar = (props) => {
   let buttons;
 
   const handleClick = () => {
+    resetStore()
     localStorage.clear();
     window.location.reload();
     window.location.pathname = '/';
