@@ -137,11 +137,12 @@ export const SignUpForm = () => {
             />
           </div>
 
-          <div className='mt-10 -ml-6'>
+          <div className='mt-0 ml-0'>
             <Button
               type='submit'
               value='submit'
-              backgroundColor='primary-200'
+              backgroundColor='primary-100'
+              name='Sign Up'
             />
           </div>
         </form>

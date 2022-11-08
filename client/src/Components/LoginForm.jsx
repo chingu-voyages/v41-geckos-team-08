@@ -98,7 +98,7 @@ export function LoginForm() {
             </div>
 
             <div>
-              <Button backgroundColor='tertiary-100'/>
+              <Button backgroundColor='tertiary-100' name='Sign In'/>
             </div>
           </form>
         </div>

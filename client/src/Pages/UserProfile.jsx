@@ -6,6 +6,7 @@ import { Footer } from './../Components/Footer';
 import { Pagination } from './../Components/Pagination';
 import UserProfilePic from './../assets/images/measurements.jpg';
 import SortAndSearch from '../Components/SortAndSearch';
+import {SecondaryNavBar} from '../Components/SecondaryNavBar'
 
 export const UserProfile = () => {
   return (
@@ -15,7 +16,7 @@ export const UserProfile = () => {
         </section>
 
         <section className='bg-primary-300'> 
-        <NavBar />
+        <SecondaryNavBar />
           <div className='flex flex-wrap items-center'>
             <div className='py-0 grow-0 shrink-0 basis-auto w-full'>
               <div className=' flex flex-col justify-center items-center py-12 gap-12 '>
