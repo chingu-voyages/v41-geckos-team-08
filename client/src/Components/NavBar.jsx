@@ -1,9 +1,183 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from './Button';
 import Logo from './Logo';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from 'react-router-dom';
+import { useRef } from 'react';
 
 export const NavBar = (props) => {
+  const location = useLocation();
+
+  let buttons;
+
+  const handleClick = () => {
+    localStorage.clear();
+    window.location.reload();
+    window.location.pathname = '/';
+  };
+
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  console.log(userInfo)
+
+  if (!userInfo && location.pathname === '/') {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/signup'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Up'
+          />
+        </Link>
+        <Link to='/login'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Login'
+          />
+        </Link>
+      </div>
+    );
+  } else if (!userInfo && location.pathname === '/login') {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/signup'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Up'
+          />
+        </Link>
+      </div>
+    );
+  } else if (!userInfo && location.pathname === '/signup') {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/login'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Login'
+          />
+        </Link>
+      </div>
+    );
+  } else if (userInfo && location.pathname === `/user/${userInfo.uuid}`) {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/new_job'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Post New Job'
+          />
+        </Link>
+        <Link to='/jobs'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Available Jobs'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={handleClick}
+          />
+        </Link>
+      </div>
+    );
+  } else if (userInfo && location.pathname === `/jobs`) {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/new_job'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Post New Job'
+          />
+        </Link>
+        <Link to={`/user/${userInfo.uuid}`}>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Profile'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={handleClick}
+          />
+        </Link>
+      </div>
+    );
+  } else if (userInfo && location.pathname === `/new_job`) {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/jobs'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Available Jobs'
+          />
+        </Link>
+        <Link to={`/user/${userInfo.uuid}`}>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Profile'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={handleClick}
+          />
+        </Link>
+      </div>
+    );
+  } else if (userInfo.token && location.pathname === `/`) {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/new_job'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Post New Job'
+          />
+        </Link>
+        <Link to='/jobs'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Available Jobs'
+          />
+        </Link>
+        <Link to={`/user/${userInfo.uuid}`}>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Profile'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={handleClick}
+          />
+        </Link>
+      </div>
+    );
+  }
+
   const [navBarOpen, setNavBarOpen] = useState(true);
   return (
     <nav className='relative flex flex-wrap justify-between items-center bg-quaternary-100 px-2 py mb-0'>
@@ -42,11 +216,7 @@ export const NavBar = (props) => {
             (navBarOpen ? ' flex' : ' hidden')
           }
         >
-          <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
-            {/* Buttons or links will be placed here */}
-            <Button backgroundColor ='transparent' activeEffect = 'primary-100'/>
-            <Button backgroundColor ='transparent' activeEffect = 'primary-100'/>
-          </div>
+          {buttons}
         </div>
       </div>
     </nav>
