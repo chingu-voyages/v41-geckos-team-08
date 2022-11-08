@@ -1,5 +1,7 @@
 import { postAPI } from "../../Utils/Axios";
 import { AUTH } from "../ActionTypes";
+import {RESET_STORE} from "../ActionTypes";
+
 
 export const login = userLogin => async dispatch => {
  try {
@@ -37,4 +39,11 @@ export const signUp = userSignup => async dispatch => {
  } catch (error) {
   console.log(error);
  }
+}
+
+// to reset the state of redux store
+export const resetStore = () => {
+  return {
+    type: RESET_STORE
+  }
 }
