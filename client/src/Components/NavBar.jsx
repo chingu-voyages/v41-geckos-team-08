@@ -16,10 +16,11 @@ export const NavBar = (props) => {
   };
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  console.log(userInfo)
 
-  if (location.pathname === '/') {
+  if (!userInfo && location.pathname === '/') {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/signup'>
           <Button
             backgroundColor='transparent'
@@ -36,9 +37,9 @@ export const NavBar = (props) => {
         </Link>
       </div>
     );
-  } else if (location.pathname === '/login') {
+  } else if (!userInfo && location.pathname === '/login') {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/signup'>
           <Button
             backgroundColor='transparent'
@@ -48,9 +49,9 @@ export const NavBar = (props) => {
         </Link>
       </div>
     );
-  } else if (location.pathname === '/signup') {
+  } else if (!userInfo && location.pathname === '/signup') {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/login'>
           <Button
             backgroundColor='transparent'
@@ -62,7 +63,7 @@ export const NavBar = (props) => {
     );
   } else if (userInfo && location.pathname === `/user/${userInfo.uuid}`) {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/new_job'>
           <Button
             backgroundColor='transparent'
@@ -89,7 +90,7 @@ export const NavBar = (props) => {
     );
   } else if (userInfo && location.pathname === `/jobs`) {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/new_job'>
           <Button
             backgroundColor='transparent'
@@ -116,7 +117,41 @@ export const NavBar = (props) => {
     );
   } else if (userInfo && location.pathname === `/new_job`) {
     buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-2'>
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/jobs'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Available Jobs'
+          />
+        </Link>
+        <Link to={`/user/${userInfo.uuid}`}>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Profile'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={handleClick}
+          />
+        </Link>
+      </div>
+    );
+  } else if (userInfo.token && location.pathname === `/`) {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+        <Link to='/new_job'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Post New Job'
+          />
+        </Link>
         <Link to='/jobs'>
           <Button
             backgroundColor='transparent'
