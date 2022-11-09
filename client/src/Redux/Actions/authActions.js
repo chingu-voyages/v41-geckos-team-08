@@ -28,7 +28,7 @@ export const login = userLogin => async dispatch => {
 
 export const signUp = userSignup => async dispatch => {
  try {
-  const res = await postAPI('http://localhost:8080/users', userSignup);
+  const res = await postAPI('users', userSignup);
   console.log(res);
 //   dispatch({
 //    type: AUTH,
