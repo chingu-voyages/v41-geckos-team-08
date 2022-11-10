@@ -4,21 +4,23 @@ import Logo from './Logo';
 import { Link, useLocation } from 'react-router-dom';
 import { useRef } from 'react';
 import { resetStore } from '../Redux/Actions/authActions';
+import { store } from './../Redux/Store';
 
 export const NavBar = (props) => {
   const location = useLocation();
+  const isSupplier = store.getState().auth.data;
 
   let buttons;
 
   const handleClick = () => {
-    resetStore()
+    resetStore();
     localStorage.clear();
     window.location.reload();
     window.location.pathname = '/';
   };
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log(userInfo)
+  console.log(userInfo);
 
   if (!userInfo && location.pathname === '/') {
     buttons = (
@@ -64,86 +66,131 @@ export const NavBar = (props) => {
       </div>
     );
   } else if (userInfo && location.pathname === `/user/${userInfo.uuid}`) {
-    buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
-        <Link to='/new_job'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Post New Job'
-          />
-        </Link>
-        <Link to='/jobs'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Available Jobs'
-          />
-        </Link>
-        <Link to='/'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Sign Out'
-            handleClick={handleClick}
-          />
-        </Link>
-      </div>
-    );
+    if (!isSupplier.is_supplier) {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/new_job'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Post New Job'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/jobs'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Available Jobs'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    }
   } else if (userInfo && location.pathname === `/jobs`) {
-    buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
-        <Link to='/new_job'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Post New Job'
-          />
-        </Link>
-        <Link to={`/user/${userInfo.uuid}`}>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Profile'
-          />
-        </Link>
-        <Link to='/'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Sign Out'
-            handleClick={handleClick}
-          />
-        </Link>
-      </div>
-    );
+    if (!isSupplier.is_supplier) {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/new_job'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Post New Job'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/jobs'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Available Jobs'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    }
   } else if (userInfo && location.pathname === `/new_job`) {
-    buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
-        <Link to='/jobs'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Available Jobs'
-          />
-        </Link>
-        <Link to={`/user/${userInfo.uuid}`}>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Profile'
-          />
-        </Link>
-        <Link to='/'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Sign Out'
-            handleClick={handleClick}
-          />
-        </Link>
-      </div>
-    );
+    if (!isSupplier.is_supplier) {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/new_job'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Post New Job'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/jobs'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Available Jobs'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    }
   } else if (userInfo.token && location.pathname === `/`) {
     buttons = (
       <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>

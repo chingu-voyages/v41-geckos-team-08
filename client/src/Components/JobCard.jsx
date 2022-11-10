@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from './Button';
 
+
 export const JobCard = () => {
   return (
     <div className='container mx-auto px-3 sm:px-20 mb-5'>
