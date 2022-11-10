@@ -192,39 +192,63 @@ export const NavBar = (props) => {
       );
     }
   } else if (userInfo.token && location.pathname === `/`) {
-    buttons = (
-      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
-        <Link to='/new_job'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Post New Job'
-          />
-        </Link>
-        <Link to='/jobs'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Available Jobs'
-          />
-        </Link>
-        <Link to={`/user/${userInfo.uuid}`}>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Profile'
-          />
-        </Link>
-        <Link to='/'>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Sign Out'
-            handleClick={handleClick}
-          />
-        </Link>
-      </div>
-    );
+    if (!isSupplier.is_supplier) {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/new_job'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Post New Job'
+            />
+          </Link>
+
+          <Link to={`/user/${userInfo.uuid}`}>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Profile'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    } else {
+      buttons = (
+        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
+          <Link to='/jobs'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Available Jobs'
+            />
+          </Link>
+
+          <Link to={`/user/${userInfo.uuid}`}>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Profile'
+            />
+          </Link>
+          <Link to='/'>
+            <Button
+              backgroundColor='transparent'
+              activeEffect='primary-100'
+              name='Sign Out'
+              handleClick={handleClick}
+            />
+          </Link>
+        </div>
+      );
+    }
   }
 
   const [navBarOpen, setNavBarOpen] = useState(true);
