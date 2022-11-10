@@ -3,6 +3,7 @@ import { Button } from './Button';
 import { Link, useLocation } from 'react-router-dom';
 import { useRef } from 'react';
 import { store } from '../Redux/Store';
+import { useSelector } from 'react-redux';
 
 export const SecondaryNavBar = (props) => {
   const location = useLocation();
@@ -15,9 +16,10 @@ export const SecondaryNavBar = (props) => {
   //   window.location.reload();
   //   window.location.pathname = '/';
   // };
-  const isSupplier = store.getState().auth.data.is_supplier;
+  const { auth } = useSelector(state => state);
+  const isSupplier = auth.data.is_supplier;
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log(store.getState().auth.data.is_supplier);
+  console.log(auth.data.is_supplier);
 
   if (
     !isSupplier &&

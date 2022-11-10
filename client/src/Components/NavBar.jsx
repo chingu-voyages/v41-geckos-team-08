@@ -5,10 +5,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { useRef } from 'react';
 import { resetStore } from '../Redux/Actions/authActions';
 import { store } from './../Redux/Store';
+import { useSelector } from 'react-redux';
 
 export const NavBar = (props) => {
   const location = useLocation();
-  const isSupplier = store.getState().auth.data;
+  const { auth } = useSelector(state => state);
+  const [isSupplier, setIsSupplier] = useState(null);
+
+  useEffect(() => {
+    if (auth.data) setIsSupplier(auth.data.is_supplier);
+  }, [auth]);
 
   let buttons;
 
@@ -20,9 +26,9 @@ export const NavBar = (props) => {
   };
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  console.log(userInfo);
 
-  if (!userInfo && location.pathname === '/') {
+  // first conditional is if user is logged out and tries to go to the homepage or pages only accessible by logged in users
+  if (!userInfo && location.pathname !== '/login' && location.pathname !== '/signup') {
     buttons = (
       <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
         <Link to='/signup'>
@@ -66,7 +72,7 @@ export const NavBar = (props) => {
       </div>
     );
   } else if (userInfo && location.pathname === `/user/${userInfo.uuid}`) {
-    if (!isSupplier.is_supplier) {
+    if (!isSupplier) {
       buttons = (
         <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
           <Link to='/new_job'>
@@ -108,7 +114,7 @@ export const NavBar = (props) => {
       );
     }
   } else if (userInfo && location.pathname === `/jobs`) {
-    if (!isSupplier.is_supplier) {
+    if (!isSupplier) {
       buttons = (
         <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
           <Link to='/new_job'>
@@ -150,7 +156,7 @@ export const NavBar = (props) => {
       );
     }
   } else if (userInfo && location.pathname === `/new_job`) {
-    if (!isSupplier.is_supplier) {
+    if (!isSupplier) {
       buttons = (
         <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
           <Link to='/new_job'>
@@ -192,7 +198,7 @@ export const NavBar = (props) => {
       );
     }
   } else if (userInfo.token && location.pathname === `/`) {
-    if (!isSupplier.is_supplier) {
+    if (!isSupplier) {
       buttons = (
         <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-5'>
           <Link to='/new_job'>

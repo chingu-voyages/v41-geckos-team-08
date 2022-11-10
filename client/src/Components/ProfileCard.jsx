@@ -1,8 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { store } from '../Redux/Store';
 
 export const ProfileCard = () => {
-  const userInfo = store.getState().auth.data;
+  const { auth } = useSelector(state => state);
+  const userInfo = auth.data;
   console.log(userInfo);
 
 
