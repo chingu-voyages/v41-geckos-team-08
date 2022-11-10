@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
 import LandingImage from './../assets/images/Drill.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signUp } from '../Redux/Actions/authActions';
 import { useDispatch } from 'react-redux';
 import {store} from './../Redux/Store'
@@ -34,14 +34,14 @@ export const SignUpForm = () => {
     // });
   };
 
-  // console.log(userSignUp);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(userSignUp);
     dispatch(signUp(userSignUp));
-    console.log(store.getState())
+    navigate('/login');
   };
 
   return (

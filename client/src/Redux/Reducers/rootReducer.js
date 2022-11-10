@@ -11,10 +11,9 @@ const appReducer = combineReducers({
 });
 
 // reset the state of a redux store
- export const rootReducer = (state, action) => {
+export const rootReducer = (state, action) => {
     if (action.type === RESET_STORE) {
       state = undefined;
     }
-    return appReducer(state, action)
-  }
-   
+    return appReducer(state, action);
+}
