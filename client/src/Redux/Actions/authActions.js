@@ -41,6 +41,13 @@ export const signUp = userSignup => async dispatch => {
  }
 }
 
+export const logout = () => {
+  localStorage.clear();
+  resetStore();
+  window.location.reload();
+  window.location.pathname = '/';
+}
+
 // to reset the state of redux store
 export const resetStore = () => {
   return {
