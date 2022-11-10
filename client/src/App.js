@@ -18,7 +18,9 @@ import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
-import {store} from './Redux/Store'
+import {store} from './Redux/Store';
+import { checkTokenExp } from './Utils/CheckTokenExp';
+import { logout } from './Redux/Actions/authActions';
 
 function App() {
 
@@ -29,7 +31,6 @@ function App() {
  console.log(store.getState())
    
   useEffect(() => {
-
     if (auth.length !== undefined) {
       setLoading(false);
       return;
@@ -43,6 +44,12 @@ function App() {
     const getUserInfo = async () => {
       const { token, uuid } = userInfo;
       try {
+        const tokenActive = await checkTokenExp(token);
+        if (!tokenActive) {
+          logout();
+          setLoading(false);
+          return;
+        }
         const res = await getAPI(`users/${uuid}`, token);
         dispatch({
           type: AUTH,

@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Button } from './Button';
 import Logo from './Logo';
 import { Link, useLocation } from 'react-router-dom';
-import { useRef } from 'react';
-import { resetStore } from '../Redux/Actions/authActions';
-import { store } from './../Redux/Store';
 import { useSelector } from 'react-redux';
+import { logout } from '../Redux/Actions/authActions';
 
 export const NavBar = (props) => {
   const location = useLocation();
@@ -17,13 +15,6 @@ export const NavBar = (props) => {
   }, [auth]);
 
   let buttons;
-
-  const handleClick = () => {
-    resetStore();
-    localStorage.clear();
-    window.location.reload();
-    window.location.pathname = '/';
-  };
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -87,7 +78,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -107,7 +98,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -129,7 +120,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -149,7 +140,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -171,7 +162,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -191,7 +182,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -221,7 +212,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
@@ -249,7 +240,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Sign Out'
-              handleClick={handleClick}
+              handleClick={logout}
             />
           </Link>
         </div>
