@@ -92,7 +92,7 @@ export const JobForm = () => {
     setFilteredCities(_cities);
   }, [cityInput]);
 
-  const [disabled, setDisabled] = useState(true);
+  const [selectedTrade, setSelectedTrade] = useState('');
 
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -137,34 +137,16 @@ export const JobForm = () => {
               className='mb-2 font-bold text-lg text-black'
               htmlFor='last_name'
             >
-              Last Name
+            Trade
             </label>
-            <input
-              className='border py-2 px-3 text-black rounded'
-              type='text'
-              name='last_name'
-              id='last_name'
-              value={last_name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-black'
-              htmlFor='last_name'
-            >
-            Job Title
-            </label>
-            <input
-              className='border py-2 px-3 text-black rounded'
-              type='text'
-              name='job_title'
-              id='job_title'
-              value={job_title}
-              onChange={handleChange}
-              required
-            />
+            <select value={selectedTrade} onChange={e => setSelectedTrade(e.target.value)}>
+              <option default value=''>Select a trade</option>
+              {/* Placeholder options for now: */}
+              <option key={0} value='Trade 0'>Trade 0</option>
+              <option key={1} value='Trade 1'>Trade 1</option>
+              <option key={2} value='Trade 2'>Trade 2</option>
+              <option key={3} value='Trade 3'>Trade 3</option>
+            </select>
           </div>
           <div className='flex flex-col mb-4'>
             <label
