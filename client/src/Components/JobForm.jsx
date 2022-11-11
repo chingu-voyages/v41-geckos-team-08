@@ -1,10 +1,12 @@
-import React, {useState} from 'react'
-import DatePicker from 'react-date-picker'
+import React, {useState, useRef} from 'react';
+import DatePicker from 'react-date-picker';
 import { Button } from './Button';
 import LandingImage from './../assets/images/drillBits.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { createJob } from '../Redux/Actions/jobActions';
+import { getAPI } from '../Utils/Axios';
+import SortAndSearch from './SortAndSearch';
 
 export const JobForm = () => {
   const [date, changeDate] = useState(new Date());
@@ -12,12 +14,14 @@ export const JobForm = () => {
   const initialState = {
     first_name: '',
     last_name: '',
+    city: '',
     job_title: '',
     description: '',
     date
   };
 
   const [newJob, setNewJob] = useState(initialState);
+  const [countries, setCountries] = useState([]);
 
   const { first_name, last_name, job_title, description } = newJob;
 
@@ -26,12 +30,69 @@ export const JobForm = () => {
     [e.target.name]: e.target.value
   });
 
+  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+  useEffect(() => {
+    (async () => {
+      const { data: _countries } = await getAPI(`locations`, userInfo.token);
+      setCountries(_countries.data);
+    })();
+  }, [userInfo.token]);
+
+  // 1. Get the value of the current selected country
+  const [selectedCountry, setSelectedCountry] = useState('');
+
+  useEffect(() => {
+    console.log(countries);
+  }, [countries]);
+
+  useEffect(() => {
+    if (selectedCountry === '' && cities.length > 0) setCities([]);
+    if (selectedCountry !== '') {
+      setCityInput('');
+      (async () => {
+        const { data: _cities } = await getAPI(`locations/${selectedCountry}`, userInfo.token);
+        setCities(_cities.data);
+      })();
+    }
+  }, [selectedCountry, userInfo.token]);
+
+  // 2. Use the country value's uuid to query the server for the cities
+  const [selectedCity, setSelectedCity] = useState('');
+  // 3. Set the cities array's state to the data array returned from the query
+  const [cities, setCities] = useState([]);
+  // 4. Set the selected city's value to the city key in the form
+
+  useEffect(() => {
+    console.log(cities);
+  }, [cities]);
+
   useEffect(() => {
     setNewJob({
       ...newJob,
       date
     });
   }, [date]);
+
+  const [cityInput, setCityInput] = useState('');
+
+  const cityInputHandler = e => {
+    const lower = e.target.value.toLowerCase();
+    setCityInput(lower);
+  }
+
+  const [filteredCities, setFilteredCities] = useState([]);
+
+  useEffect(() => {
+    if (cityInput === '') {
+      setFilteredCities([]);
+      return;
+    }
+    const _cities = cities.filter(city => city.name.toLowerCase().includes(cityInput)).slice(0, 5);
+    setFilteredCities(_cities);
+  }, [cityInput]);
+
+  const [disabled, setDisabled] = useState(true);
 
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -51,19 +112,25 @@ export const JobForm = () => {
           <div className='flex flex-col mb-4'>
             <label
               className='mb-2 font-bold text-lg text-black'
-              htmlFor='first_name'
+              htmlFor='countries'
             >
-              First Name
+              Countries
             </label>
-            <input
-              className='border py-2 px-3 text-black rounded'
-              type='text'
-              name='first_name'
-              id='first_name'
-              value={first_name}
-              onChange={handleChange}
-              required
-            />
+            <select value={selectedCountry} onChange={e => setSelectedCountry(e.target.value)}>
+              <option default value=''>Select a country</option>
+              {countries.map(country => {
+                return <option key={country.uuid} value={country.uuid}>{country.name}</option>
+              })}
+            </select>
+          </div>
+          <div className='flex flex-col mb-4'>
+            <label className={`mb-2 font-bold text-lg text-black ${selectedCountry ? 'text-opacity-100' : 'text-opacity-20'}`} htmlFor='cities'>Cities</label>
+            <input className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`} type='search' value={cityInput} onChange={cityInputHandler} disabled={selectedCountry === ''} />
+            <ul>
+              {filteredCities.map(city => (
+                <li key={city.uuid}>{city.name}</li>
+              ))}
+            </ul>
           </div>
           <div className='flex flex-col mb-4'>
             <label
@@ -132,7 +199,8 @@ export const JobForm = () => {
             </div>
           </div>
           <div className='mt-3 -ml-6'>
-              <Button type='submit' value='submit' backgroundColor='primary-200' />
+              <button type="submit" className='w-12 h-12'>Submit</button>
+              {/* <Button type='submit' value='submit' backgroundColor='black' /> */}
           </div>     
         </form>
       </div>
