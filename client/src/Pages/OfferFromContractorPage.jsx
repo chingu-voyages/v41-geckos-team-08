@@ -8,7 +8,7 @@ export const OfferFromContractorPage = () => {
   return (
     <>
       <JobCard />
-      <Pagination />
+      {/* <Pagination /> */}
     </>
   );
 };

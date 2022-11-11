@@ -27,8 +27,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
-
- console.log(store.getState())
    
   useEffect(() => {
     if (auth.length !== undefined) {
@@ -44,12 +42,12 @@ function App() {
     const getUserInfo = async () => {
       const { token, uuid } = userInfo;
       try {
-        const tokenActive = await checkTokenExp(token);
-        if (!tokenActive) {
-          logout();
-          setLoading(false);
-          return;
-        }
+        // const tokenActive = await checkTokenExp(token);
+        // if (!tokenActive) {
+        //   // logout();
+        //   setLoading(false);
+        //   return;
+        // }
         const res = await getAPI(`users/${uuid}`, token);
         dispatch({
           type: AUTH,

@@ -9,13 +9,7 @@ export const SecondaryNavBar = (props) => {
   const location = useLocation();
 
   let buttons;
-
-  // const handleClick = () => {
-  //   resetStore()
-  //   localStorage.clear();
-  //   window.location.reload();
-  //   window.location.pathname = '/';
-  // };
+  
   const { auth } = useSelector(state => state);
   const isSupplier = auth.data.is_supplier;
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
