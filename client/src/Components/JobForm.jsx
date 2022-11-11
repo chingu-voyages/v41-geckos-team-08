@@ -7,23 +7,31 @@ import { useEffect } from 'react';
 import { createJob } from '../Redux/Actions/jobActions';
 import { getAPI } from '../Utils/Axios';
 import SortAndSearch from './SortAndSearch';
+import { store } from '../Redux/Store';
 
 export const JobForm = () => {
   const [date, changeDate] = useState(new Date());
 
   const initialState = {
-    first_name: '',
-    last_name: '',
-    city: '',
-    job_title: '',
-    description: '',
-    date
+    trade_uuid: '',
+		city_uuid: '',
+		description: '',
+		low_price: 1,
+		high_price: 1,
+		expiration_date: date
   };
 
   const [newJob, setNewJob] = useState(initialState);
   const [countries, setCountries] = useState([]);
 
-  const { first_name, last_name, job_title, description } = newJob;
+  const { 
+    trade_uuid,
+		city_uuid,
+		description,
+		low_price,
+		high_price,
+		expiration_date 
+  } = newJob;
 
   const handleChange = e => setNewJob({
     ...newJob,
@@ -70,37 +78,51 @@ export const JobForm = () => {
   useEffect(() => {
     setNewJob({
       ...newJob,
-      date
+      expiration_date: date.toLocaleString()
     });
   }, [date]);
 
   const [cityInput, setCityInput] = useState('');
 
-  const cityInputHandler = e => {
-    const lower = e.target.value.toLowerCase();
-    setCityInput(lower);
-  }
-
   const [filteredCities, setFilteredCities] = useState([]);
-
+  
   useEffect(() => {
     if (cityInput === '') {
       setFilteredCities([]);
       return;
     }
-    const _cities = cities.filter(city => city.name.toLowerCase().includes(cityInput)).slice(0, 5);
+    const _cities = cities.filter(city => city.name.toLowerCase().includes(cityInput.toLowerCase())).slice(0, 5);
     setFilteredCities(_cities);
   }, [cityInput]);
-
+  
   const [selectedTrade, setSelectedTrade] = useState('');
+
+  useEffect(() => {
+    setNewJob({
+      ...newJob,
+      trade_uuid: selectedTrade
+    });
+  }, [selectedTrade]);
+
+  const cityInputHandler = city => {
+    setNewJob({
+      ...newJob,
+      city_uuid: city.uuid,
+    });
+    setCityInput(city.name);
+  }
 
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
-  const handleSubmit = async () => {
-    if (!auth.access_token) return;
-    dispatch(createJob(newJob, auth.access_token));
+  const handleSubmit = async e => {
+    e.preventDefault();
+    dispatch(createJob(newJob, userInfo.token));
   }
+
+  useEffect(() => {
+    console.log(store.getState());
+  }, [store]);
 
   return (
     <div className='flex flex-wrap lg:h-full'>
@@ -108,7 +130,7 @@ export const JobForm = () => {
         <h1 className='block w-full text-center text-gray-800 text-3xl tracking-tight font-bold mb-6'>
           New Job
         </h1>
-        <form className='flex flex-col justify-center' action='/' method='POST' onSubmit={handleSubmit}>
+        <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
           <div className='flex flex-col mb-4'>
             <label
               className='mb-2 font-bold text-lg text-black'
@@ -116,7 +138,7 @@ export const JobForm = () => {
             >
               Countries
             </label>
-            <select value={selectedCountry} onChange={e => setSelectedCountry(e.target.value)}>
+            <select value={selectedCountry} onChange={e => setSelectedCountry(e.target.value)} className='cursor-pointer'>
               <option default value=''>Select a country</option>
               {countries.map(country => {
                 return <option key={country.uuid} value={country.uuid}>{country.name}</option>
@@ -125,10 +147,10 @@ export const JobForm = () => {
           </div>
           <div className='flex flex-col mb-4'>
             <label className={`mb-2 font-bold text-lg text-black ${selectedCountry ? 'text-opacity-100' : 'text-opacity-20'}`} htmlFor='cities'>Cities</label>
-            <input className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`} type='search' value={cityInput} onChange={cityInputHandler} disabled={selectedCountry === ''} />
+            <input className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`} type='search' value={cityInput} onChange={e => setCityInput(e.target.value)} disabled={selectedCountry === ''} />
             <ul>
               {filteredCities.map(city => (
-                <li key={city.uuid}>{city.name}</li>
+                <li className='cursor-pointer hover:opacity-60' key={city.uuid} onClick={() => cityInputHandler(city)}>{city.name}</li>
               ))}
             </ul>
           </div>
@@ -139,7 +161,7 @@ export const JobForm = () => {
             >
             Trade
             </label>
-            <select value={selectedTrade} onChange={e => setSelectedTrade(e.target.value)}>
+            <select value={selectedTrade} onChange={e => setSelectedTrade(e.target.value)} className='cursor-pointer'>
               <option default value=''>Select a trade</option>
               {/* Placeholder options for now: */}
               <option key={0} value='Trade 0'>Trade 0</option>
@@ -179,6 +201,39 @@ export const JobForm = () => {
                 required 
               />
             </div>
+          </div>
+          {/* prices are converted from numbers to strings when changed */}
+          <div className='flex flex-col mb-4'>
+            <label
+              className='mb-2 font-bold text-lg text-black'
+              htmlFor='low_price'
+            >
+            Low Price
+            </label>
+            <input 
+              type='number'
+              min={1}
+              required
+              name='low_price'
+              id='low_price'
+              value={low_price}
+              onChange={handleChange}
+            />
+            <label
+              className='mb-2 font-bold text-lg text-black'
+              htmlFor='high_price'
+            >
+            High Price
+            </label>
+            <input 
+              type='number'
+              min={1}
+              required
+              name='high_price'
+              id='high_price'
+              value={high_price}
+              onChange={handleChange}
+            />
           </div>
           <div className='mt-3 -ml-6'>
               <button type="submit" className='w-12 h-12'>Submit</button>
