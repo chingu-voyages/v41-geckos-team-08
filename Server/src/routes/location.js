@@ -28,6 +28,13 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 			req.params.uuid,
 			name.toLowerCase(),
 		]);
+
+		if (queryResponse.rowCount === 0)
+			return res
+				.status(404)
+				.json({
+					detail: `The city ${name} does not exist in the specified country`,
+				});
 	} else {
 		sql =
 			'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 order by city.name';
