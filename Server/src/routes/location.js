@@ -16,12 +16,26 @@ route.get('/', async (req, res) => {
 });
 
 route.get('/:uuid', validateUUID, async (req, res) => {
-	const sql =
-		'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 order by city.name';
+	const { name } = req.query;
+	console.log(name);
+
+	let sql, queryResponse;
+
+	if (name) {
+		sql =
+			'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 and lower(city.name) = $2 order by city.name';
+		queryResponse = await client.query(sql, [
+			req.params.uuid,
+			name.toLowerCase(),
+		]);
+	} else {
+		sql =
+			'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 order by city.name';
+
+		queryResponse = await client.query(sql, [req.params.uuid]);
+	}
 
 	try {
-		const queryResponse = await client.query(sql, [req.params.uuid]);
-
 		const formattedResponse = [];
 
 		for (index in queryResponse.rows) {
