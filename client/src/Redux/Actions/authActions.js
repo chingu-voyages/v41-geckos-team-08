@@ -28,8 +28,13 @@ export const login = userLogin => async dispatch => {
 
 export const signUp = userSignup => async dispatch => {
  try {
-  const res = await postAPI('users', userSignup);
-  console.log(res);
+  await postAPI('users', userSignup);
+  if (userSignup.trade) {
+    const res = await postAPI('trades', {
+      description: userSignup.trade
+    });
+    console.log(res);
+  }
 //   dispatch({
 //    type: AUTH,
 //    payload: res.data.data
