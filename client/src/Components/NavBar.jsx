@@ -300,14 +300,16 @@ export const NavBar = (props) => {
 	}
 
 	return (
-		<nav className="relative flex flex-wrap justify-between items-center bg-white px-2 py mb-0 h-20">
-			<div className="container px-4 mx-auto my-4 flex flex-wrap items-center justify-between">
+		<nav className="relative flex flex-wrap justify-between items-center bg-quaternary-100 px-2 py mb-0 h-auto py-3">
+			<div className="container px-4 mx-auto flex flex-wrap items-center justify-between">
 				<div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start md:w-auto md:static md:block md:justify-start">
 					<Link className="inline-block mr-4 py-2 whitespace-nowrap" to="/">
 						<Logo />
 					</Link>
 					<button
-						className="text-primary-100 cursor-pointer text-xl leading-none px-3 py-1 border-solid border border-transparent rounded bg-transparent block md:hidden lg:hidden outline-none focus:outline-none"
+
+						className="text-primary-100 cursor-pointer text-xl leading-none px-3 py-1 border-solid border-transparent rounded bg-transparent block md:hidden outline-none focus:outline-none"
+
 						type="button"
 						onClick={toggleMenu}>
 						<svg
@@ -327,7 +329,7 @@ export const NavBar = (props) => {
 				</div>
 				<div
 					className={
-						"lg:flex md:flex flex-grow items-center justify-center py-1" +
+						"lg:flex md:flex flex-grow items-center justify-center text-center py-1 bg-quaternary-100 " +
 						(menuOpen ? " flex" : " hidden")
 					}>
 					{buttons}
