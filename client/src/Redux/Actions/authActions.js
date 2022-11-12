@@ -29,7 +29,8 @@ export const login = userLogin => async dispatch => {
 
 export const signUp = userSignup => async dispatch => {
  try {
-  await postAPI('users', userSignup);
+  const _res = await postAPI('users', userSignup);
+  console.log(_res);
   if (userSignup.trades) {
     const res = await postAPI('trades', {
       description: [userSignup.trades]
