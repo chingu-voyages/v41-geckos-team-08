@@ -15,11 +15,11 @@ route.post('/', validatePassword, validateEmail, async (req, res) => {
 			res.status(400).send('All fields are required.');
 		}
 		const user = await client.query(
-			'SELECT users.uuid, users.email, users.password, users.is_supplier, users.name, users.phone, trades.uuid as trades_uuid, trades.description from users inner join supplier_trade on users.uuid = supplier_trade.supplier_uuid inner join trades on supplier_trade.trades_uuid = trades.uuid WHERE email = $1',
+			'SELECT users.uuid, users.email, users.password, users.is_supplier, users.name, users.phone, trades.uuid as trades_uuid, trades.description from users left join supplier_trade on users.uuid = supplier_trade.supplier_uuid left join trades on supplier_trade.trades_uuid = trades.uuid WHERE email = $1',
 			[email]
 		);
 
-		if (user.rows.length === 0) {
+		if (!user.rowCount) {
 			return res.status(401).json('User does not exist.');
 		}
 		//3 check if password matches stored password(if false throw error)
