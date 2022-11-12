@@ -2,10 +2,11 @@ import { postAPI } from "../../Utils/Axios";
 import { AUTH } from "../ActionTypes";
 import {RESET_STORE} from "../ActionTypes";
 
-
 export const login = userLogin => async dispatch => {
  try {
   const res = await postAPI('login', userLogin);
+
+  console.log(res);
 
   dispatch({
    type: AUTH,
@@ -29,9 +30,9 @@ export const login = userLogin => async dispatch => {
 export const signUp = userSignup => async dispatch => {
  try {
   await postAPI('users', userSignup);
-  if (userSignup.trade) {
+  if (userSignup.trades) {
     const res = await postAPI('trades', {
-      description: userSignup.trade
+      description: [userSignup.trades]
     });
     console.log(res);
   }

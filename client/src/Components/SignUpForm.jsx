@@ -40,7 +40,7 @@ export const SignUpForm = () => {
     if (trade !== '') {
       setUserSignUp({
         ...userSignUp,
-        trade: trade.toLowerCase()
+        trades: [trade.toLowerCase()]
       });
     }
   }, [trade]);
