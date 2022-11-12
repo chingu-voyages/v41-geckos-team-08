@@ -307,7 +307,7 @@ export const NavBar = (props) => {
 						<Logo />
 					</Link>
 					<button
-						className="text-primary-100 cursor-pointer text-xl leading-none px-3 py-1 border-solid border border-transparent rounded bg-transparent block md:hidden outline-none focus:outline-none"
+						className="text-primary-100 cursor-pointer text-xl leading-none px-3 py-1 border-solid border border-transparent rounded bg-transparent block md:hidden lg:hidden outline-none focus:outline-none"
 						type="button"
 						onClick={toggleMenu}>
 						<svg
