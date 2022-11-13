@@ -8,6 +8,7 @@ import { createJob } from '../Redux/Actions/jobActions';
 import { getAPI } from '../Utils/Axios';
 import SortAndSearch from './SortAndSearch';
 import { store } from '../Redux/Store';
+import { useNavigate } from 'react-router-dom';
 
 export const JobForm = () => {
   const [date, changeDate] = useState(new Date());
@@ -18,11 +19,12 @@ export const JobForm = () => {
 		description: '',
 		low_price: 1,
 		high_price: 1,
-		expiration_date: date
+		expiration_date: date.toISOString().split('T')[0]
   };
 
   const [newJob, setNewJob] = useState(initialState);
   const [countries, setCountries] = useState([]);
+  const [trades, setTrades] = useState([]);
 
   const { 
     trade_uuid,
@@ -35,7 +37,7 @@ export const JobForm = () => {
 
   const handleChange = e => setNewJob({
     ...newJob,
-    [e.target.name]: e.target.value
+    [e.target.name]: e.target.type === 'number' ? parseInt(e.target.value) : e.target.value
   });
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -44,10 +46,19 @@ export const JobForm = () => {
     (async () => {
       const { data: _countries } = await getAPI(`locations`, userInfo.token);
       setCountries(_countries.data);
+      const { data: _trades } = await getAPI('trades', userInfo.token);
+      const tradesArr = _trades.data
+        .filter(trade => trade.description.substring(0, 2) !== '{{')
+        .sort((a, b) => a.description.localeCompare(b.description))
+        .map(trade => ({
+          ...trade,
+          description: trade.description.charAt(0).toUpperCase() + trade.description.slice(1).toLowerCase()
+      }));
+      console.log(tradesArr);
+      setTrades(tradesArr);
     })();
   }, [userInfo.token]);
 
-  // 1. Get the value of the current selected country
   const [selectedCountry, setSelectedCountry] = useState('');
 
   useEffect(() => {
@@ -55,7 +66,11 @@ export const JobForm = () => {
   }, [countries]);
 
   useEffect(() => {
-    if (selectedCountry === '' && cities.length > 0) setCities([]);
+    if (selectedCountry === '' && cities.length > 0) {
+      setCityInput('');
+      setCities([]);
+      setFilteredCities([]);
+    } 
     if (selectedCountry !== '') {
       setCityInput('');
       (async () => {
@@ -65,11 +80,7 @@ export const JobForm = () => {
     }
   }, [selectedCountry, userInfo.token]);
 
-  // 2. Use the country value's uuid to query the server for the cities
-  const [selectedCity, setSelectedCity] = useState('');
-  // 3. Set the cities array's state to the data array returned from the query
   const [cities, setCities] = useState([]);
-  // 4. Set the selected city's value to the city key in the form
 
   useEffect(() => {
     console.log(cities);
@@ -78,7 +89,7 @@ export const JobForm = () => {
   useEffect(() => {
     setNewJob({
       ...newJob,
-      expiration_date: date.toLocaleString()
+      expiration_date: date.toISOString().split('T')[0]
     });
   }, [date]);
 
@@ -115,9 +126,13 @@ export const JobForm = () => {
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
 
+  const navigate = useNavigate();
+
   const handleSubmit = async e => {
     e.preventDefault();
+    console.log(newJob);
     dispatch(createJob(newJob, userInfo.token));
+    navigate(`/user/${auth.data.uuid}`);
   }
 
   useEffect(() => {
@@ -163,11 +178,9 @@ export const JobForm = () => {
             </label>
             <select value={selectedTrade} onChange={e => setSelectedTrade(e.target.value)} className='cursor-pointer'>
               <option default value=''>Select a trade</option>
-              {/* Placeholder options for now: */}
-              <option key={0} value='Trade 0'>Trade 0</option>
-              <option key={1} value='Trade 1'>Trade 1</option>
-              <option key={2} value='Trade 2'>Trade 2</option>
-              <option key={3} value='Trade 3'>Trade 3</option>
+              {trades.map(trade => {
+                return <option key={trade.uuid} value={trade.uuid}>{trade.description}</option>
+              })}
             </select>
           </div>
           <div className='flex flex-col mb-4'>

@@ -25,7 +25,7 @@ import { logout } from './Redux/Actions/authActions';
 function App() {
 
   const [loading, setLoading] = useState(true);
-  const { auth } = useSelector((state) => state);
+  const { auth, jobs } = useSelector((state) => state);
   const dispatch = useDispatch();
    
   useEffect(() => {
@@ -48,11 +48,15 @@ function App() {
         //   setLoading(false);
         //   return;
         // }
-        const res = await getAPI(`users/${uuid}`, token);
+        const authRes = await getAPI(`users/${uuid}`, token);
         dispatch({
           type: AUTH,
-          payload: res.data
+          payload: authRes.data
         });
+
+        if (jobs.length === 0) {
+          // I need a route on the backend where I can get the jobs by the user's uuid
+        }
         setLoading(false);
       } catch (error) {
         console.log(error);
