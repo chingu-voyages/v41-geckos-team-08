@@ -8,7 +8,7 @@ route.get('/', authorization, async (req, res) => {
 
 	const sql =
 		'select uuid, email, is_supplier, name, phone from users where uuid = $1';
-	const userResponse = await await client.query(sql, [user]);
+	const userResponse = await client.query(sql, [user]);
 
 	if (userResponse.rowCount === 0) {
 		res.status(404).json({

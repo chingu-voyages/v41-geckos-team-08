@@ -3,7 +3,7 @@ const { secret_key } = require('../../environment.js');
 
 module.exports = async (req, res, next) => {
 	try {
-		const token = req.headers.authorization.split(' ')[1];
+		const token = req.headers.authorization.split(' ')[0];
 
 		if (!token) return res.status(403).json('Invalid token!');
 
