@@ -7,7 +7,7 @@ import { RESET_STORE } from '../ActionTypes';
 const appReducer = combineReducers({
  // reducers go here
  auth: authReducer,
- job: jobReducer
+ jobs: jobReducer
 });
 
 // reset the state of a redux store
