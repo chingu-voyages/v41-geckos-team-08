@@ -7,8 +7,12 @@ import { Pagination } from "./../Components/Pagination";
 import UserProfilePic from "./../assets/images/measurements.jpg";
 import SortAndSearch from "../Components/SortAndSearch";
 //import {SecondaryNavBar} from '../Components/SecondaryNavBar'
+import { store } from "../Redux/Store";
 
 export const UserProfile = () => {
+
+	console.log(store.getState());
+	
 	return (
 		<div className="bg-white  rounded-sm border-none">
 			<section

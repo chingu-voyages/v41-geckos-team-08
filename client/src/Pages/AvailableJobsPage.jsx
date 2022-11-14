@@ -8,6 +8,7 @@ import { getAPI } from '../Utils/Axios';
 import { Footer } from './../Components/Footer';
 import {Pagination} from './../Components/Pagination'
 import { Button } from '../Components/Button'; 
+import { useNavigate } from 'react-router-dom';
 
 export const AvailableJobsPage = () => {
 
@@ -15,6 +16,8 @@ export const AvailableJobsPage = () => {
   
   const [city, setCity] = useState('');
   const [jobs, setJobs] = useState([]);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     try {
@@ -55,7 +58,8 @@ export const AvailableJobsPage = () => {
         }
         {jobs.map(job => {
           return (
-            <JobCard 
+            <JobCard
+              onClick={() => navigate(`/offer/${job.uuid}`)} 
               key={job.uuid}
               name={job.customer.name}
               description={job.description}

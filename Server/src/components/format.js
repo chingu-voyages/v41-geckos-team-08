@@ -82,6 +82,7 @@ const formatOneJobRespnse = (job) => {
  */
 const formatOneProposalResponse = (proposal) => {
 	return {
+		description: proposal.description,
 		price: proposal.price,
 		expiration_date: proposal.expiration_date,
 		is_accepted: proposal.is_accepted,

@@ -50,13 +50,18 @@ route.post('/', authorization, async (req, res) => {
 	if (req.body.constructor === Object && Object.keys(req.body).length === 0)
 		return res.status(400).json({ detail: "Haven't received any data" });
 
-	const { job_uuid, price, expiration_date } = req.body;
+	const { description, job_uuid, price, expiration_date } = req.body;
 
 	if (!isValidUUID(job_uuid))
 		return res.status(400).json({ detail: 'Invalid job uuid' });
 
 	if (typeof price !== 'number')
 		return res.status(400).json({ detail: 'The price must be numeric' });
+
+	if (!description)
+		return res.status(400).json({
+			detail: 'The description is a required field',
+		});
 
 	if (!expiration_date)
 		return res.status(400).json({
@@ -80,20 +85,23 @@ route.post('/', authorization, async (req, res) => {
 		await client.query('COMMIT');
 
 		const sql =
-			'insert into proposal(supplier_uuid, job_uuid, price, expiration_date, is_accepted) values ($1, $2, $3, $4, $5)';
+			'insert into proposal(supplier_uuid, description, job_uuid, price, expiration_date, is_accepted) values ($1, $2, $3, $4, $5, $6)';
 
+		console.log(0);
 		await client.query(sql, [
-			supplier_uuid,
-			job_uuid,
-			price,
-			expiration_date,
-			false,
+				supplier_uuid,
+				description,
+				job_uuid,
+				price,
+				expiration_date,
+				false,
 		]);
-
+			
+		console.log(1);
 		await client.query('COMMIT');
 
 		const resultSQL =
-			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
+			'select proposal.price, proposal.expiration_date, proposal.is_accepted, proposal.description, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
 		const result = await (
 			await client.query(resultSQL, [job_uuid, supplier_uuid])
 		).rows[0];

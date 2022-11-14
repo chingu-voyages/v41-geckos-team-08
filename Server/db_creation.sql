@@ -122,6 +122,9 @@ CREATE TABLE public.proposal
         NOT VALID
 );
 
+ALTER TABLE IF EXISTS public.proposal
+    ADD COLUMN description text COLLATE pg_catalog."default" NOT NULL;
+
 CREATE TABLE IF NOT EXISTS public.countries
 (
     uuid uuid NOT NULL,
