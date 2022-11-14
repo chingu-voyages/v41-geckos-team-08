@@ -48,18 +48,18 @@ function App() {
         //   setLoading(false);
         //   return;
         // }
-        const authRes = await getAPI(`users/${uuid}`, token);
+        const { data: authRes } = await getAPI(`users/${uuid}`, token);
         dispatch({
           type: AUTH,
-          payload: authRes.data
+          payload: authRes
         });
 
-        if (jobs.length === 0) {
-          const jobsRes = await getAPI('jobs', token);
+        if (jobs.length === 0 && authRes.data.is_supplier === false) {
+          const { data: jobsRes } = await getAPI('jobs', token);
           if (jobsRes) {
             dispatch({
               type: GET_JOBS,
-              payload: jobsRes.data.data
+              payload: jobsRes.data
             });
           }
         }
