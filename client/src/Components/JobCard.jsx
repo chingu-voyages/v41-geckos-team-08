@@ -2,26 +2,23 @@ import React from 'react';
 import { Button } from './Button';
 
 
-export const JobCard = () => {
+export const JobCard = (props) => {
   return (
-    <div className='container mx-auto px-3 sm:px-20 mb-5'>
+    <div key={props.uuid} className='container mx-auto px-3 sm:px-20 mb-5'>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
-            <h4 className='text-2xl font-semibold'>Backyard Lawn Removal</h4>
+            <h4 className='text-2xl font-semibold'>{props.name}</h4>
 
             <p className='my-2 text-lg pr-2'>
-              This is my latest GitHub publication. Plenty of Stars and NPM
-              downloads. This is my latest GitHub publication. Plenty of Stars
-              and NPM downloads. This is my latest GitHub publication. Plenty of
-              Stars and NPM downloads.
+              {props.description}
             </p>
             <div className='flex items-center mt-4'>
               <div className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
-                Skills Required: Gardener
+                Skills Required: {props.trade}
               </div>
               <div className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
-                Due Date: 09/30/2022
+                Due Date: {props.expiration_date}
               </div>
             </div>
           </div>
