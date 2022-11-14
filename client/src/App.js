@@ -16,7 +16,7 @@ import Loading from './Components/Loading';
 import PageNotFound from './Pages/PageNotFound';
 import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { AUTH } from './Redux/ActionTypes';
+import { AUTH, GET_JOBS } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
 import {store} from './Redux/Store';
 import { checkTokenExp } from './Utils/CheckTokenExp';
@@ -55,7 +55,13 @@ function App() {
         });
 
         if (jobs.length === 0) {
-          // I need a route on the backend where I can get the jobs by the user's uuid
+          const jobsRes = await getAPI('jobs', token);
+          if (jobsRes) {
+            dispatch({
+              type: GET_JOBS,
+              payload: jobsRes.data.data
+            });
+          }
         }
         setLoading(false);
       } catch (error) {
