@@ -8,7 +8,12 @@ const authorization = require('../middleware/authorization');
 
 route.get('/', authorization, async (req, res) => {
 	const { job } = req.query;
-	if (!job) return res.status(400).json({ detail: 'A job uuid is required' });
+	const { is_supplier, user } = req.user;
+
+	if (!is_supplier) {
+		if (!job)
+			return res.status(400).json({ detail: 'A job uuid is required' });
+	}
 
 	if (!isValidUUID(job))
 		return res.status(400).json({ detail: 'The job uuid' });
@@ -21,10 +26,19 @@ route.get('/', authorization, async (req, res) => {
 			.status(404)
 			.json({ detail: `There are no jobs with UUID: ${job}` });
 
-	const proposalsSQL =
-		'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1';
+	let proposalsResult;
 
-	const proposalsResult = await client.query(proposalsSQL, [job]);
+	if (job) {
+		const proposalsSQL =
+			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1';
+
+		proposalsResult = await client.query(proposalsSQL, [job]);
+	} else {
+		const proposalsSQL =
+			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where supplier.uuid = $1';
+
+		proposalsResult = await client.query(proposalsSQL, [user]);
+	}
 
 	const allProposals = proposalsResult.rows;
 
@@ -89,14 +103,14 @@ route.post('/', authorization, async (req, res) => {
 
 		console.log(0);
 		await client.query(sql, [
-				supplier_uuid,
-				description,
-				job_uuid,
-				price,
-				expiration_date,
-				false,
+			supplier_uuid,
+			description,
+			job_uuid,
+			price,
+			expiration_date,
+			false,
 		]);
-			
+
 		console.log(1);
 		await client.query('COMMIT');
 
