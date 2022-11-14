@@ -16,7 +16,7 @@ import Loading from './Components/Loading';
 import PageNotFound from './Pages/PageNotFound';
 import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { AUTH, GET_JOBS } from './Redux/ActionTypes';
+import { AUTH, GET_JOBS, GET_PROPOSALS } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
 import {store} from './Redux/Store';
 import { checkTokenExp } from './Utils/CheckTokenExp';
@@ -25,7 +25,7 @@ import { logout } from './Redux/Actions/authActions';
 function App() {
 
   const [loading, setLoading] = useState(true);
-  const { auth, jobs } = useSelector((state) => state);
+  const { auth, jobs, proposals } = useSelector((state) => state);
   const dispatch = useDispatch();
    
   useEffect(() => {
@@ -62,8 +62,16 @@ function App() {
               payload: jobsRes.data
             });
           }
-        } else if (jobs.length === 0 && authRes.data.is_supplier) {
-          
+        }
+
+        if (proposals.length === 0 && authRes.data.is_supplier) {
+          const { data: proposalsRes } = await getAPI('proposals', token);
+          if (proposalsRes) {
+            dispatch({
+              type: GET_PROPOSALS,
+              payload: proposalsRes.data
+            });
+          }
         }
         setLoading(false);
       } catch (error) {
