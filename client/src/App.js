@@ -62,6 +62,8 @@ function App() {
               payload: jobsRes.data
             });
           }
+        } else if (jobs.length === 0 && authRes.data.is_supplier) {
+          
         }
         setLoading(false);
       } catch (error) {

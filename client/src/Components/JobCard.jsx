@@ -4,7 +4,7 @@ import { Button } from './Button';
 
 export const JobCard = (props) => {
   return (
-    <div key={props.uuid} className='container mx-auto px-3 sm:px-20 mb-5'>
+    <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
