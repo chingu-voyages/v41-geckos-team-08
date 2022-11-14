@@ -96,6 +96,7 @@ export const JobForm = () => {
   const [cityInput, setCityInput] = useState('');
 
   const [filteredCities, setFilteredCities] = useState([]);
+  const [cityInputToggled, setCityInputToggled]=useState(false)
   
   useEffect(() => {
     if (cityInput === '') {
@@ -103,7 +104,8 @@ export const JobForm = () => {
       return;
     }
     const _cities = cities.filter(city => city.name.toLowerCase().includes(cityInput.toLowerCase())).slice(0, 5);
-    setFilteredCities(_cities);
+    if(!cityInputToggled) setFilteredCities(_cities);
+    if(cityInputToggled) setCityInputToggled(false)
   }, [cityInput]);
   
   const [selectedTrade, setSelectedTrade] = useState('');
@@ -119,9 +121,13 @@ export const JobForm = () => {
     setNewJob({
       ...newJob,
       city_uuid: city.uuid,
-    });
+    }); 
+     setFilteredCities([])
+     setCityInputToggled(true)
     setCityInput(city.name);
   }
+
+
 
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();
