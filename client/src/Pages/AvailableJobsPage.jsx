@@ -7,6 +7,7 @@ import SortAndSearch from '../Components/SortAndSearch';
 import { getAPI } from '../Utils/Axios';
 import { Footer } from './../Components/Footer';
 import {Pagination} from './../Components/Pagination'
+import { Button } from '../Components/Button'; 
 
 export const AvailableJobsPage = () => {
 
@@ -28,21 +29,29 @@ export const AvailableJobsPage = () => {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor='city'>City:</label>
-        <input 
+    <div className='h-screen'>
+      <form className='container p-4 mx-auto flex justify-start items-center' onSubmit={handleSubmit}>
+        <label className='mb-0 mx-2 font-bold text-lg text-black' htmlFor='city'>City:</label>
+        <input
+        className='border py-2 px-3 text-black rounded' 
           type='text' 
           required
           value={city}
           onChange={e => setCity(e.target.value)}
           placeholder='City'
         />
-        <button type='submit'>Submit</button>
+          <div className='mt-0 ml-2'>
+            <Button
+              type='submit'
+              value='submit'
+              backgroundColor='primary-100'
+              name='Search'
+            />
+          </div>
       </form>
       <div>
         {jobs.length > 0 && 
-          <h3>Showing results for {jobs[0].city.name}</h3>
+          <h3 className="text-xl font-bold mb-5 text-center text-primary-200">Showing results for {jobs[0].city.name}</h3>
         }
         {jobs.map(job => {
           return (
