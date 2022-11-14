@@ -13,29 +13,28 @@ route.get('/', authorization, async (req, res) => {
 	if (!is_supplier) {
 		if (!job)
 			return res.status(400).json({ detail: 'A job uuid is required' });
+		if (!isValidUUID(job))
+				return res.status(400).json({ detail: 'The job uuid needs to be valid' });
 	}
 
-	if (!isValidUUID(job))
-		return res.status(400).json({ detail: 'The job uuid' });
-
-	const jobSQL = 'select * from job where uuid = $1';
-	const jobResult = await client.query(jobSQL, [job]);
-
-	if (jobResult.rowCount === 0)
-		return res
-			.status(404)
-			.json({ detail: `There are no jobs with UUID: ${job}` });
-
+	
 	let proposalsResult;
-
+	
 	if (job) {
+		const jobSQL = 'select * from job where uuid = $1';
+		const jobResult = await client.query(jobSQL, [job]);
+	
+		if (jobResult.rowCount === 0)
+			return res
+				.status(404)
+				.json({ detail: `There are no jobs with UUID: ${job}` });
 		const proposalsSQL =
 			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1';
 
 		proposalsResult = await client.query(proposalsSQL, [job]);
 	} else {
 		const proposalsSQL =
-			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where supplier.uuid = $1';
+			'select proposal.description, proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where supplier.uuid = $1';
 
 		proposalsResult = await client.query(proposalsSQL, [user]);
 	}
