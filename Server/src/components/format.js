@@ -92,6 +92,29 @@ const formatOneProposalResponse = (proposal) => {
 			name: proposal.supplier_name,
 			phone: proposal.supplier_phone,
 		},
+		customer: {
+			uuid: proposal.customer_uuid,
+			email: proposal.customer_email,
+			name: proposal.customer_name,
+			phone: proposal.customer_phone,
+		},
+		trade: {
+			uuid: proposal.trades_uuid,
+			description: proposal.trades_description,
+		},
+		city: {
+			uuid: proposal.city_uuid,
+			name: proposal.city_name,
+		},
+		job: {
+			uuid: proposal.job_uuid,
+			description: proposal.job_description,
+			is_taken: proposal.job_is_taken,
+			is_completed: proposal.job_is_completed,
+			low_price: proposal.job_low_price,
+			high_price: proposal.job_high_price,
+			expiration_date: proposal.job_expiration_date,
+		},
 	};
 };
 
