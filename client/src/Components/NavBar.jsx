@@ -82,17 +82,6 @@ export const NavBar = (props) => {
               name='Post New Job'
             />
           </Link>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Jobs Posted'
-          />
-
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Jobs in Progress'
-          />
           <Link to='/'>
             <Button
               backgroundColor='transparent'
@@ -113,17 +102,6 @@ export const NavBar = (props) => {
               name='Available Jobs'
             />
           </Link>
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Jobs Taken'
-          />
-
-          <Button
-            backgroundColor='transparent'
-            activeEffect='primary-100'
-            name='Jobs Pending'
-          />
           <Link to='/'>
             <Button
               backgroundColor='transparent'

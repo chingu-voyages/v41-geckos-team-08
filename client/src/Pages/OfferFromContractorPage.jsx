@@ -26,6 +26,7 @@ export const OfferFromContractorPage = () => {
     (async () => {
       try {
         const { data: res } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
+        console.log(res.data);
         setJob(res.data);
         setLoading(false);
       } catch (err) {

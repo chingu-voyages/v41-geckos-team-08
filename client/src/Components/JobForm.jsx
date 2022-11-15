@@ -27,12 +27,9 @@ export const JobForm = () => {
   const [trades, setTrades] = useState([]);
 
   const {
-    trade_uuid,
-    city_uuid,
     description,
     low_price,
-    high_price,
-    expiration_date,
+    high_price
   } = newJob;
 
   const handleChange = (e) =>
