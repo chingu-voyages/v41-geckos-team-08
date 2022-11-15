@@ -33,24 +33,27 @@ export const AvailableJobsPage = () => {
 
   return (
     <div className='h-screen'>
-      <form className='container p-4 mx-auto flex justify-start items-center' onSubmit={handleSubmit}>
-        <label className='mb-0 mx-2 font-bold text-lg text-black' htmlFor='city'>City:</label>
-        <input
-        className='border py-2 px-3 text-black rounded' 
-          type='text' 
-          required
-          value={city}
-          onChange={e => setCity(e.target.value)}
-          placeholder='City'
-        />
-          <div className='mt-0 ml-2'>
-            <Button
-              type='submit'
-              value='submit'
-              backgroundColor='primary-100'
-              name='Search'
+      <h1 className='font-bold text-center my-5'>Available Jobs</h1>
+      <form className='container p-4 mx-auto flex flex-col items-center' onSubmit={handleSubmit}>
+          <div className='flex flex-col items-start mb-4'>
+            <label className='mb-0 mx-2 font-bold text-lg text-black' htmlFor='city'>City:</label>
+            <input
+            className='border py-2 px-3 text-black rounded' 
+              type='text' 
+              required
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              placeholder='City'
             />
           </div>
+            <div className='mt-0'>
+              <Button
+                type='submit'
+                value='submit'
+                backgroundColor='primary-100'
+                name='Search'
+              />
+            </div>
       </form>
       <div>
         {jobs.length > 0 && 
