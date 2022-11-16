@@ -1,4 +1,4 @@
-import { postAPI } from "../../Utils/Axios";
+import { postAPI, putAPI } from "../../Utils/Axios";
 import { CREATE_JOB_PROPOSAL } from "../ActionTypes";
 
 export const createProposal = (proposal, token) => async dispatch => {
