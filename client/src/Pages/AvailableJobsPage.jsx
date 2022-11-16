@@ -9,6 +9,7 @@ import { Footer } from './../Components/Footer';
 import { Pagination } from './../Components/Pagination';
 import { Button } from '../Components/Button';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 export const AvailableJobsPage = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -16,19 +17,31 @@ export const AvailableJobsPage = () => {
   const [city, setCity] = useState('');
   const [jobs, setJobs] = useState([]);
 
+  const [noJobs, setNoJobs] = useState('');
+
   const navigate = useNavigate();
+
+  const { proposals } = useSelector(state => state);
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       const { data: res } = await getAPI(`jobs?city=${city}`, userInfo.token);
-      console.log(res.data);
-      setJobs(res.data);
-      setCity('');
+      const _proposals = proposals.filter(proposal => proposal.city.name.toLowerCase() === city.toLowerCase());
+      console.log(_proposals);
+      const arr = res.data.filter(job => !_proposals.find(proposal => job.uuid === proposal.job.uuid));
+      console.log(arr);
+      setJobs(arr);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (jobs.length > 0 && noJobs) setNoJobs('');
+    if (jobs.length === 0 && city !== '') setNoJobs(city);
+    setCity('');
+  }, [jobs]);
 
   return (
     <div className='h-screen'>
@@ -63,6 +76,9 @@ export const AvailableJobsPage = () => {
         </div>
       </form>
       <div>
+        {jobs.length === 0 && noJobs !== '' &&
+          <h1>No jobs available in {noJobs}</h1>
+        }
         {jobs.length > 0 && (
           <h3 className='text-xl font-bold mb-5 text-center text-primary-200'>
             Showing results for {jobs[0].city.name}
