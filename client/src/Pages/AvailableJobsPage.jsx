@@ -87,7 +87,7 @@ export const AvailableJobsPage = () => {
         {jobs.map((job) => {
           return (
             <JobCard
-              onClick={() => navigate(`/offer/${job.uuid}`)}
+              onClick={() => navigate(`/job/${job.uuid}`)}
               key={job.uuid}
               name={job.customer.name}
               description={job.description}

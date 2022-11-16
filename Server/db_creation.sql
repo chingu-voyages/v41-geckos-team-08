@@ -143,3 +143,6 @@ ALTER TABLE IF EXISTS public.city
 
 ALTER TABLE IF EXISTS public.trades
     ADD CONSTRAINT uq_trades_description UNIQUE (description);
+
+ALTER TABLE IF EXISTS public.proposal
+    ADD COLUMN is_accepted boolean;

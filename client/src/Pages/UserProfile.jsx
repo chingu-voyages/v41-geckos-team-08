@@ -12,6 +12,7 @@ import { Button } from '../Components/Button';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { getAPI } from '../Utils/Axios';
+import { useNavigate } from 'react-router-dom';
 
 export const UserProfile = () => {
   console.log(store.getState());
@@ -22,6 +23,8 @@ export const UserProfile = () => {
 
   const [buttonAClicked, setButtonAClicked] = useState(true);
   const [buttonBClicked, setButtonBClicked] = useState(false);
+
+  const navigate = useNavigate();
 
   return (
     <div className='bg-white  rounded-sm border-none'>
@@ -93,6 +96,7 @@ export const UserProfile = () => {
                   return (
                     <JobCard
                       key={job.uuid}
+                      onClick={() => navigate(`/job/${job.uuid}`)}
                       name={job.customer.name}
                       description={job.description}
                       trade={job.trade.description}

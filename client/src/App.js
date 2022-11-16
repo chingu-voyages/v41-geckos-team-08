@@ -7,7 +7,7 @@ import {SignUpPage}from './Pages/SignUpPage';
 import {AvailableJobsPage} from './Pages/AvailableJobsPage'
 import {ContractorProfile} from './Pages/ContractorProfile'
 import {JobFormPage} from './Pages/JobFormPage'
-import {OfferFromContractorPage} from './Pages/OfferFromContractorPage'
+import {ProposalPage} from './Pages/ProposalPage'
 import {UserProfile} from './Pages/UserProfile'
 import SortAndSearch from './Components/SortAndSearch';
 import { NavBar } from './Components/NavBar';
@@ -95,7 +95,7 @@ function App() {
             <Route path='/supplier/:id' element={<AuthRoute><ContractorProfile /></AuthRoute>} />
             <Route path='/new_job' element={<AuthRoute><JobFormPage /></AuthRoute>} />
             <Route path='/login' element={<LoginPage />} />
-            <Route path='/offer/:id' element={<AuthRoute><OfferFromContractorPage /></AuthRoute>} />
+            <Route path='/job/:id' element={<AuthRoute><ProposalPage /></AuthRoute>} />
             <Route path='/signup' element={<SignUpPage />} />
             <Route path='/user/:id' element={<AuthRoute><UserProfile /></AuthRoute>} />
             <Route path="*" element={<PageNotFound />} />

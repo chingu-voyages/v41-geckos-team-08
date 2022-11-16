@@ -30,7 +30,7 @@ route.get('/', authorization, async (req, res) => {
 				.status(404)
 				.json({ detail: `There are no jobs with UUID: ${job}` });
 		const proposalsSQL = `select 
-				proposal.price, proposal.expiration_date, proposal.is_accepted, 
+				proposal.price, proposal.description, proposal.expiration_date, proposal.is_accepted, 
 
 				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
 				
@@ -142,7 +142,7 @@ route.post('/', authorization, async (req, res) => {
 			job_uuid,
 			price,
 			expiration_date,
-			false,
+			null,
 		]);
 
 		console.log(1);
