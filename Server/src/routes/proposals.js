@@ -14,27 +14,44 @@ route.get('/', authorization, async (req, res) => {
 		if (!job)
 			return res.status(400).json({ detail: 'A job uuid is required' });
 		if (!isValidUUID(job))
-				return res.status(400).json({ detail: 'The job uuid needs to be valid' });
+			return res
+				.status(400)
+				.json({ detail: 'The job uuid needs to be valid' });
 	}
 
-	
 	let proposalsResult;
-	
+
 	if (job) {
 		const jobSQL = 'select * from job where uuid = $1';
 		const jobResult = await client.query(jobSQL, [job]);
-	
+
 		if (jobResult.rowCount === 0)
 			return res
 				.status(404)
 				.json({ detail: `There are no jobs with UUID: ${job}` });
-		const proposalsSQL =
-			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1';
+		const proposalsSQL = `select 
+				proposal.price, proposal.expiration_date, proposal.is_accepted, 
+
+				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
+				
+				job.description as job_description, job.is_taken as job_is_taken, job.is_completed as job_is_completed, job.low_price as job_low_price, job.high_price as job_high_price, job.uuid as job_uuid, job.expiration_date as job_expiration_date, 
+
+				city.uuid as city_uuid, city.name as city_name, 
+				
+				customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, 
+				
+				trades.uuid as trade_uuid, trades.description as trade_description
+			from proposal 
+				join users as supplier on proposal.supplier_uuid = supplier.uuid 
+				join job on proposal.job_uuid = job.uuid 
+				join city on job.city_uuid = city.uuid 
+				join users as customer on job.customer_uuid = customer.uuid
+				join trades on job.trade_uuid = trades.uuid
+			where proposal.job_uuid = $1`;
 
 		proposalsResult = await client.query(proposalsSQL, [job]);
 	} else {
-		const proposalsSQL =
-			`select 
+		const proposalsSQL = `select 
 				proposal.price, proposal.expiration_date, proposal.is_accepted, 
 
 				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
@@ -131,8 +148,25 @@ route.post('/', authorization, async (req, res) => {
 		console.log(1);
 		await client.query('COMMIT');
 
-		const resultSQL =
-			'select proposal.price, proposal.expiration_date, proposal.is_accepted, proposal.description, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
+		const resultSQL = `select 
+				proposal.price, proposal.expiration_date, proposal.is_accepted, 
+
+				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
+				
+				job.description as job_description, job.is_taken as job_is_taken, job.is_completed as job_is_completed, job.low_price as job_low_price, job.high_price as job_high_price, job.uuid as job_uuid, job.expiration_date as job_expiration_date, 
+
+				city.uuid as city_uuid, city.name as city_name, 
+				
+				customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, 
+				
+				trades.uuid as trade_uuid, trades.description as trade_description
+			from proposal 
+				join users as supplier on proposal.supplier_uuid = supplier.uuid 
+				join job on proposal.job_uuid = job.uuid 
+				join city on job.city_uuid = city.uuid 
+				join users as customer on job.customer_uuid = customer.uuid
+				join trades on job.trade_uuid = trades.uuid
+			where proposal.job_uuid = $1 and proposal.supplier_uuid = $2`;
 		const result = await (
 			await client.query(resultSQL, [job_uuid, supplier_uuid])
 		).rows[0];
@@ -173,8 +207,25 @@ route.get('/:uuid', authorization, validateUUID, async (req, res) => {
 	if (supplierResult.rowCount === 0)
 		return res.status(404).json({ detail: 'No supplier with that uuid' });
 
-	const proposalSQL =
-		'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and supplier.uuid = $2';
+	const proposalSQL = `select 
+				proposal.price, proposal.expiration_date, proposal.is_accepted, 
+
+				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
+				
+				job.description as job_description, job.is_taken as job_is_taken, job.is_completed as job_is_completed, job.low_price as job_low_price, job.high_price as job_high_price, job.uuid as job_uuid, job.expiration_date as job_expiration_date, 
+
+				city.uuid as city_uuid, city.name as city_name, 
+				
+				customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, 
+				
+				trades.uuid as trade_uuid, trades.description as trade_description
+			from proposal 
+				join users as supplier on proposal.supplier_uuid = supplier.uuid 
+				join job on proposal.job_uuid = job.uuid 
+				join city on job.city_uuid = city.uuid 
+				join users as customer on job.customer_uuid = customer.uuid
+				join trades on job.trade_uuid = trades.uuid
+			where proposal.job_uuid = $1 and proposal.supplier_uuid = $2`;
 	const proposalResult = await client.query(proposalSQL, [job, uuid]);
 
 	if (proposalResult.rowCount === 0)
@@ -298,8 +349,25 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 
 		await client.query('COMMIT');
 
-		const resultSQL =
-			'select proposal.price, proposal.expiration_date, proposal.is_accepted, supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone from proposal join users as supplier on proposal.supplier_uuid = supplier.uuid where proposal.job_uuid = $1 and proposal.supplier_uuid = $2';
+		const resultSQL = `select 
+				proposal.price, proposal.expiration_date, proposal.is_accepted, 
+
+				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
+				
+				job.description as job_description, job.is_taken as job_is_taken, job.is_completed as job_is_completed, job.low_price as job_low_price, job.high_price as job_high_price, job.uuid as job_uuid, job.expiration_date as job_expiration_date, 
+
+				city.uuid as city_uuid, city.name as city_name, 
+				
+				customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, 
+				
+				trades.uuid as trade_uuid, trades.description as trade_description
+			from proposal 
+				join users as supplier on proposal.supplier_uuid = supplier.uuid 
+				join job on proposal.job_uuid = job.uuid 
+				join city on job.city_uuid = city.uuid 
+				join users as customer on job.customer_uuid = customer.uuid
+				join trades on job.trade_uuid = trades.uuid
+			where proposal.job_uuid = $1 and proposal.supplier_uuid = $2`;
 		const result = await (
 			await client.query(resultSQL, [job, supplierUUID])
 		).rows[0];

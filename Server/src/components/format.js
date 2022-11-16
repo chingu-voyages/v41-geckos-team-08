@@ -99,8 +99,8 @@ const formatOneProposalResponse = (proposal) => {
 			phone: proposal.customer_phone,
 		},
 		trade: {
-			uuid: proposal.trades_uuid,
-			description: proposal.trades_description,
+			uuid: proposal.trade_uuid,
+			description: proposal.trade_description,
 		},
 		city: {
 			uuid: proposal.city_uuid,
