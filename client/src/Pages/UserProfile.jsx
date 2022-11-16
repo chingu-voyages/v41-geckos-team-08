@@ -11,12 +11,15 @@ import { store } from "../Redux/Store";
 import { Button } from "../Components/Button";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import { getAPI } from "../Utils/Axios";
 
 export const UserProfile = () => {
 
 	console.log(store.getState());
 
 	const { auth, jobs, proposals } = useSelector((state) => state);
+
+	console.log(proposals);
 
 	const [buttonAClicked, setButtonAClicked] = useState(true);
 	const [buttonBClicked, setButtonBClicked] = useState(false);
@@ -95,21 +98,21 @@ export const UserProfile = () => {
 									);
 								})
 							}
-							{buttonAClicked 
+							{buttonBClicked 
 								&& auth.data.is_supplier 
 								&& proposals.length > 0 
-								&& ''
-								// proposals.map(job => {
-								// 	return (
-								// 		<JobCard 
-        //       key={job.uuid}
-        //       name={job.customer.name}
-        //       description={job.description}
-        //       trade={job.trade.description}
-        //       expiration_date={job.expiration_date.split('T')[0]}
-        //   />
-								// 	);
-								// })
+								&& 
+								proposals.map(proposal => {
+									return (
+										<JobCard 
+              key={proposal.job.uuid}
+              name={proposal.customer.name}
+              description={proposal.job.description}
+              trade={proposal.trade.description}
+              expiration_date={proposal.expiration_date.split('T')[0]}
+          />
+									);
+								})
 							}
 							{buttonBClicked 
 								&& !auth.data.is_supplier 
