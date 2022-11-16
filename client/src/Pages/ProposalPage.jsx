@@ -131,12 +131,14 @@ export const ProposalPage = () => {
                   return (
                     <ProposalCard 
                       key={proposal.supplier.uuid}
-                      uuid={proposal.supplier.uuid}
+                      supplierUUID={proposal.supplier.uuid}
+                      jobUUID={proposal.job.uuid}
                       name={proposal.supplier.name}
                       phone={proposal.supplier.phone}
                       email={proposal.supplier.email}
                       description={proposal.description}
                       price={proposal.price}
+                      token={userInfo.token}
                     />
                   );
                 })}

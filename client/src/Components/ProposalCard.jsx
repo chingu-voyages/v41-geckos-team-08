@@ -1,18 +1,22 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { acceptJobProposal, rejectJobProposal } from '../Redux/Actions/jobActions';
 import { Button } from './Button';
 
 export const ProposalCard = (props) => {
 
+  const dispatch = useDispatch();
+
   const acceptProposal = () => {
-   console.log('accepted', props.uuid);
+   dispatch(acceptJobProposal(props.supplierUUID, props.jobUUID, props.token));
   }
 
   const rejectProposal = () => {
-   console.log('rejected');
+   dispatch(rejectJobProposal(props.supplierUUID, props.jobUUID, props.token));
   }
 
   return (
-    <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
+    <div onClick={props.onClick} key={props.supplierUUID} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
