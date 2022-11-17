@@ -92,7 +92,7 @@ export const UserProfile = () => {
               {buttonAClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&
-                jobs.map((job) => {
+                jobs[0].jobs_posted.map((job) => {
                   return (
                     <JobCard
                       key={job.uuid}
@@ -104,10 +104,24 @@ export const UserProfile = () => {
                     />
                   );
                 })}
+              {buttonAClicked &&
+                auth.data.is_supplier &&
+                proposals.length > 0 &&
+                proposals[0].jobs_taken.map((proposal) => {
+                  return (
+                    <JobCard
+                      key={proposal.job.uuid}
+                      name={proposal.customer.name}
+                      description={proposal.job.description}
+                      trade={proposal.trade.description}
+                      expiration_date={proposal.expiration_date.split('T')[0]}
+                    />
+                  );
+                })}
               {buttonBClicked &&
                 auth.data.is_supplier &&
                 proposals.length > 0 &&
-                proposals.map((proposal) => {
+                proposals[0].jobs_pending.map((proposal) => {
                   return (
                     <JobCard
                       key={proposal.job.uuid}
@@ -127,7 +141,7 @@ export const UserProfile = () => {
               {buttonBClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&
-                jobs.map((job) => {
+                jobs[0].jobs_in_progress.map((job) => {
                   return (
                     <JobCard
                       key={job.uuid}

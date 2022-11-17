@@ -1,18 +1,17 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { acceptJobProposal, rejectJobProposal } from '../Redux/Actions/jobActions';
+import { useNavigate } from 'react-router-dom';
+import { acceptJobProposal } from '../Redux/Actions/jobActions';
 import { Button } from './Button';
 
 export const ProposalCard = (props) => {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const acceptProposal = () => {
    dispatch(acceptJobProposal(props.supplierUUID, props.jobUUID, props.token));
-  }
-
-  const rejectProposal = () => {
-   dispatch(rejectJobProposal(props.supplierUUID, props.jobUUID, props.token));
+   navigate(`/user/${props.user}`);
   }
 
   return (
@@ -41,13 +40,6 @@ export const ProposalCard = (props) => {
                 actionEffect='secondary-300'
                 name='Accept'
                 handleClick={acceptProposal}
-              />
-              <Button
-                backgroundColor='primary-100'
-                textColor='white'
-                actionEffect='secondary-300'
-                name='Reject'
-                handleClick={rejectProposal}
               />
             </div>
           </div>
