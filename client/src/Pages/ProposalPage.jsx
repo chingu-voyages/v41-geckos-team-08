@@ -139,6 +139,7 @@ export const ProposalPage = () => {
                       description={proposal.description}
                       price={proposal.price}
                       token={userInfo.token}
+                      user={auth.data.uuid}
                     />
                   );
                 })}

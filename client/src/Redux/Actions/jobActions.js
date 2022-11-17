@@ -1,4 +1,4 @@
-import { postAPI, putAPI } from "../../Utils/Axios";
+import { getAPI, postAPI, putAPI } from "../../Utils/Axios";
 import { CREATE_JOB_BY_USER_ID, ACCEPT_JOB_PROPOSAL
  } from "../ActionTypes";
 
@@ -20,7 +20,9 @@ export const createJob = (newJob, token) => async dispatch => {
 
 export const acceptJobProposal = (supplier, job, token) => async dispatch => {
  try {
-  const { data: res } = await putAPI(`proposals/${supplier}?job=${job}`, { is_accepted: true }, token);
+  await putAPI(`proposals/${supplier}?job=${job}`, { is_accepted: true }, token);
+
+  const { data: res } = await getAPI(`jobs/${job}`, token);
 
   console.log(res.data);
 
@@ -29,16 +31,6 @@ export const acceptJobProposal = (supplier, job, token) => async dispatch => {
    payload: res.data
   });
 
- } catch (error) {
-  console.log(error);
- }
-}
-
-export const rejectJobProposal = (supplier, job, token) => async dispatch => {
- try {
-  const res = await putAPI(`proposals/${supplier}?job=${job}`, { is_accepted: false }, token);
-
-  console.log(res);
  } catch (error) {
   console.log(error);
  }
