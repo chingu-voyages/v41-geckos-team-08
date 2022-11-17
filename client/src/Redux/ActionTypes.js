@@ -1,6 +1,7 @@
 export const AUTH = 'AUTH';
 
 export const CREATE_JOB_BY_USER_ID = 'CREATE_JOB_BY_USER_ID';
+export const UPDATE_JOB_BY_USER_ID = 'UPDATE_JOB_BY_USER_ID';
 export const GET_JOBS = 'GET_JOBS';
 export const ACCEPT_JOB_PROPOSAL = 'ACCEPT_JOB_PROPOSAL';
 

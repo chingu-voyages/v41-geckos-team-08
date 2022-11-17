@@ -1,16 +1,32 @@
 import { getAPI, postAPI, putAPI } from "../../Utils/Axios";
-import { CREATE_JOB_BY_USER_ID, ACCEPT_JOB_PROPOSAL
+import { CREATE_JOB_BY_USER_ID, ACCEPT_JOB_PROPOSAL, UPDATE_JOB_BY_USER_ID
  } from "../ActionTypes";
 
 export const createJob = (newJob, token) => async dispatch => {
  try {
-  const res = await postAPI('jobs', newJob, token);
+  const { data: res } = await postAPI('jobs', newJob, token);
 
-  console.log(res.data.data);
+  console.log(res.data);
 
   dispatch({
    type: CREATE_JOB_BY_USER_ID,
-   payload: res.data.data
+   payload: res.data
+  });
+
+ } catch (error) {
+  console.log(error);
+ }
+}
+
+export const updateJob = (newJob, jobUUID, token) => async dispatch => {
+ try {
+  const { data: res } = await putAPI(`jobs/${jobUUID}`, newJob, token);
+
+  console.log(res.data);
+
+  dispatch({
+   type: UPDATE_JOB_BY_USER_ID,
+   payload: res.data
   });
 
  } catch (error) {

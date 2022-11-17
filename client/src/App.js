@@ -49,6 +49,7 @@ function App() {
         //   return;
         // }
         const { data: authRes } = await getAPI(`users/${uuid}`, token);
+        console.log(authRes);
         dispatch({
           type: AUTH,
           payload: authRes
@@ -56,6 +57,7 @@ function App() {
 
         if (jobs.length === 0 && authRes.data.is_supplier === false) {
           const { data: jobsRes } = await getAPI('jobs', token);
+          console.log(jobsRes);
           if (jobsRes) {
             dispatch({
               type: GET_JOBS,

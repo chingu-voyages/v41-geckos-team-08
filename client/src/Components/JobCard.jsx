@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Button';
 
-
 export const JobCard = (props) => {
+
+  const navigate = useNavigate();
+
   return (
     <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
       <div>
@@ -21,14 +24,29 @@ export const JobCard = (props) => {
                 Due Date: {props.expiration_date}
               </div>
             </div>
-          </div>
-          <div className='text-right md:ml-8 flex items-center'>
-            <div className='flex md:block -mx-0 md:flex-col md:mx-0 mt-3 md:mt-0'>
-              <Button
-                backgroundColor='primary-200'
-                textColor='white'
-                actionEffect='secondary-300'
-              />
+            <div className="flex justify-center sm:justify-start mr-2 sm:mr-0 gap-3 mt-2">
+              {props.showEditBtn &&             
+                <div className='flex gap-3 mt-2'>
+                  <Button
+                    backgroundColor='primary-100'
+                    textColor='white'
+                    actionEffect='secondary-300'
+                    name='Edit'
+                    handleClick={() => navigate(`/new_job?job=${props.jobUUID}`)}
+                  />
+                </div>
+              }
+              {props.showJobBtn &&             
+                <div className='flex gap-3 mt-2'>
+                    <Button
+                      backgroundColor='primary-100'
+                      textColor='white'
+                      actionEffect='secondary-300'
+                      name='Go to Job Page'
+                      handleClick={() => navigate(`/job/${props.jobUUID}`)}
+                    />
+                </div>
+              }
             </div>
           </div>
         </div>
