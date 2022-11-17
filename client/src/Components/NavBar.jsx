@@ -133,29 +133,6 @@ export const NavBar = (props) => {
           </Link>
         </div>
       );
-    
-  } else if (userInfo && location.pathname === `/new_job`) {
-    if (!isSupplier) {
-      buttons = (
-        <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-3'>
-           <Link to={`/user/${userInfo.uuid}`}>
-            <Button
-              backgroundColor='transparent'
-              activeEffect='primary-100'
-              name='Profile'
-            />
-          </Link>
-          <Link to='/'>
-            <Button
-              backgroundColor='transparent'
-              activeEffect='primary-100'
-              name='Sign Out'
-              handleClick={logout}
-            />
-          </Link>
-        </div>
-      );
-    } 
   } else if (userInfo.token && location.pathname === `/`) {
     if (!isSupplier) {
       buttons = (
@@ -165,7 +142,7 @@ export const NavBar = (props) => {
               backgroundColor='transparent'
               activeEffect='primary-100'
               name='Post New Job'
-            />
+              />
           </Link>
 
           <Link to={`/user/${userInfo.uuid}`}>
@@ -214,6 +191,26 @@ export const NavBar = (props) => {
         </div>
       );
     }
+  } else {
+    buttons = (
+      <div className='flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-3'>
+         <Link to={`/user/${userInfo.uuid}`}>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Profile'
+          />
+        </Link>
+        <Link to='/'>
+          <Button
+            backgroundColor='transparent'
+            activeEffect='primary-100'
+            name='Sign Out'
+            handleClick={logout}
+          />
+        </Link>
+      </div>
+    );
   }
 
   // if (
