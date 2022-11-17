@@ -16,14 +16,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/login', login);
-app.use('/jobs', jobs);
-app.use('/locations', locations);
-app.use('/proposals', proposals);
-app.use('/trades', trades);
-app.use('/users', users);
-app.use('/load', load);
-app.use('/me', me);
+app.use('/api/login', login);
+app.use('/api/jobs', jobs);
+app.use('/api/locations', locations);
+app.use('/api/proposals', proposals);
+app.use('/api/trades', trades);
+app.use('/api/users', users);
+app.use('/api/load', load);
+app.use('/api/me', me);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
