@@ -342,6 +342,11 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 		]);
 
 		if (is_accepted) {
+			const rejectAllOthers =
+				'update proposal set is_accepted = false where job_uuid =$1 and supplier_uuid != $2';
+
+			await client.query(rejectAllOthers, [job, supplierUUID]);
+
 			const updateJob =
 				'update job set is_taken=true, supplier_uuid=$1 where uuid=$2';
 			await client.query(updateJob, [supplierUUID, job]);

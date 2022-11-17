@@ -27,9 +27,9 @@ export const AvailableJobsPage = () => {
     try {
       e.preventDefault();
       const { data: res } = await getAPI(`jobs?city=${city}`, userInfo.token);
-      const _proposals = proposals.filter(proposal => proposal.city.name.toLowerCase() === city.toLowerCase());
+      const _proposals = proposals[0].jobs_pending.filter(proposal => proposal.city.name.toLowerCase() === city.toLowerCase());
       console.log(_proposals);
-      const arr = res.data.filter(job => !_proposals.find(proposal => job.uuid === proposal.job.uuid));
+      const arr = res.data.filter(job => job.is_taken === false).filter(job => !_proposals.find(proposal => job.uuid === proposal.job.uuid));
       console.log(arr);
       setJobs(arr);
     } catch (error) {
