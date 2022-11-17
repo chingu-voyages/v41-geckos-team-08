@@ -1,14 +1,15 @@
 import React, { useState, useRef } from 'react';
 import DatePicker from 'react-date-picker';
 import { Button } from './Button';
+import Loading from './Loading';
 import LandingImage from './../assets/images/drillBits.jpg';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { createJob } from '../Redux/Actions/jobActions';
+import { createJob, updateJob } from '../Redux/Actions/jobActions';
 import { getAPI } from '../Utils/Axios';
 import SortAndSearch from './SortAndSearch';
 import { store } from '../Redux/Store';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const JobForm = () => {
   const [date, changeDate] = useState(new Date());
@@ -55,16 +56,54 @@ export const JobForm = () => {
             trade.description.charAt(0).toUpperCase() +
             trade.description.slice(1).toLowerCase(),
         }));
-      console.log(tradesArr);
       setTrades(tradesArr);
     })();
   }, [userInfo.token]);
 
+  const [loading, setLoading] = useState(true);
+  const [showUpdate, setShowUpdate] = useState(false);
+  const location = useLocation();
+  const jobUUID = location.search.slice(5) || '';
+
+  useEffect(() => {
+    if (location.search === '') {
+      setLoading(false);
+      return;
+    }
+    if (trades.length === 0) return;
+    setShowUpdate(true);
+    (async () => {
+      try {
+        const { data: res } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
+        const data = res.data;
+        const [country] = countries.filter(_country => _country.uuid === data.city.country_uuid);
+        setSelectedCountry(country.uuid);
+        setCityInput(data.city.name);
+        setSelectedTrade(data.trade.uuid);
+        changeDate(new Date(data.expiration_date));
+        setNewJob({
+          ...newJob,
+          city_uuid: data.city.uuid,
+          trade_uuid: data.trade.uuid,
+          description: data.description,
+          low_price: data.low_price,
+          high_price: data.high_price,
+          expiration_date: data.expiration_date.split('T')[0]
+        });
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, [trades]);
+
   const [selectedCountry, setSelectedCountry] = useState('');
 
   useEffect(() => {
-    console.log(countries);
-  }, [countries]);
+    console.log(newJob);
+  }, [newJob]);
+
+  const [showCityForUpdate, setShowCityForUpdate] = useState(true);
 
   useEffect(() => {
     if (selectedCountry === '' && cities.length > 0) {
@@ -73,7 +112,7 @@ export const JobForm = () => {
       setFilteredCities([]);
     }
     if (selectedCountry !== '') {
-      setCityInput('');
+      if (!showCityForUpdate) setCityInput('');
       (async () => {
         const { data: _cities } = await getAPI(
           `locations/${selectedCountry}`,
@@ -81,14 +120,11 @@ export const JobForm = () => {
         );
         setCities(_cities.data);
       })();
+      if (showCityForUpdate) setShowCityForUpdate(false);
     }
   }, [selectedCountry, userInfo.token]);
 
   const [cities, setCities] = useState([]);
-
-  useEffect(() => {
-    console.log(cities);
-  }, [cities]);
 
   useEffect(() => {
     setNewJob({
@@ -143,180 +179,185 @@ export const JobForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(newJob);
-    dispatch(createJob(newJob, userInfo.token));
+    if (showUpdate) {
+      dispatch(updateJob(newJob, jobUUID, userInfo.token));
+    } else {
+      dispatch(createJob(newJob, userInfo.token));
+    }
     navigate(`/user/${auth.data.uuid}`);
   };
 
-  useEffect(() => {
-    console.log(store.getState());
-  }, [store]);
-
   return (
-    <div className='flex flex-wrap lg:h-full'>
-      <div className='w-full lg:w-1/2 bg-secondary-300 p-8 m-0'>
-        <h1 className='block w-full text-center text-quaternary-300 text-3xl tracking-tight font-bold mb-6'>
-          New Job
-        </h1>
-        <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='countries'
-            >
-              Countries
-            </label>
-            <select
-              value={selectedCountry}
-              onChange={(e) => setSelectedCountry(e.target.value)}
-              className='cursor-pointer'
-            >
-              <option default value=''>
-                Select a country
-              </option>
-              {countries.map((country) => {
-                return (
-                  <option key={country.uuid} value={country.uuid}>
-                    {country.name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label
-              className={`mb-2 font-bold text-lg text-quaternary-300 ${
-                selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
-              }`}
-              htmlFor='cities'
-            >
-              Cities
-            </label>
-            <input
-              className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
-              type='search'
-              value={cityInput}
-              onChange={(e) => setCityInput(e.target.value)}
-              disabled={selectedCountry === ''}
-            />
-            <ul>
-              {filteredCities.map((city) => (
-                <li
-                  className='cursor-pointer hover:opacity-60 text-quaternary-300'
-                  key={city.uuid}
-                  onClick={() => cityInputHandler(city)}
+    <>
+      {loading && <Loading />}
+      {!loading &&
+        <div className='flex flex-wrap lg:h-full'>        
+          <div className='w-full lg:w-1/2 bg-secondary-300 p-8 m-0'>
+            <h1 className='block w-full text-center text-quaternary-300 text-3xl tracking-tight font-bold mb-6'>
+              {showUpdate ? 'Update' : 'New'} Job
+            </h1>
+            <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='countries'
                 >
-                  {city.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='last_name'
-            >
-              Trade
-            </label>
-            <select
-              value={selectedTrade}
-              onChange={(e) => setSelectedTrade(e.target.value)}
-              className='cursor-pointer'
-            >
-              <option default value=''>
-                Select a trade
-              </option>
-              {trades.map((trade) => {
-                return (
-                  <option key={trade.uuid} value={trade.uuid}>
-                    {trade.description}
+                  Countries
+                </label>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className='cursor-pointer'
+                >
+                  <option default value=''>
+                    Select a country
                   </option>
-                );
-              })}
-            </select>
+                  {countries.map((country) => {
+                    return (
+                      <option key={country.uuid} value={country.uuid}>
+                        {country.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className={`mb-2 font-bold text-lg text-quaternary-300 ${
+                    selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
+                  }`}
+                  htmlFor='cities'
+                >
+                  Cities
+                </label>
+                <input
+                  className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
+                  type='search'
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  disabled={selectedCountry === ''}
+                />
+                <ul>
+                  {filteredCities.map((city) => (
+                    <li
+                      className='cursor-pointer hover:opacity-60 text-quaternary-300'
+                      key={city.uuid}
+                      onClick={() => cityInputHandler(city)}
+                    >
+                      {city.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='last_name'
+                >
+                  Trade
+                </label>
+                <select
+                  value={selectedTrade}
+                  onChange={(e) => setSelectedTrade(e.target.value)}
+                  className='cursor-pointer'
+                >
+                  <option default value=''>
+                    Select a trade
+                  </option>
+                  {trades.map((trade) => {
+                    return (
+                      <option key={trade.uuid} value={trade.uuid}>
+                        {trade.description}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='last_name'
+                >
+                  Description
+                </label>
+                <textarea
+                  className='border py-2 px-3 text-black rounded'
+                  type='text'
+                  name='description'
+                  id='description'
+                  value={description}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='last_name'
+                >
+                  I Need this Done by
+                </label>
+                <div>
+                  <DatePicker
+                    className='bg-quaternary-300'
+                    value={date}
+                    onChange={changeDate}
+                    required
+                  />
+                </div>
+              </div>
+              {/* prices are converted from numbers to strings when changed */}
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='low_price'
+                >
+                  Low Price
+                </label>
+                <input
+                  type='number'
+                  min={1}
+                  required
+                  name='low_price'
+                  id='low_price'
+                  value={low_price}
+                  onChange={handleChange}
+                />
+                <label
+                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  htmlFor='high_price'
+                >
+                  High Price
+                </label>
+                <input
+                  type='number'
+                  min={1}
+                  required
+                  name='high_price'
+                  id='high_price'
+                  value={high_price}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <Button
+                  type='submit'
+                  value='submit'
+                  backgroundColor='primary-100'
+                  name='Post'
+                />
+              </div>
+            </form>
           </div>
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='last_name'
-            >
-              Description
-            </label>
-            <textarea
-              className='border py-2 px-3 text-black rounded'
-              type='text'
-              name='description'
-              id='description'
-              value={description}
-              onChange={handleChange}
-              required
+          <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12 '>
+            <img
+              src={LandingImage}
+              alt='Trendy Pants and Shoes'
+              className='w-full h-screen'
             />
           </div>
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='last_name'
-            >
-              I Need this Done by
-            </label>
-            <div>
-              <DatePicker
-                className='bg-quaternary-300'
-                value={date}
-                onChange={changeDate}
-                required
-              />
-            </div>
-          </div>
-          {/* prices are converted from numbers to strings when changed */}
-          <div className='flex flex-col mb-4'>
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='low_price'
-            >
-              Low Price
-            </label>
-            <input
-              type='number'
-              min={1}
-              required
-              name='low_price'
-              id='low_price'
-              value={low_price}
-              onChange={handleChange}
-            />
-            <label
-              className='mb-2 font-bold text-lg text-quaternary-300'
-              htmlFor='high_price'
-            >
-              High Price
-            </label>
-            <input
-              type='number'
-              min={1}
-              required
-              name='high_price'
-              id='high_price'
-              value={high_price}
-              onChange={handleChange}
-            />
-          </div>
-          <div>
-            <Button
-              type='submit'
-              value='submit'
-              backgroundColor='primary-100'
-              name='Post'
-            />
-          </div>
-        </form>
-      </div>
-      <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12 '>
-        <img
-          src={LandingImage}
-          alt='Trendy Pants and Shoes'
-          className='w-full h-screen'
-        />
-      </div>
-    </div>
+        </div>       
+      }
+    </>
   );
 };

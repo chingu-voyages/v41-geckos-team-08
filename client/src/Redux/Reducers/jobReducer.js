@@ -1,7 +1,8 @@
 import { 
   CREATE_JOB_BY_USER_ID, 
   GET_JOBS, 
-  ACCEPT_JOB_PROPOSAL
+  ACCEPT_JOB_PROPOSAL,
+  UPDATE_JOB_BY_USER_ID
 } from '../ActionTypes';
 
 export const jobReducer = (state = [], action) => {
@@ -11,6 +12,11 @@ export const jobReducer = (state = [], action) => {
   switch (action.type) {
     case CREATE_JOB_BY_USER_ID:
       jobs_posted = [action.payload, ...state[0].jobs_posted];
+      jobs_in_progress = state[0].jobs_in_progress;
+      return [{ jobs_posted, jobs_in_progress }];
+    case UPDATE_JOB_BY_USER_ID:
+      jobs_posted = state[0].jobs_posted.filter(job => job.uuid !== action.payload.uuid);
+      jobs_posted = [action.payload, ...jobs_posted];
       jobs_in_progress = state[0].jobs_in_progress;
       return [{ jobs_posted, jobs_in_progress }];
     case GET_JOBS:

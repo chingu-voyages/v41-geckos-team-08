@@ -96,11 +96,13 @@ export const UserProfile = () => {
                   return (
                     <JobCard
                       key={job.uuid}
-                      onClick={() => navigate(`/job/${job.uuid}`)}
+                      jobUUID={job.uuid}
                       name={job.customer.name}
                       description={job.description}
                       trade={job.trade.description}
                       expiration_date={job.expiration_date.split('T')[0]}
+                      showEditBtn={true}
+                      showJobBtn={true}
                     />
                   );
                 })}
