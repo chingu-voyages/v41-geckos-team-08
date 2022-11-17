@@ -7,7 +7,9 @@ import LandingImage from './../assets/images/Drill.jpg';
 import {store} from './../Redux/Store'
 
 export const LandingPage = () => {
-  console.log(store.getState())
+
+  console.log(store.getState());
+ 
   return (
     <div className='bg-white rounded-sm border-none flex flex-col'>
       <LandingTop />      

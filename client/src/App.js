@@ -7,7 +7,7 @@ import {SignUpPage}from './Pages/SignUpPage';
 import {AvailableJobsPage} from './Pages/AvailableJobsPage'
 import {ContractorProfile} from './Pages/ContractorProfile'
 import {JobFormPage} from './Pages/JobFormPage'
-import {OfferFromContractorPage} from './Pages/OfferFromContractorPage'
+import {ProposalPage} from './Pages/ProposalPage'
 import {UserProfile} from './Pages/UserProfile'
 import SortAndSearch from './Components/SortAndSearch';
 import { NavBar } from './Components/NavBar';
@@ -16,15 +16,18 @@ import Loading from './Components/Loading';
 import PageNotFound from './Pages/PageNotFound';
 import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { AUTH } from './Redux/ActionTypes';
+import { AUTH, GET_JOBS, GET_PROPOSALS } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
+import {store} from './Redux/Store';
+import { checkTokenExp } from './Utils/CheckTokenExp';
+import { logout } from './Redux/Actions/authActions';
 
 function App() {
 
   const [loading, setLoading] = useState(true);
-  const { auth } = useSelector((state) => state);
+  const { auth, jobs, proposals } = useSelector((state) => state);
   const dispatch = useDispatch();
-
+   
   useEffect(() => {
     if (auth.length !== undefined) {
       setLoading(false);
@@ -39,11 +42,37 @@ function App() {
     const getUserInfo = async () => {
       const { token, uuid } = userInfo;
       try {
-        const res = await getAPI(`users/${uuid}`, token);
+        // const tokenActive = await checkTokenExp(token);
+        // if (!tokenActive) {
+        //   // logout();
+        //   setLoading(false);
+        //   return;
+        // }
+        const { data: authRes } = await getAPI(`users/${uuid}`, token);
         dispatch({
           type: AUTH,
-          payload: res.data
+          payload: authRes
         });
+
+        if (jobs.length === 0 && authRes.data.is_supplier === false) {
+          const { data: jobsRes } = await getAPI('jobs', token);
+          if (jobsRes) {
+            dispatch({
+              type: GET_JOBS,
+              payload: jobsRes.data
+            });
+          }
+        }
+
+        if (proposals.length === 0 && authRes.data.is_supplier) {
+          const { data: proposalsRes } = await getAPI('proposals', token);
+          if (proposalsRes) {
+            dispatch({
+              type: GET_PROPOSALS,
+              payload: proposalsRes.data
+            });
+          }
+        }
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -55,24 +84,26 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-     {!loading &&     
-      <Router>
-        <NavBar />
-        <Routes>
-          <Route path='/' element={<LandingPage />} />
-          <Route path='/jobs' element={<AuthRoute><AvailableJobsPage /></AuthRoute>} />
-          <Route path='/supplier/:id' element={<ContractorProfile />} />
-          <Route path='/new_job' element={<JobFormPage />} />
-          <Route path='/login' element={<LoginPage />} />
-          <Route path='/offer/:id' element={<OfferFromContractorPage />} />
-          <Route path='/signup' element={<SignUpPage />} />
-          <Route path='/user/:id' element={<UserProfile />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-        <Footer />
-      </Router>
-     }
+    <div className="app-container">
+     {/* <div className='app-body'> */}
+      {!loading &&     
+        <Router>
+          <NavBar />
+          <Routes>
+            <Route path='/' element={<LandingPage />} />
+            <Route path='/jobs' element={<AuthRoute><AvailableJobsPage /></AuthRoute>} />
+            <Route path='/supplier/:id' element={<AuthRoute><ContractorProfile /></AuthRoute>} />
+            <Route path='/new_job' element={<AuthRoute><JobFormPage /></AuthRoute>} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/job/:id' element={<AuthRoute><ProposalPage /></AuthRoute>} />
+            <Route path='/signup' element={<SignUpPage />} />
+            <Route path='/user/:id' element={<AuthRoute><UserProfile /></AuthRoute>} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+          <Footer />
+        </Router>
+      }
+     {/* </div> */}
     </div>
   );
 }

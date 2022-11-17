@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import LandingImage from './../assets/images/Drill.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signUp } from '../Redux/Actions/authActions';
 import { useDispatch } from 'react-redux';
-import {store} from './../Redux/Store'
 
 export const SignUpForm = () => {
   const initialState = {
@@ -34,14 +33,26 @@ export const SignUpForm = () => {
     // });
   };
 
-  // console.log(userSignUp);
+  // Trade is a separate state because only the supplier is required to have a trade, not the customer
+  const [trade, setTrade] = useState('');
+
+  useEffect(() => {
+    if (trade !== '') {
+      setUserSignUp({
+        ...userSignUp,
+        trades: [trade.toLowerCase()]
+      });
+    }
+  }, [trade]);
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(userSignUp);
     dispatch(signUp(userSignUp));
-    console.log(store.getState())
+    navigate('/login');
   };
 
   return (
@@ -105,6 +116,12 @@ export const SignUpForm = () => {
             />
           </div>
           <div className='flex flex-col mb-4'>
+            <label
+              className='mb-2 font-bold text-lg text-black'
+              htmlFor='serviceProvider'
+            >
+              Service Provider
+            </label>
             <input
               type='checkbox'
               id='is_supplier'
@@ -113,11 +130,21 @@ export const SignUpForm = () => {
               name='is_supplier'
             />
             <label
-              className='mb-2 font-bold text-lg text-black'
-              htmlFor='serviceProvider'
+              className={`mb-2 font-bold text-lg text-black ${userSignUp.is_supplier ? 'opacity-100' : 'opacity-60'}`}
+              htmlFor='trade'
             >
-              Service Provider
+              Trade
             </label>
+            <input
+              className={`${userSignUp.is_supplier ? 'opacity-100' : 'opacity-60'}`}
+              type='text'
+              id='trade'
+              value={trade}
+              onChange={e => setTrade(e.target.value)}
+              name='trade'
+              disabled={!userSignUp.is_supplier}
+              required={userSignUp.is_supplier}
+            />
           </div>
           <div className='flex flex-col mb-4'>
             <label
@@ -137,11 +164,12 @@ export const SignUpForm = () => {
             />
           </div>
 
-          <div className='mt-10 -ml-6'>
+          <div className='mt-0 ml-0'>
             <Button
               type='submit'
               value='submit'
-              backgroundColor='primary-200'
+              backgroundColor='primary-100'
+              name='Sign Up'
             />
           </div>
         </form>

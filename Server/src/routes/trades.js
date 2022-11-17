@@ -15,7 +15,7 @@ route.get('/', authorization, async (req, res) => {
 	});
 });
 
-route.post('/', authorization, async (req, res) => {
+route.post('/', async (req, res) => {
 	if (!req.body.description)
 		return res.status(400).json({ detail: 'A description is needed' });
 

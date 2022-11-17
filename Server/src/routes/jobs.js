@@ -8,15 +8,27 @@ const validateUUID = require('../middleware/validateUUID');
 const authorization = require('../middleware/authorization');
 
 route.get('/', authorization, async (req, res) => {
-	if (!req.query.city)
-		return res.status(406).json({ detail: 'You need to send the city' });
+	let jobsSQL, jobsResponse;
 
-	const jobsSQL =
-		'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where lower(city.name) = $1';
+	if (!req.user.is_supplier) {
+		jobsSQL =
+			'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where customer.uuid = $1 and job.is_completed = false';
 
-	const jobsResponse = await (
-		await client.query(jobsSQL, [req.query.city.toLowerCase()])
-	).rows;
+		jobsResponse = await (
+			await client.query(jobsSQL, [req.user.user])
+		).rows;
+	} else {
+		if (!req.query.city)
+			return res
+				.status(406)
+				.json({ detail: 'You need to send the city' });
+		jobsSQL =
+			'select job.uuid, job.description, job.low_price, job.high_price, job.expiration_date, job.is_taken, job.is_completed, trades.uuid as trades_uuid, trades.description as trades_description, customer.uuid as customer_uuid, customer.email as customer_email, customer.name as customer_name, customer.phone as customer_phone, supplier.uuid as supplier_uuid, supplier.email as supplier_email, supplier.name as supplier_name, supplier.phone as supplier_phone, city.uuid as city_uuid, city.name as city_name from job left join trades on job.trade_uuid = trades.uuid left join users as customer on job.customer_uuid = customer.uuid left join users as supplier on job.supplier_uuid = supplier.uuid left join city on job.city_uuid = city.uuid where lower(city.name) = $1 and job.is_completed = false';
+
+		jobsResponse = await (
+			await client.query(jobsSQL, [req.query.city.toLowerCase()])
+		).rows;
+	}
 
 	const formattedJobs = jobsResponse.map((job) => {
 		const formatted = formatOneJobRespnse(job);

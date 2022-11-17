@@ -1,9 +1,12 @@
 import { postAPI } from "../../Utils/Axios";
 import { AUTH } from "../ActionTypes";
+import {RESET_STORE} from "../ActionTypes";
 
 export const login = userLogin => async dispatch => {
  try {
   const res = await postAPI('login', userLogin);
+
+  console.log(res);
 
   dispatch({
    type: AUTH,
@@ -26,8 +29,14 @@ export const login = userLogin => async dispatch => {
 
 export const signUp = userSignup => async dispatch => {
  try {
-  const res = await postAPI('http://localhost:8080/users', userSignup);
-  console.log(res);
+  const _res = await postAPI('users', userSignup);
+  console.log(_res);
+  if (userSignup.trades) {
+    const res = await postAPI('trades', {
+      description: [userSignup.trades]
+    });
+    console.log(res);
+  }
 //   dispatch({
 //    type: AUTH,
 //    payload: res.data.data
@@ -37,4 +46,18 @@ export const signUp = userSignup => async dispatch => {
  } catch (error) {
   console.log(error);
  }
+}
+
+export const logout = () => {
+  localStorage.clear();
+  resetStore();
+  window.location.reload();
+  window.location.pathname = '/';
+}
+
+// to reset the state of redux store
+export const resetStore = () => {
+  return {
+    type: RESET_STORE
+  }
 }

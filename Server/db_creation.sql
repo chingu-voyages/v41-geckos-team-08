@@ -122,6 +122,9 @@ CREATE TABLE public.proposal
         NOT VALID
 );
 
+ALTER TABLE IF EXISTS public.proposal
+    ADD COLUMN description text COLLATE pg_catalog."default" NOT NULL;
+
 CREATE TABLE IF NOT EXISTS public.countries
 (
     uuid uuid NOT NULL,
@@ -140,3 +143,6 @@ ALTER TABLE IF EXISTS public.city
 
 ALTER TABLE IF EXISTS public.trades
     ADD CONSTRAINT uq_trades_description UNIQUE (description);
+
+ALTER TABLE IF EXISTS public.proposal
+    ADD COLUMN is_accepted boolean;
