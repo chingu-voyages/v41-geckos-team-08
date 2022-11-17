@@ -10,7 +10,9 @@ export const jobReducer = (state = [], action) => {
 
   switch (action.type) {
     case CREATE_JOB_BY_USER_ID:
-      return [...state, action.payload];
+      jobs_posted = [action.payload, ...state[0].jobs_posted];
+      jobs_in_progress = state[0].jobs_in_progress;
+      return [{ jobs_posted, jobs_in_progress }];
     case GET_JOBS:
       jobs_posted = action.payload.filter(job => job.is_taken === false);
       jobs_in_progress = action.payload.filter(job => job.is_taken === true && job.is_completed === false);
