@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Loading from '../Components/Loading';
 import { Button } from '../Components/Button';
 import { JobCard } from '../Components/JobCard';
 import { ProposalCard } from '../Components/ProposalCard';
 import { NavBar } from '../Components/NavBar';
-import { createProposal } from '../Redux/Actions/proposalActions';
+import { createProposal, updateProposal } from '../Redux/Actions/proposalActions';
 import { getAPI } from '../Utils/Axios';
 import { Footer } from '../Components/Footer';
 import { Pagination } from '../Components/Pagination';
@@ -23,19 +24,27 @@ export const ProposalPage = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const jobUUID = location.pathname.slice(5);
 
-  const { auth } = useSelector((state) => state);
+  const { auth, proposals } = useSelector((state) => state);
 
-  const [proposals, setProposals] = useState([]);
+  const [_proposals, setProposals] = useState([]);
+
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState(0);
 
   useEffect(() => {
     (async () => {
       try {
         const { data: jobRes } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
         console.log(jobRes.data);
-        if (!auth.data.is_supplier) {
-          const { data: proposalsRes } = await getAPI(`proposals?job=${jobUUID}`, userInfo.token);
-          console.log(proposalsRes.data);
-          setProposals(proposalsRes.data);
+        if (!auth.data.is_supplier || location.search === "?edit") {
+          const { data: _proposalsRes } = await getAPI(`proposals?job=${jobUUID}`, userInfo.token);
+          if (auth.data.is_supplier) {
+            const [proposal] = _proposalsRes.data.filter(proposal => proposal.supplier.uuid === auth.data.uuid);
+            setDescription(proposal.description);
+            setPrice(proposal.price);
+          } else {
+            setProposals(_proposalsRes.data);
+          }
         }
         setJob(jobRes.data);
         setLoading(false);
@@ -47,11 +56,8 @@ export const ProposalPage = () => {
     })();
   }, []);
 
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState(0);
-
   useEffect(() => {
-    if (Object.keys(job).length > 0) setPrice(job.low_price);
+    if (Object.keys(job).length > 0 && location.search !== "?edit") setPrice(job.low_price);
   }, [job]);
 
   const dispatch = useDispatch();
@@ -64,12 +70,19 @@ export const ProposalPage = () => {
       job_uuid: jobUUID,
       price
     };
-    dispatch(createProposal(proposal, userInfo.token));
+    if (location.search === "?edit") {
+      dispatch(updateProposal(auth.data.uuid, jobUUID, proposal, userInfo.token));
+    } else {
+      dispatch(createProposal(proposal, userInfo.token));
+    }
     navigate(`/user/${auth.data.uuid}`);
   }
 
   return (
-    <div className=''>
+    <div>
+      {loading && !error &&
+        <Loading />
+      }
       {!loading && error &&
         <PageNotFound />
       }
@@ -121,13 +134,13 @@ export const ProposalPage = () => {
             }
             {!auth.data.is_supplier &&
               <div className='mt-10'>
-                {proposals.length === 0 &&
-                  <h1 className='text-center font-bold mb-5'>No proposals have been made for this job, yet.</h1>
+                {_proposals.length === 0 &&
+                  <h1 className='text-center font-bold mb-5'>No _proposals have been made for this job, yet.</h1>
                 }
-                {proposals.length > 0 &&                 
-                  <h1 className='text-center font-bold mb-5'>Proposals:</h1>
+                {_proposals.length > 0 &&                 
+                  <h1 className='text-center font-bold mb-5'>_proposals:</h1>
                 }
-                {proposals.map(proposal => {
+                {_proposals.map(proposal => {
                   return (
                     <ProposalCard 
                       key={proposal.supplier.uuid}

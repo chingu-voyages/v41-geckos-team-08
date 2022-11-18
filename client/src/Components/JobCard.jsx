@@ -32,7 +32,7 @@ export const JobCard = (props) => {
                     textColor='white'
                     actionEffect='secondary-300'
                     name='Edit'
-                    handleClick={() => navigate(`/new_job?job=${props.jobUUID}`)}
+                    handleClick={() => navigate(props.is_supplier ? `/job/${props.jobUUID}?edit` : `/new_job?job=${props.jobUUID}`)}
                   />
                 </div>
               }
