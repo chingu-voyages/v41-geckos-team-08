@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {LoginPage} from './Pages/LoginPage'
 import { LandingPage } from './Pages/LandingPage';
-import {SignUpPage}from './Pages/SignUpPage';
+import { UserInfoPage } from './Pages/UserInfoPage';
 import {AvailableJobsPage} from './Pages/AvailableJobsPage'
 import {ContractorProfile} from './Pages/ContractorProfile'
 import {JobFormPage} from './Pages/JobFormPage'
@@ -98,7 +98,8 @@ function App() {
             <Route path='/new_job' element={<AuthRoute><JobFormPage /></AuthRoute>} />
             <Route path='/login' element={<LoginPage />} />
             <Route path='/job/:id' element={<AuthRoute><ProposalPage /></AuthRoute>} />
-            <Route path='/signup' element={<SignUpPage />} />
+            <Route path='/signup' element={<UserInfoPage />} />
+            <Route path='/edit_user/:id' element={<AuthRoute><UserInfoPage /></AuthRoute>} />
             <Route path='/user/:id' element={<AuthRoute><UserProfile /></AuthRoute>} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>

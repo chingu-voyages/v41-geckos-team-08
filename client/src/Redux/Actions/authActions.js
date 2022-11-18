@@ -1,6 +1,5 @@
-import { postAPI } from "../../Utils/Axios";
-import { AUTH } from "../ActionTypes";
-import {RESET_STORE} from "../ActionTypes";
+import { postAPI, putAPI } from "../../Utils/Axios";
+import { AUTH, RESET_STORE } from "../ActionTypes";
 
 export const login = userLogin => async dispatch => {
  try {
@@ -27,25 +26,34 @@ export const login = userLogin => async dispatch => {
  }
 }
 
-export const signUp = userSignup => async dispatch => {
+export const signUp = userInputs => async dispatch => {
  try {
-  const _res = await postAPI('users', userSignup);
+  const _res = await postAPI('users', userInputs);
   console.log(_res);
-  if (userSignup.trades) {
+  if (userInputs.trades) {
     const res = await postAPI('trades', {
-      description: [userSignup.trades]
+      description: [userInputs.trades]
     });
     console.log(res);
   }
-//   dispatch({
-//    type: AUTH,
-//    payload: res.data.data
-//   });
- 
-//   localStorage.setItem('logged', 'true');
  } catch (error) {
   console.log(error);
  }
+}
+
+export const updateUser = (userInputs, userUUID, token) => async dispatch => {
+  try {
+    const res = await putAPI(`users/${userUUID}`, userInputs, token);
+    console.log(res);
+
+    dispatch({
+      type: AUTH,
+      payload: res.data
+    });
+
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export const logout = () => {

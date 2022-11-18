@@ -187,17 +187,13 @@ route.put(
 		const email = userData.email || userResponse.rows[0].email;
 		const name = userData.name || userResponse.rows[0].name;
 		const phone = userData.phone || userResponse.rows[0].phone;
-		const is_supplier =
-			userData.is_supplier === undefined
-				? userResponse.rows[0].is_supplier
-				: userData.is_supplier;
 
 		let values = [];
 
 		// Since we can not read the password then if the user doesn't send it then it will not update the password
 		if (userData.password) {
 			sql =
-				'update users set email=$1, password=$2, name=$3, phone=$4, is_supplier=$5 where uuid=$6';
+				'update users set email=$1, password=$2, name=$3, phone=$4 where uuid=$5';
 
 			const hashedPassword = await hashPassword(userData.password);
 
@@ -206,14 +202,13 @@ route.put(
 				hashedPassword,
 				name,
 				phone,
-				is_supplier,
 				userUUID,
 			];
 		} else {
 			sql =
-				'update users set email=$1, name=$2, phone=$3, is_supplier=$4 where uuid=$5';
+				'update users set email=$1, name=$2, phone=$3 where uuid=$4';
 
-			values = [email, name, phone, is_supplier, userUUID];
+			values = [email, name, phone, userUUID];
 		}
 
 		try {
@@ -239,7 +234,7 @@ route.put(
 
 			await client.query('COMMIT'); // Saves all the information to the database
 
-			// if saving was succefsull then we get the saved information
+			// if saving was successful, then we get the saved information
 
 			sql =
 				'select uuid, email, is_supplier, name, phone from users where uuid = $1';

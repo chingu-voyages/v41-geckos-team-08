@@ -146,3 +146,6 @@ ALTER TABLE IF EXISTS public.trades
 
 ALTER TABLE IF EXISTS public.proposal
     ADD COLUMN is_accepted boolean;
+
+ALTER TABLE IF EXISTS public.city
+    ADD COLUMN country_uuid uuid NOT NULL;

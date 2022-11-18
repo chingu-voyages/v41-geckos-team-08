@@ -14,7 +14,7 @@ const saveTrades = async (trades, supplier_uuid) => {
 		let sql = 'delete from supplier_trade where supplier_uuid = $1';
 		await client.query(sql, [supplier_uuid]);
 
-		for (index in trades) {
+		for (let index in trades) {
 			const trade = trades[index];
 
 			sql = 'select uuid from trades where description = $1';
@@ -41,4 +41,5 @@ const saveTrades = async (trades, supplier_uuid) => {
 		return false;
 	}
 };
-exports.saveTrades = saveTrades;
+
+module.exports.saveTrades = saveTrades;
