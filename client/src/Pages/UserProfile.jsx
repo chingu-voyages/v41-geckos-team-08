@@ -84,10 +84,10 @@ export const UserProfile = () => {
               </h1>
               {buttonAClicked &&
                 !auth.data.is_supplier &&
-                jobs.length === 0 && <h3>No Jobs Posted</h3>}
+                jobs[0].jobs_posted.length === 0 && <h3>No Jobs Posted</h3>}
               {buttonAClicked &&
                 auth.data.is_supplier &&
-                proposals.length === 0 && <h3>No Jobs Taken</h3>}
+                proposals[0].jobs_taken.length === 0 && <h3>No Jobs Taken</h3>}
               {/* I'm gonna have to add logic later differentiating between Jobs Posted and Jobs Picked Up by Suppliers */}
               {buttonAClicked &&
                 !auth.data.is_supplier &&
@@ -114,10 +114,12 @@ export const UserProfile = () => {
                   return (
                     <JobCard
                       key={proposal.job.uuid}
+                      jobUUID={proposal.job.uuid}
                       name={proposal.customer.name}
                       description={proposal.job.description}
                       trade={proposal.trade.description}
                       expiration_date={proposal.expiration_date.split('T')[0]}
+                      showCompletedBtn={true}
                     />
                   );
                 })}
@@ -140,10 +142,10 @@ export const UserProfile = () => {
                 })}
               {buttonBClicked &&
                 !auth.data.is_supplier &&
-                jobs.length === 0 && <h3>No Jobs in Progress</h3>}
+                jobs[0].jobs_in_progress.length === 0 && <h3>No Jobs in Progress</h3>}
               {buttonBClicked &&
                 auth.data.is_supplier &&
-                proposals.length === 0 && <h3>No Jobs Pending</h3>}
+                proposals[0].jobs_pending.length === 0 && <h3>No Jobs Pending</h3>}
               {buttonBClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&

@@ -1,10 +1,15 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { completeJob } from '../Redux/Actions/proposalActions';
 import { Button } from './Button';
 
 export const JobCard = (props) => {
 
   const navigate = useNavigate();
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const dispatch = useDispatch();
 
   return (
     <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
@@ -44,6 +49,17 @@ export const JobCard = (props) => {
                       actionEffect='secondary-300'
                       name='Go to Job Page'
                       handleClick={() => navigate(`/job/${props.jobUUID}`)}
+                    />
+                </div>
+              }
+              {props.showCompletedBtn &&             
+                <div className='flex gap-3 mt-2'>
+                    <Button
+                      backgroundColor='primary-100'
+                      textColor='white'
+                      actionEffect='secondary-300'
+                      name='Job Complete'
+                      handleClick={() => dispatch(completeJob(props.jobUUID, userInfo.token))}
                     />
                 </div>
               }

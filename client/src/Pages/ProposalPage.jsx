@@ -24,9 +24,9 @@ export const ProposalPage = () => {
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const jobUUID = location.pathname.slice(5);
 
-  const { auth, proposals } = useSelector((state) => state);
+  const { auth } = useSelector((state) => state);
 
-  const [_proposals, setProposals] = useState([]);
+  const [proposals, setProposals] = useState([]);
 
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
@@ -37,13 +37,13 @@ export const ProposalPage = () => {
         const { data: jobRes } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
         console.log(jobRes.data);
         if (!auth.data.is_supplier || location.search === "?edit") {
-          const { data: _proposalsRes } = await getAPI(`proposals?job=${jobUUID}`, userInfo.token);
+          const { data: proposalsRes } = await getAPI(`proposals?job=${jobUUID}`, userInfo.token);
           if (auth.data.is_supplier) {
-            const [proposal] = _proposalsRes.data.filter(proposal => proposal.supplier.uuid === auth.data.uuid);
+            const [proposal] = proposalsRes.data.filter(proposal => proposal.supplier.uuid === auth.data.uuid);
             setDescription(proposal.description);
             setPrice(proposal.price);
           } else {
-            setProposals(_proposalsRes.data);
+            setProposals(proposalsRes.data);
           }
         }
         setJob(jobRes.data);
@@ -134,13 +134,13 @@ export const ProposalPage = () => {
             }
             {!auth.data.is_supplier &&
               <div className='mt-10'>
-                {_proposals.length === 0 &&
-                  <h1 className='text-center font-bold mb-5'>No _proposals have been made for this job, yet.</h1>
+                {proposals.length === 0 &&
+                  <h1 className='text-center font-bold mb-5'>No proposals have been made for this job, yet.</h1>
                 }
-                {_proposals.length > 0 &&                 
-                  <h1 className='text-center font-bold mb-5'>_proposals:</h1>
+                {proposals.length > 0 &&                 
+                  <h1 className='text-center font-bold mb-5'>Proposals:</h1>
                 }
-                {_proposals.map(proposal => {
+                {proposals.map(proposal => {
                   return (
                     <ProposalCard 
                       key={proposal.supplier.uuid}
