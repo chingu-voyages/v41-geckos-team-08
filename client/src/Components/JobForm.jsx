@@ -299,6 +299,7 @@ export const JobForm = () => {
                 </label>
                 <div>
                   <DatePicker
+                    clearIcon={null}
                     className='bg-quaternary-300'
                     value={date}
                     onChange={changeDate}
