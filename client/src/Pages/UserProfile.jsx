@@ -103,6 +103,7 @@ export const UserProfile = () => {
                       expiration_date={job.expiration_date.split('T')[0]}
                       showEditBtn={true}
                       showJobBtn={true}
+                      is_supplier={false}
                     />
                   );
                 })}
@@ -127,10 +128,13 @@ export const UserProfile = () => {
                   return (
                     <JobCard
                       key={proposal.job.uuid}
+                      jobUUID={proposal.job.uuid}
                       name={proposal.customer.name}
                       description={proposal.job.description}
                       trade={proposal.trade.description}
                       expiration_date={proposal.expiration_date.split('T')[0]}
+                      showEditBtn={true}
+                      is_supplier={true}
                     />
                   );
                 })}

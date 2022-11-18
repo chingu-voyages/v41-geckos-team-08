@@ -1,4 +1,4 @@
-import { CREATE_JOB_PROPOSAL, GET_PROPOSALS } from "../ActionTypes";
+import { CREATE_JOB_PROPOSAL, GET_PROPOSALS, UPDATE_JOB_PROPOSAL } from "../ActionTypes";
 
 export const proposalReducer = (state = [], action) => {
 
@@ -13,6 +13,11 @@ export const proposalReducer = (state = [], action) => {
    jobs_taken = action.payload.filter(job => job.is_accepted === true && job.job.is_completed === false);
    jobs_pending = action.payload.filter(job => job.is_accepted === null);
    return [{ jobs_taken, jobs_pending }];
+  case UPDATE_JOB_PROPOSAL:
+    jobs_taken = state[0].jobs_taken;
+    jobs_pending = state[0].jobs_pending.filter(job => job.job.uuid !== action.payload.job.uuid);
+    jobs_pending = [action.payload, ...jobs_pending];
+    return [{ jobs_taken, jobs_pending }];
   default:
    return state;
  }
