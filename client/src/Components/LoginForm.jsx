@@ -3,6 +3,7 @@ import { Button } from './Button';
 import LandingImage from './../assets/images/Drill.jpg';
 import { useDispatch } from 'react-redux';
 import { login } from '../Redux/Actions/authActions';
+import { useNavigate } from 'react-router-dom';
 // import { Link } from 'react-router-dom';
 
 export function LoginForm() {
@@ -22,10 +23,17 @@ export function LoginForm() {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
-    dispatch(login(userLogin));
+    dispatch(login(userLogin)).then(res => {
+      if (res.status !== 200) {
+        // add error msg later
+        return;
+      }
+      navigate(`/user/${res.data.user.uuid}`);
+    });
   }
 
   return (

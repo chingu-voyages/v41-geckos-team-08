@@ -11,38 +11,46 @@ export const createProposal = (proposal, token) => async dispatch => {
    type: CREATE_JOB_PROPOSAL,
    payload: res.data.data
   });
+
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
 
 export const updateProposal = (supplier, job, proposal, token) => async dispatch => {
  try {
-  const { data: res } = await putAPI(`proposals/${supplier}?job=${job}`, proposal, token);
+  const res = await putAPI(`proposals/${supplier}?job=${job}`, proposal, token);
 
-  console.log(res.data);
+  console.log(res.data.data);
 
   dispatch({
    type: UPDATE_JOB_PROPOSAL,
-   payload: res.data
+   payload: res.data.data
   });
+
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
 
 export const completeJob = (job, token) => async dispatch => {
  try {
-  const { data: res } = await putAPI(`jobs/${job}`, { is_completed: true }, token);
+  const res = await putAPI(`jobs/${job}`, { is_completed: true }, token);
 
-  console.log(res.data);
+  console.log(res.data.data);
 
   dispatch({
    type: COMPLETE_JOB,
-   payload: res.data
+   payload: res.data.data
   });
 
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
