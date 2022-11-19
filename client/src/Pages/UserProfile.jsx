@@ -38,7 +38,7 @@ export const UserProfile = () => {
         <ProfileCard />
       </section>
 
-      <section className='bg-primary-300'>
+      <section className='bg-tertiary-100'>
         {/* <SecondaryNavBar /> */}
         <div className='flex flex-wrap items-center'>
           <div className='py-0 grow-0 shrink-0 basis-auto w-full'>
@@ -46,9 +46,6 @@ export const UserProfile = () => {
               <Button
                 type='submit'
                 value={buttonAClicked}
-                backgroundColor={
-                  buttonAClicked ? 'tertiary-100' : 'tertiary-300'
-                }
                 name={auth.data.is_supplier ? 'Jobs Taken' : 'Jobs Posted'}
                 handleClick={() => {
                   setButtonAClicked(true);
@@ -59,9 +56,6 @@ export const UserProfile = () => {
               <Button
                 type='submit'
                 value={buttonBClicked}
-                backgroundColor={
-                  buttonBClicked ? 'tertiary-100' : 'tertiary-300'
-                }
                 name={
                   auth.data.is_supplier ? 'Jobs Pending' : 'Jobs In Progress'
                 }
@@ -73,7 +67,7 @@ export const UserProfile = () => {
               />
             </div>
             <div className='flex flex-col justify-center items-center py-12 gap-12 '>
-              <h1 className='text-xl font-bold mb-5 text-center text-quaternary-300'>
+              <h1 className='text-xl font-bold mb-5 text-center text-black'>
                 {buttonAClicked
                   ? auth.data.is_supplier
                     ? 'Jobs Taken'
@@ -84,10 +78,16 @@ export const UserProfile = () => {
               </h1>
               {buttonAClicked &&
                 !auth.data.is_supplier &&
-                jobs[0].jobs_posted.length === 0 && <h3>No Jobs Posted</h3>}
+                jobs[0].jobs_posted.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs posted.</h3>}
               {buttonAClicked &&
                 auth.data.is_supplier &&
-                proposals[0].jobs_taken.length === 0 && <h3>No Jobs Taken</h3>}
+                proposals[0].jobs_taken.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs picked up.</h3>}
+              {buttonBClicked &&
+                !auth.data.is_supplier &&
+                jobs[0].jobs_in_progress.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs in progress.</h3>}
+              {buttonBClicked &&
+                auth.data.is_supplier &&
+                proposals[0].jobs_pending.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs waiting to be picked up.</h3>}
               {/* I'm gonna have to add logic later differentiating between Jobs Posted and Jobs Picked Up by Suppliers */}
               {buttonAClicked &&
                 !auth.data.is_supplier &&
@@ -140,12 +140,6 @@ export const UserProfile = () => {
                     />
                   );
                 })}
-              {buttonBClicked &&
-                !auth.data.is_supplier &&
-                jobs[0].jobs_in_progress.length === 0 && <h3>No Jobs in Progress</h3>}
-              {buttonBClicked &&
-                auth.data.is_supplier &&
-                proposals[0].jobs_pending.length === 0 && <h3>No Jobs Pending</h3>}
               {buttonBClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&
