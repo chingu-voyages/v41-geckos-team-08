@@ -26,6 +26,7 @@ export const JobForm = () => {
   const [newJob, setNewJob] = useState(initialState);
   const [countries, setCountries] = useState([]);
   const [trades, setTrades] = useState([]);
+  const [cityLength, setCityLength] = useState(0);
 
   const {
     description,
@@ -79,6 +80,7 @@ export const JobForm = () => {
         const [country] = countries.filter(_country => _country.uuid === data.city.country_uuid);
         setSelectedCountry(country.uuid);
         setCityInput(data.city.name);
+        setCityLength(data.city.name.length);
         setSelectedTrade(data.trade.uuid);
         changeDate(new Date(data.expiration_date));
         setNewJob({
@@ -107,12 +109,24 @@ export const JobForm = () => {
 
   useEffect(() => {
     if (selectedCountry === '' && cities.length > 0) {
+      setNewJob({
+        ...newJob,
+        city_uuid: ''
+      });
       setCityInput('');
+      setCityLength(0);
       setCities([]);
       setFilteredCities([]);
     }
     if (selectedCountry !== '') {
-      if (!showCityForUpdate) setCityInput('');
+      if (!showCityForUpdate) {
+        setNewJob({
+          ...newJob,
+          city_uuid: ''
+        });
+        setCityInput('');
+        setCityLength(0);
+      }
       (async () => {
         const { data: _cities } = await getAPI(
           `locations/${selectedCountry}`,
@@ -148,9 +162,16 @@ export const JobForm = () => {
         city.name.toLowerCase().includes(cityInput.toLowerCase())
       )
       .slice(0, 5);
+    if (newJob.city_uuid !== '' && cityInput.length !== cityLength) {
+      setNewJob({
+        ...newJob,
+        city_uuid: ''
+      });
+      setCityLength(0);
+    }
     if (!cityInputToggled) setFilteredCities(_cities);
     if (cityInputToggled) setCityInputToggled(false);
-  }, [cityInput]);
+  }, [cityInput, cityLength]);
 
   const [selectedTrade, setSelectedTrade] = useState('');
 
@@ -169,6 +190,7 @@ export const JobForm = () => {
     setFilteredCities([]);
     setCityInputToggled(true);
     setCityInput(city.name);
+    setCityLength(city.name.length);
   };
 
   const { auth } = useSelector((state) => state);
@@ -179,12 +201,28 @@ export const JobForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(newJob);
+    let res;
     if (showUpdate) {
-      dispatch(updateJob(newJob, jobUUID, userInfo.token));
+      dispatch(updateJob(newJob, jobUUID, userInfo.token)).then(response => {
+        console.log(response);
+        res = response;
+        if (res.status !== 200) {
+          // add error msg here later
+          return;
+        }
+        navigate(`/user/${auth.data.uuid}`);
+      });
     } else {
-      dispatch(createJob(newJob, userInfo.token));
+      dispatch(createJob(newJob, userInfo.token)).then(response => {
+        console.log(response);
+        res = response;
+        if (res.status !== 201) {
+          // add error msg here later
+          return;
+        }
+        navigate(`/user/${auth.data.uuid}`);
+      });
     }
-    navigate(`/user/${auth.data.uuid}`);
   };
 
   return (
@@ -236,6 +274,7 @@ export const JobForm = () => {
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
                   disabled={selectedCountry === ''}
+                  // maxLength={((cityUUID !== '') || (filteredCities.length === 0 && cityInput !== '')) ? cityInput.length : null}
                 />
                 <ul>
                   {filteredCities.map((city) => (
@@ -352,7 +391,9 @@ export const JobForm = () => {
                     description === '' ||
                     isNaN(low_price) ||
                     isNaN(high_price) ||
-                    high_price < low_price
+                    high_price < low_price ||
+                    filteredCities.length > 0 ||
+                    (cityLength !== cityInput.length)
                   }
                 />
               </div>

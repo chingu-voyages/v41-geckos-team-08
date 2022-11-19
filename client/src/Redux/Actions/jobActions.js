@@ -4,33 +4,37 @@ import { CREATE_JOB_BY_USER_ID, ACCEPT_JOB_PROPOSAL, UPDATE_JOB_BY_USER_ID
 
 export const createJob = (newJob, token) => async dispatch => {
  try {
-  const { data: res } = await postAPI('jobs', newJob, token);
+  const res = await postAPI('jobs', newJob, token);
 
-  console.log(res.data);
+  console.log(res.data.data);
 
   dispatch({
    type: CREATE_JOB_BY_USER_ID,
-   payload: res.data
+   payload: res.data.data
   });
 
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
 
 export const updateJob = (newJob, jobUUID, token) => async dispatch => {
  try {
-  const { data: res } = await putAPI(`jobs/${jobUUID}`, newJob, token);
+  const res = await putAPI(`jobs/${jobUUID}`, newJob, token);
 
-  console.log(res.data);
+  console.log(res.data.data);
 
   dispatch({
    type: UPDATE_JOB_BY_USER_ID,
-   payload: res.data
+   payload: res.data.data
   });
 
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
 
@@ -38,16 +42,18 @@ export const acceptJobProposal = (supplier, job, token) => async dispatch => {
  try {
   await putAPI(`proposals/${supplier}?job=${job}`, { is_accepted: true }, token);
 
-  const { data: res } = await getAPI(`jobs/${job}`, token);
+  const res = await getAPI(`jobs/${job}`, token);
 
-  console.log(res.data);
+  console.log(res.data.data);
 
   dispatch({
    type: ACCEPT_JOB_PROPOSAL,
-   payload: res.data
+   payload: res.data.data
   });
 
+  return res;
+
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
