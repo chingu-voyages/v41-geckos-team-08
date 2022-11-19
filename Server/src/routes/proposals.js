@@ -51,7 +51,7 @@ route.get('/', authorization, async (req, res) => {
 
 		proposalsResult = await client.query(proposalsSQL, [job]);
 	} else {
-				const proposalsSQL = `select proposal.description, proposal.price, proposal.expiration_date, proposal.is_accepted, 
+		const proposalsSQL = `select proposal.description, proposal.price, proposal.expiration_date, proposal.is_accepted, 
 
 				supplier.uuid as supplier_uuid, supplier.name as supplier_name, supplier.email as supplier_email, supplier.phone as supplier_phone, 
 				
@@ -134,7 +134,6 @@ route.post('/', authorization, async (req, res) => {
 		const sql =
 			'insert into proposal(supplier_uuid, description, job_uuid, price, expiration_date, is_accepted) values ($1, $2, $3, $4, $5, $6)';
 
-		console.log(0);
 		await client.query(sql, [
 			supplier_uuid,
 			description,
@@ -144,7 +143,6 @@ route.post('/', authorization, async (req, res) => {
 			null,
 		]);
 
-		console.log(1);
 		await client.query('COMMIT');
 
 		const resultSQL = `select 
@@ -265,7 +263,7 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 			detail: `Supplier with UUID: ${supplierUUID} does not exist`,
 		});
 
-	if (description === '') 
+	if (description === '')
 		return res.status(400).json({
 			detail: 'The description cannot be blank',
 		});
@@ -327,7 +325,8 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 				detail: `No proposal for supplier with UUID: ${supplierUUID} for the job with UUID: ${job}`,
 			});
 
-		const updatedDescription = description || resultExistentProposal.rows[0].description;
+		const updatedDescription =
+			description || resultExistentProposal.rows[0].description;
 		const updatedPrice = price || resultExistentProposal.rows[0].price;
 		const updatedIsAccepted =
 			is_accepted === undefined

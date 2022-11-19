@@ -3,7 +3,7 @@ const request = require('supertest');
 const baseUrl = require('../../app');
 
 module.exports = async (email, password, is_supplier) => {
-	response = await request(baseUrl).post('/users').send({
+	response = await request(baseUrl).post('/api/users').send({
 		email: email,
 		password: password,
 		name: 'The name of the user',
