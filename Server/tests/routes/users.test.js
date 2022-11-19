@@ -17,37 +17,37 @@ describe('Test the users path', () => {
 		describe('Given the JSON body is incomplete', () => {
 			it('should return 401 when not sending an invalid email', async () => {
 				const response = await request(baseUrl)
-					.post('/users')
+					.post('/api/users')
 					.send({ email: 'user' });
 				expect(response.statusCode).toBe(401);
 			});
 
 			it('should return 401 when passing an invalid password', async () => {
 				response = await request(baseUrl)
-					.post('/users')
+					.post('/api/users')
 					.send({ email: 'user@mail.com', password: 'pa$sWord123' });
 				expect(response.statusCode).toBe(400);
 			});
 
 			it('should return 400 when trying to create user with incomplete JSON', async () => {
 				let response = await request(baseUrl)
-					.post('/users')
+					.post('/api/users')
 					.send({ email: 'user@mail.com' });
 				expect(response.statusCode).toBe(400);
 
 				response = await request(baseUrl)
-					.post('/users')
+					.post('/api/users')
 					.send({ email: 'user@mail.com', password: 'pa$sWord123' });
 				expect(response.statusCode).toBe(400);
 
-				response = await request(baseUrl).post('/users').send({
+				response = await request(baseUrl).post('/api/users').send({
 					email: 'user@mail.com',
 					password: 'pa$sWord123',
 					name: 'The name of the user',
 				});
 				expect(response.statusCode).toBe(400);
 
-				response = await request(baseUrl).post('/users').send({
+				response = await request(baseUrl).post('/api/users').send({
 					email: 'user@mail.com',
 					password: 'pa$sWord123',
 					name: 'The name of the user',
@@ -60,7 +60,7 @@ describe('Test the users path', () => {
 		describe('Given the JSON body is complete', () => {
 			it('should return 201 when creating a supplier with trades', async () => {
 				const result = await request(baseUrl)
-					.post('/users')
+					.post('/api/users')
 					.send({
 						email: 'test@supplier.com',
 						password: 'Pas$W0rd123',
@@ -142,7 +142,7 @@ describe('Test the users path', () => {
 		describe('Given the supplier query parameter', () => {
 			it('It should return 406 if it not exists', async () => {
 				const response = await request(baseUrl)
-					.get('/users')
+					.get('/api/users')
 					.expect('Content-Type', /json/);
 
 				expect(response.statusCode).toBe(406);
@@ -152,7 +152,7 @@ describe('Test the users path', () => {
 			});
 			it('It should return 200 if it exists', async () => {
 				const response = await request(baseUrl)
-					.get('/users?supplier=true')
+					.get('/api/users?supplier=true')
 					.expect('Content-Type', /json/);
 
 				expect(response.statusCode).toBe(200);
@@ -161,7 +161,7 @@ describe('Test the users path', () => {
 		describe('Given the supplier query parameter is false', () => {
 			it('Should return only non suppliers', async () => {
 				const response = await request(baseUrl).get(
-					'/users?supplier=false'
+					'/api/users?supplier=false'
 				);
 
 				const data = response.body.data;
@@ -189,7 +189,7 @@ describe('Test the users path', () => {
 		describe('Given the supplier query parameter is true', () => {
 			it('Should return only suppliers', async () => {
 				const response = await request(baseUrl).get(
-					'/users?supplier=true'
+					'/api/users?supplier=true'
 				);
 
 				const data = response.body.data;
@@ -220,7 +220,9 @@ describe('Test the users path', () => {
 		let userUUID;
 
 		beforeAll(async () => {
-			const response = await request(baseUrl).get('/users?supplier=true');
+			const response = await request(baseUrl).get(
+				'/api/users?supplier=true'
+			);
 
 			userUUID =
 				response.body.data[
@@ -229,20 +231,20 @@ describe('Test the users path', () => {
 		});
 		describe('Given the UUID', () => {
 			it('Should return 400 if the UUID is invalid', async () => {
-				const url = `/users/thisanin-vali-duui-dsoi-treturn404nf`;
+				const url = `/api/users/thisanin-vali-duui-dsoi-treturn404nf`;
 				const response = await request(baseUrl).get(url);
 
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 404 with valid UUID inexistent in users', async () => {
 				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
-				const url = `/users/${badUUID}`;
+				const url = `/api/users/${badUUID}`;
 				const response = await request(baseUrl).get(url);
 
 				expect(response.statusCode).toBe(404);
 			});
 			it('should return 200 with a vaild UUID that exist in users', async () => {
-				const url = `/users/${userUUID}`;
+				const url = `/api/users/${userUUID}`;
 				const response = await request(baseUrl).get(url);
 
 				expect(response.statusCode).toBe(200);
@@ -269,7 +271,9 @@ describe('Test the users path', () => {
 		let userUUID;
 
 		beforeAll(async () => {
-			const response = await request(baseUrl).get('/users?supplier=true');
+			const response = await request(baseUrl).get(
+				'/api/users?supplier=true'
+			);
 			userUUID =
 				response.body.data[
 					Math.floor(Math.random() * response.body.data.length)
@@ -277,21 +281,21 @@ describe('Test the users path', () => {
 		});
 		describe('Given the UUID', () => {
 			it('Should return 400 if the UUID is invalid', async () => {
-				const url = `/users/thisanin-vali-duui-dsoi-treturn404nf`;
+				const url = `/api/users/thisanin-vali-duui-dsoi-treturn404nf`;
 				const response = await request(baseUrl).put(url);
 
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 404 with valid UUID inexistent in users', async () => {
 				const badUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
-				const url = `/users/${badUUID}`;
+				const url = `/api/users/${badUUID}`;
 				const response = await request(baseUrl).put(url);
 
 				expect(response.statusCode).toBe(404);
 			});
 
 			it('should return 401 with invalide email', async () => {
-				const url = `/users/${userUUID}`;
+				const url = `/api/users/${userUUID}`;
 				const response = await request(baseUrl)
 					.put(url)
 					.send({ email: 'user' });
@@ -299,7 +303,7 @@ describe('Test the users path', () => {
 				expect(response.statusCode).toBe(401);
 			});
 			it('should return 200 when update succesfull', async () => {
-				const url = `/users/${userUUID}`;
+				const url = `/api/users/${userUUID}`;
 				const response = await request(baseUrl)
 					.put(url)
 					.send({
