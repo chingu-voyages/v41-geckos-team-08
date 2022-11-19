@@ -17,7 +17,6 @@ route.get('/', async (req, res) => {
 
 route.get('/:uuid', validateUUID, async (req, res) => {
 	const { name } = req.query;
-	console.log(name);
 
 	let sql, queryResponse;
 
@@ -30,11 +29,9 @@ route.get('/:uuid', validateUUID, async (req, res) => {
 		]);
 
 		if (queryResponse.rowCount === 0)
-			return res
-				.status(404)
-				.json({
-					detail: `The city ${name} does not exist in the specified country`,
-				});
+			return res.status(404).json({
+				detail: `The city ${name} does not exist in the specified country`,
+			});
 	} else {
 		sql =
 			'select city.uuid, city.name, countries.uuid as country_uuid, countries.name as country_name from city join countries on city.country_uuid = countries.uuid where countries.uuid = $1 order by city.name';

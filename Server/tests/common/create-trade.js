@@ -4,7 +4,7 @@ const baseUrl = require('../../app');
 
 module.exports = async (trade, TOKEN) => {
 	response = await request(baseUrl)
-		.post('/trades')
+		.post('/api/trades')
 		.send({
 			description: trade,
 		})

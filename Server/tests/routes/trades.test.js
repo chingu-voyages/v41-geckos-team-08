@@ -6,7 +6,7 @@ const { initializeDB } = require('../common/initializeDB');
 const createUser = require('../common/create-user');
 const login = require('../common/login');
 
-const endpoint = '/trades';
+const endpoint = '/api/trades';
 const invalidTOKEN = 'thisis.aninvalidtokenthat.ivejustmadeup';
 let tradeUUID, TOKEN;
 
@@ -20,60 +20,41 @@ describe('Trades routes', () => {
 		await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 1' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 		await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 2' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 		await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 3' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 		const trade = await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 4' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 
 		tradeUUID = trade.body.data.uuid;
 
 		await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 5' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 		await request(baseUrl)
 			.post(endpoint)
 			.send({ description: 'trade 6' })
-			.set('Authorization', `Bearer ${TOKEN}`);
+			.set('Authorization', `${TOKEN}`);
 	});
 	afterAll(async () => {
 		await client.end();
 	});
 
 	describe('Test creating a trade', () => {
-		describe('Given the user is not sending a token', () => {
-			it('should return 403', async () => {
-				const result = await request(baseUrl)
-					.post(endpoint)
-					.send({ description: 'Testing trade' });
-
-				expect(result.statusCode).toBe(403);
-			});
-		});
-		describe('Given the user is sending an invalid token', () => {
-			it('should return 403', async () => {
-				const result = await request(baseUrl)
-					.post(endpoint)
-					.send({ description: 'Testing trade' })
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
-
-				expect(result.statusCode).toBe(403);
-			});
-		});
 		it('should return 201 when a trade is created', async () => {
 			const response = await request(baseUrl)
 				.post(endpoint)
 				.send({ description: 'Testing trade' })
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 
 			expect(response.statusCode).toBe(201);
 			expect(response.body.data).toHaveProperty('uuid');
@@ -85,7 +66,7 @@ describe('Trades routes', () => {
 			const response = await request(baseUrl)
 				.post(endpoint)
 				.send({ description: 'Testing trade' })
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 
 			expect(response.statusCode).toBe(409);
 		});
@@ -95,7 +76,7 @@ describe('Trades routes', () => {
 			it('should return 200', async () => {
 				const response = await request(baseUrl)
 					.get(endpoint)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(response.statusCode).toBe(200);
 				expect(typeof response.body.data).toBe('object');
@@ -116,7 +97,7 @@ describe('Trades routes', () => {
 				const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 404 if no trade is found', async () => {
@@ -124,14 +105,14 @@ describe('Trades routes', () => {
 				const url = `${endpoint}/${badUUID}`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(404);
 			});
 			it('should return 200 if a trade is found', async () => {
 				const url = `${endpoint}/${tradeUUID}`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(response.statusCode).toBe(200);
 				expect(response.body.data).toHaveProperty('uuid');
@@ -146,7 +127,7 @@ describe('Trades routes', () => {
 			const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
 			const response = await request(baseUrl)
 				.put(url)
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 			expect(response.statusCode).toBe(400);
 		});
 		it('should return 404 if no trade is found', async () => {
@@ -154,7 +135,7 @@ describe('Trades routes', () => {
 			const url = `${endpoint}/${badUUID}`;
 			const response = await request(baseUrl)
 				.put(url)
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 			expect(response.statusCode).toBe(404);
 		});
 		it('should return 200 on a successfull update', async () => {
@@ -162,7 +143,7 @@ describe('Trades routes', () => {
 			const response = await request(baseUrl)
 				.put(url)
 				.send({ description: 'updated trade' })
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 
 			expect(response.statusCode).toBe(200);
 			expect(response.body.data.uuid).toBe(tradeUUID);
