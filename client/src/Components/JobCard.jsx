@@ -12,7 +12,7 @@ export const JobCard = (props) => {
   const dispatch = useDispatch();
 
   return (
-    <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
+    <div key={props.uuid} className='container mx-auto px-3 sm:px-20 mb-5'>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
@@ -33,33 +33,36 @@ export const JobCard = (props) => {
               {props.showEditBtn &&             
                 <div className='flex gap-3 mt-2'>
                   <Button
-                    backgroundColor='primary-100'
+                    backgroundColor='tertiary-100'
                     textColor='white'
                     actionEffect='secondary-300'
                     name='Edit'
                     handleClick={() => navigate(props.is_supplier ? `/job/${props.jobUUID}?edit` : `/new_job?job=${props.jobUUID}`)}
+                    bolder='font-semibold'
                   />
                 </div>
               }
               {props.showJobBtn &&             
                 <div className='flex gap-3 mt-2'>
                     <Button
-                      backgroundColor='primary-100'
+                      backgroundColor='tertiary-100'
                       textColor='white'
                       actionEffect='secondary-300'
                       name='Go to Job Page'
                       handleClick={() => navigate(`/job/${props.jobUUID}`)}
+                      bolder='font-semibold'
                     />
                 </div>
               }
               {props.showCompletedBtn &&             
                 <div className='flex gap-3 mt-2'>
                     <Button
-                      backgroundColor='primary-100'
+                      backgroundColor='tertiary-100'
                       textColor='white'
                       actionEffect='secondary-300'
                       name='Job Complete'
                       handleClick={() => dispatch(completeJob(props.jobUUID, userInfo.token))}
+                      bolder='font-semibold'
                     />
                 </div>
               }

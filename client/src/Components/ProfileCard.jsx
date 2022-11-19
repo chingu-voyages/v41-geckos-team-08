@@ -25,7 +25,7 @@ export const ProfileCard = () => {
 
   return (
     <div className='w-5/6 h-72 rounded-lg bg-tertiary-100 max-w-2xl max-h-96 text-center m-0 flex flex-col justify-center shadow-customShadow'>
-      <div className='p-6 '>
+      <div className='p-6'>
         <h5 className='text-primary-100 text-xl font-extrabold mb-2'>
           {auth.data.name}
         </h5>
@@ -36,14 +36,17 @@ export const ProfileCard = () => {
         <p className='text-black text-base mb-1'>
           <span className='font-bold'>Phone:</span> {formatPhoneNumber(auth.data.phone)}
         </p>
-        <p className='text-black text-base mb-1 font-semibold'>
-          <span className='font-bold'></span> {auth.data.is_supplier ? "Service Provider" : ""} 
+        <p className='text-primary-100 text-lg mt-2 font-bold -mb-1'>
+          <span>{auth.data.is_supplier ? "Service Provider" : ""}</span>  
         </p>
-        <Button 
-          backgroundColor="primary-100"
-          name="Edit Profile"
-          handleClick={() => navigate(`/edit_user/${auth.data.uuid}`)}
-        />
+        <section className='mt-4'>
+          <Button 
+            backgroundColor="white"
+            name="Edit Profile"
+            handleClick={() => navigate(`/edit_user/${auth.data.uuid}`)}
+            bolder='font-semibold'
+          />
+        </section>
         {/* <p className='text-black text-base mb-1'>
           <span className='font-bold'>Location:</span> not Available
         </p> */}

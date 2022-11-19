@@ -26,10 +26,11 @@ module.exports = {
         200: '#eff2e7',
         300: '#dbe2c9',
       },
-      white: '#efefef',
-      black: '#0a0a0a',
+      white: '#ffffff',
+      black: '#000000',
       transparent:'transparent',
-      logo: '#AADFE7'
+      loginForm: '#CFF4D2',
+      cream: '#fffdd0',
     },
     extend: {
       boxShadow: {

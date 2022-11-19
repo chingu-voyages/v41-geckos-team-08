@@ -20,14 +20,21 @@ export const UserForm = () => {
 
   // const { name, email, password, isProvider, phone } = userInputs;
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const [selectedOption, setSelectedOption] = useState(false);
 
+  const handleChange = (e) => {
     setUserInputs({
       ...userInputs,
-      [name]: type === 'checkbox' ? checked : value,
+      [e.target.name]: e.target.value,
     });
   };
+
+  useEffect(() => {
+    setUserInputs({
+      ...userInputs,
+      is_supplier: selectedOption,
+    });
+  }, [selectedOption]);
 
   // Trade is a separate state because only the supplier is required to have a trade, not the customer
   const [trade, setTrade] = useState('');
@@ -102,7 +109,7 @@ export const UserForm = () => {
               onSubmit={handleSubmit}
             >
               <div className='flex flex-col mb-4'>
-                <label className='mb-2 font-bold text-lg text-black' htmlFor='name'>
+                <label className='mb-3 sm:mb-2 font-bold text-lg text-black text-center sm:text-start' htmlFor='name'>
                   Name
                 </label>
                 <input
@@ -117,47 +124,8 @@ export const UserForm = () => {
                 />
               </div>
               <div className='flex flex-col mb-4'>
-                {Object.keys(auth).length === 0 &&
-                  <>                  
-                    <label
-                      className='mb-2 font-bold text-lg text-black'
-                      htmlFor='serviceProvider'
-                    >
-                      Service Provider
-                    </label>
-                    <input
-                      type='checkbox'
-                      id='is_supplier'
-                      checked={userInputs.is_supplier}
-                      onChange={handleChange}
-                      name='is_supplier'
-                    />
-                  </>                
-                }
-                {(Object.keys(auth).length === 0 || auth.data.is_supplier) && 
-                  <>                  
-                    <label
-                      className={`mb-2 font-bold text-lg text-black ${userInputs.is_supplier ? 'opacity-100' : 'opacity-60'}`}
-                      htmlFor='trade'
-                    >
-                      Trade
-                    </label>
-                    <input
-                      className={`${userInputs.is_supplier ? 'opacity-100' : 'opacity-60'}`}
-                      type='text'
-                      id='trade'
-                      value={trade}
-                      onChange={e => setTrade(e.target.value)}
-                      name='trade'
-                      disabled={!userInputs.is_supplier}
-                      required={userInputs.is_supplier}
-                    />
-                  </>                
-                }
-              </div>
-              <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black'
+                  className='mb-3 sm:mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='phone'
                 >
                   Phone
@@ -167,7 +135,7 @@ export const UserForm = () => {
                   type='text'
                   name='phone'
                   id='phone'
-                  placeholder='phone'
+                  placeholder='(123) 456-7890'
                   value={userInputs.phone}
                   onChange={handleChange}
                   required={Object.keys(auth).length === 0}
@@ -175,17 +143,17 @@ export const UserForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black '
+                  className='mb-3 sm:mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='email'
                 >
-                  E-mail
+                  Email
                 </label>
                 <input
                   className='border py-2 px-3 text-black rounded'
                   type='email'
                   name='email'
                   id='email'
-                  placeholder='Email'
+                  placeholder='example@email.com'
                   value={userInputs.email}
                   onChange={handleChange}
                   required={Object.keys(auth).length === 0}
@@ -193,7 +161,7 @@ export const UserForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black '
+                  className='mb-3 sm:mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='password'
                 >
                   {Object.keys(auth).length > 0 ? 'New Password' : 'Password'}
@@ -209,24 +177,97 @@ export const UserForm = () => {
                   required={Object.keys(auth).length === 0}
                 />
               </div>
+              <div className='flex flex-col mb-4'>
+                {Object.keys(auth).length === 0 &&
+                  <div className='flex flex-col sm:flex-row items-center gap-3'>                  
+                    <label
+                      className='font-bold text-lg text-black'
+                      htmlFor='serviceProvider'
+                    >
+                      Are you a service provider?
+                    </label>
+                    <div className='flex gap-10 sm:gap-3'>
+                      <div className='flex items-center gap-2'>
+                        <input
+                          type='radio'
+                          checked={selectedOption}
+                          value={true}
+                          onChange={() => setSelectedOption(true)}
+                          name='is_supplier'
+                          required
+                        />
+                        <label
+                          className='font-bold text-lg text-black'
+                          htmlFor='serviceProvider'
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div className='flex items-center gap-2'>
+                        <input
+                          type='radio'
+                          value={false}
+                          checked={!selectedOption}
+                          onChange={() => setSelectedOption(false)}
+                          name='is_supplier'
+                          required
+                        />
+                        <label
+                          className='font-bold text-lg text-black'
+                          htmlFor='serviceProvider'
+                        >
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </div>                
+                }
+                {(Object.keys(auth).length === 0 || auth.data.is_supplier) && 
+                  <div className={`${userInputs.is_supplier ? '' : 'hidden'} mt-3 flex flex-col`}>                  
+                    <label
+                      className="mt-2 mb-3 sm:mb-2 font-bold text-lg text-black text-center sm:text-start"
+                      htmlFor='trade'
+                    >
+                      Trade
+                    </label>
+                    <input
+                      className={`${userInputs.is_supplier ? 'opacity-100' : 'opacity-60'}`}
+                      type='text'
+                      id='trade'
+                      value={trade}
+                      onChange={e => setTrade(e.target.value)}
+                      name='trade'
+                      placeholder='Trade'
+                      required={userInputs.is_supplier ?  true : false}
+                    />
+                  </div>                
+                }
+              </div>
 
-              <div className='mt-0 ml-0'>
+              <div className='flex justify-center sm:justify-start'>
                 <Button
                   type='submit'
                   value='submit'
-                  backgroundColor='primary-100'
+                  backgroundColor='tertiary-100'
                   name={Object.keys(auth).length > 0 ? 'Update' : 'Sign Up'}
+                  disabled={
+                    userInputs.name === '' ||
+                    userInputs.email === '' ||
+                    userInputs.password === '' ||
+                    userInputs.phone === '' ||
+                    (userInputs.is_supplier ? trade === '' : null)
+                  }
                 />
               </div>
             </form>
-            {Object.keys(auth).length === 0 &&            
+            {/* {Object.keys(auth).length === 0 &&            
               <Link
                 className='block w-full no-underline mt-4 text-sm text-black hover:text-secondary-300'
                 to='/login'
               >
                 Already have an account?
               </Link>
-            }
+            } */}
           </div>
           <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12'>
             <img

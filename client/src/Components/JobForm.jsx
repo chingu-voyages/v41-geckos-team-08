@@ -192,14 +192,14 @@ export const JobForm = () => {
       {loading && <Loading />}
       {!loading &&
         <div className='flex flex-wrap lg:h-full'>        
-          <div className='w-full lg:w-1/2 bg-secondary-300 p-8 m-0'>
-            <h1 className='block w-full text-center text-quaternary-300 text-3xl tracking-tight font-bold mb-6'>
+          <div className='w-full lg:w-1/2 bg-white p-8 m-0'>
+            <h1 className='block w-full text-center text-black text-3xl tracking-tight font-bold mb-6'>
               {showUpdate ? 'Update' : 'New'} Job
             </h1>
             <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  className='mb-2 font-bold text-lg text-black'
                   htmlFor='countries'
                 >
                   Countries
@@ -223,7 +223,7 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className={`mb-2 font-bold text-lg text-quaternary-300 ${
+                  className={`mb-2 font-bold text-lg text-black ${
                     selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
                   }`}
                   htmlFor='cities'
@@ -240,7 +240,7 @@ export const JobForm = () => {
                 <ul>
                   {filteredCities.map((city) => (
                     <li
-                      className='cursor-pointer hover:opacity-60 text-quaternary-300'
+                      className='cursor-pointer hover:opacity-60 text-black'
                       key={city.uuid}
                       onClick={() => cityInputHandler(city)}
                     >
@@ -251,7 +251,7 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  className='mb-2 font-bold text-lg text-black'
                   htmlFor='last_name'
                 >
                   Trade
@@ -275,8 +275,8 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
-                  htmlFor='last_name'
+                  className='mb-2 font-bold text-lg text-black'
+                  htmlFor='description'
                 >
                   Description
                 </label>
@@ -292,15 +292,15 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
-                  htmlFor='last_name'
+                  className='mb-2 font-bold text-lg text-black'
+                  htmlFor='date'
                 >
                   I Need this Done by
                 </label>
                 <div>
                   <DatePicker
                     clearIcon={null}
-                    className='bg-quaternary-300'
+                    className='bg-white'
                     value={date}
                     onChange={changeDate}
                     required
@@ -310,7 +310,7 @@ export const JobForm = () => {
               {/* prices are converted from numbers to strings when changed */}
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  className='mb-2 font-bold text-lg text-black'
                   htmlFor='low_price'
                 >
                   Low Price
@@ -325,7 +325,7 @@ export const JobForm = () => {
                   onChange={handleChange}
                 />
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  className='my-2 font-bold text-lg text-black'
                   htmlFor='high_price'
                 >
                   High Price
@@ -344,8 +344,16 @@ export const JobForm = () => {
                 <Button
                   type='submit'
                   value='submit'
-                  backgroundColor='primary-100'
+                  backgroundColor='tertiary-100'
                   name='Post'
+                  disabled={
+                    newJob.trade_uuid === '' ||
+                    newJob.city_uuid === '' ||
+                    description === '' ||
+                    isNaN(low_price) ||
+                    isNaN(high_price) ||
+                    high_price < low_price
+                  }
                 />
               </div>
             </form>
