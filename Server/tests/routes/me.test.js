@@ -5,7 +5,7 @@ const { initializeDB } = require('../common/initializeDB');
 const createUser = require('../common/create-user');
 const login = require('../common/login');
 
-const endpoint = '/me';
+const endpoint = '/api/me';
 
 describe('Given the user access the me end point', () => {
 	beforeAll(async () => {
@@ -22,15 +22,18 @@ describe('Given the user access the me end point', () => {
 		expect(supplierResult.statusCode).toBe(403);
 	});
 	it('Should return the user information when accessing the me endpoint', async () => {
-		await createUser('supplier@mail.com', 'Pas$w0rd123', true);
+		await createUser('supplier2@mail.com', 'Pas$w0rd123', true);
 
 		const supplierToken = await (
-			await login('supplier@mail.com', 'Pas$w0rd123')
+			await login('supplier2@mail.com', 'Pas$w0rd123')
 		).body.token;
+
+		console.log('Token: ', supplierToken);
+		console.log('Endpoint: ', endpoint);
 
 		const supplierResult = await request(baseUrl)
 			.get(endpoint)
-			.set('Authorization', `Bearer ${supplierToken}`);
+			.set('Authorization', `${supplierToken}`);
 
 		expect(supplierResult.statusCode).toBe(200);
 

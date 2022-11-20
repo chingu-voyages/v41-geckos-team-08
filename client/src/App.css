@@ -1,9 +1,12 @@
-/* .app-container {
-  position: relative;
+.app-container {
+  /* position: relative;
   min-height: 100vh;
-  overflow-y: scroll;
+  overflow-y: scroll; */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
+/*
 .app-body {
   padding-bottom: 2.5rem;
   overflow-y: scroll;

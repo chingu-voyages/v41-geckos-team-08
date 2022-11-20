@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-    <footer className='py-6 dark:bg-quaternary-300 dark:text-gray-50'>
+    <footer className='py-6 dark:bg-quaternary-300 dark:text-gray-50 overflow-x-hidden'>
       <div className='container px-6 mx-auto space-y-6 divide-y divide-gray-400 md:space-y-12 divide-opacity-50'>
         <div className='grid grid-cols-12'>
           <div className='pb-6 col-span-full md:pb-0 md:col-span-6'>
@@ -24,12 +24,13 @@ export const Footer = () => {
 
           <div className='col-span-full md:col-span-6 text-center md:text-right'>
             <p className='pb-1 text-lg font-medium'>Meet the Team</p>
-            <ul>
+            <ul className='flex justify-center flex-col sm:flex-row md:justify-end sm:gap-5'>
               <li>
                 <a
                   rel='noopener noreferrer'
-                  href='#'
-                  className='hover:dark:text-violet-400 text-center'
+                  href='https://github.com/alcb1310'
+                  target={"_blank"}
+                  className='hover:dark:text-primary-100'
                 >
                   Andres
                 </a>
@@ -38,7 +39,8 @@ export const Footer = () => {
                 <a
                   rel='noopener noreferrer'
                   href='#'
-                  className='hover:dark:text-violet-400'
+                  target={"_blank"}
+                  className='hover:dark:text-primary-100'
                 >
                   Fred
                 </a>
@@ -46,8 +48,9 @@ export const Footer = () => {
               <li>
                 <a
                   rel='noopener noreferrer'
-                  href='#'
-                  className='hover:dark:text-violet-400'
+                  href='https://github.com/jonahBerlyne'
+                  target={"_blank"}
+                  className='hover:dark:text-primary-100'
                 >
                   Jonah
                 </a>
@@ -55,8 +58,9 @@ export const Footer = () => {
               <li>
                 <a
                   rel='noopener noreferrer'
-                  href='#'
-                  className='hover:dark:text-violet-400'
+                  href='https://github.com/lincoln1883'
+                  target={"_blank"}
+                  className='hover:dark:text-primary-100'
                 >
                   Lincoln
                 </a>
@@ -64,8 +68,9 @@ export const Footer = () => {
               <li>
                 <a
                   rel='noopener noreferrer'
-                  href='#'
-                  className='hover:dark:text-violet-400'
+                  href='https://github.com/HectorAgudelo'
+                  target={"_blank"}
+                  className='hover:dark:text-primary-100'
                 >
                   Hector
                 </a>

@@ -1,10 +1,18 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { completeJob } from '../Redux/Actions/proposalActions';
 import { Button } from './Button';
 
-
 export const JobCard = (props) => {
+
+  const navigate = useNavigate();
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const dispatch = useDispatch();
+
   return (
-    <div onClick={props.onClick} key={props.uuid} className='cursor-pointer container mx-auto px-3 sm:px-20 mb-5'>
+    <div key={props.uuid} onClick={props.onClick} className={`${props.onClick ? 'cursor-pointer' : ''} container mx-auto px-3 sm:px-20 mb-5`}>
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
@@ -21,14 +29,43 @@ export const JobCard = (props) => {
                 Due Date: {props.expiration_date}
               </div>
             </div>
-          </div>
-          <div className='text-right md:ml-8 flex items-center'>
-            <div className='flex md:block -mx-0 md:flex-col md:mx-0 mt-3 md:mt-0'>
-              <Button
-                backgroundColor='primary-200'
-                textColor='white'
-                actionEffect='secondary-300'
-              />
+            <div className="flex justify-center sm:justify-start mr-2 sm:mr-0 gap-3 mt-2">
+              {props.showEditBtn &&             
+                <div className='flex gap-3 mt-2'>
+                  <Button
+                    backgroundColor='tertiary-100'
+                    textColor='white'
+                    actionEffect='secondary-300'
+                    name='Edit'
+                    handleClick={() => navigate(props.is_supplier ? `/job/${props.jobUUID}?edit` : `/new_job?job=${props.jobUUID}`)}
+                    bolder='font-semibold'
+                  />
+                </div>
+              }
+              {props.showJobBtn &&             
+                <div className='flex gap-3 mt-2'>
+                    <Button
+                      backgroundColor='tertiary-100'
+                      textColor='white'
+                      actionEffect='secondary-300'
+                      name='Go to Job Page'
+                      handleClick={() => navigate(`/job/${props.jobUUID}`)}
+                      bolder='font-semibold'
+                    />
+                </div>
+              }
+              {props.showCompletedBtn &&             
+                <div className='flex gap-3 mt-2'>
+                    <Button
+                      backgroundColor='tertiary-100'
+                      textColor='white'
+                      actionEffect='secondary-300'
+                      name='Job Complete'
+                      handleClick={() => dispatch(completeJob(props.jobUUID, userInfo.token))}
+                      bolder='font-semibold'
+                    />
+                </div>
+              }
             </div>
           </div>
         </div>

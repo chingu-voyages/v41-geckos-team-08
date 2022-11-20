@@ -3,7 +3,7 @@ const request = require('supertest');
 const baseUrl = require('../../app');
 const client = require('../../src/config/db');
 
-const endpoint = '/locations';
+const endpoint = '/api/locations';
 
 describe('Test the locations path', () => {
 	afterAll(async () => {

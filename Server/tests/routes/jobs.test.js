@@ -6,7 +6,7 @@ const createUser = require('../common/create-user');
 const createTrade = require('../common/create-trade');
 const login = require('../common/login');
 
-const endpoint = '/jobs';
+const endpoint = '/api/jobs';
 let supplier, customer, trade, city, country, updateTrade, updateCity, TOKEN;
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
@@ -34,13 +34,13 @@ describe('Test jobs', () => {
 		).body.data;
 
 		const countries = await (
-			await request(baseUrl).get('/locations')
+			await request(baseUrl).get('/api/locations')
 		).body.data;
 
 		country = countries.find((pais) => pais.name === 'Ecuador');
 
 		const cities = await (
-			await request(baseUrl).get(`/locations/${country.uuid}`)
+			await request(baseUrl).get(`/api/locations/${country.uuid}`)
 		).body.data;
 
 		city = cities.find((ciudad) => ciudad.name === 'Quito');
@@ -76,7 +76,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2023-12-15',
 					})
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -91,7 +91,7 @@ describe('Test jobs', () => {
 				const response = await request(baseUrl)
 					.post(endpoint)
 					.send({})
-					.set('Authorization', `Bearer ${supplierToken.body.token}`);
+					.set('Authorization', `${supplierToken.body.token}`);
 
 				expect(response.statusCode).toBe(401);
 			});
@@ -102,7 +102,7 @@ describe('Test jobs', () => {
 				const response = await request(baseUrl)
 					.post(endpoint)
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(response.statusCode).toBe(400);
 			});
@@ -112,7 +112,7 @@ describe('Test jobs', () => {
 					.send({
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should reurn 400 if there is no description', async () => {
@@ -122,7 +122,7 @@ describe('Test jobs', () => {
 						trade_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 						city_uuid: 'a1bcdef2-1adc-d551-d701-74bacde40433',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 		});
@@ -138,7 +138,7 @@ describe('Test jobs', () => {
 						high_price: 0,
 						expiration_date: '2022-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 400 if city_uuid is invalid', async () => {
@@ -152,7 +152,7 @@ describe('Test jobs', () => {
 						high_price: 0,
 						expiration_date: '2022-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it("should reurn 400 if there is no description doesn't have at least 10 characters", async () => {
@@ -166,7 +166,7 @@ describe('Test jobs', () => {
 						high_price: 0,
 						expiration_date: '2022-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 422 if the low price is not a number', async () => {
@@ -180,7 +180,7 @@ describe('Test jobs', () => {
 						high_price: 0,
 						expiration_date: '2022-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(422);
 			});
 			it('should return 422 if the high price is not a number', async () => {
@@ -194,7 +194,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2022-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(422);
 			});
 			it('should return 422 if the user sends an invalid date', async () => {
@@ -208,7 +208,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2022-13-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(422);
 
 				response = await request(baseUrl)
@@ -221,7 +221,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2022-12-50',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(422);
 				response = await request(baseUrl)
 					.post(endpoint)
@@ -233,7 +233,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '123456-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(422);
 			});
 			it('should return 406 if the expiration date is in the past', async () => {
@@ -247,7 +247,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2020-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(406);
 			});
 			it('should return 201 if the job is created', async () => {
@@ -261,7 +261,7 @@ describe('Test jobs', () => {
 						low_price: 0,
 						expiration_date: '2023-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(201);
 
 				const job = response.body.data;
@@ -290,16 +290,19 @@ describe('Test jobs', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
 		});
 		describe('Given the city query parameter', () => {
 			it('should return 406 when it does not exist', async () => {
+				supplierToken = await (
+					await login('supplier@mail.com', 'Pas$W0rd123')
+				).body.token;
 				const response = await request(baseUrl)
 					.get(endpoint)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${supplierToken}`);
 
 				expect(response.statusCode).toBe(406);
 			});
@@ -307,7 +310,7 @@ describe('Test jobs', () => {
 				const url = `${endpoint}?city=quito`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(response.statusCode).toBe(200);
 				expect(typeof response.body.data).toBe('object');
@@ -344,7 +347,7 @@ describe('Test jobs', () => {
 		beforeAll(async () => {
 			const getJob = await request(baseUrl)
 				.get(`${endpoint}?city=quito`)
-				.set('Authorization', `Bearer ${TOKEN}`);
+				.set('Authorization', `${TOKEN}`);
 			queryJob = getJob.body.data[0];
 		});
 		describe('Given the user is not sending a token', () => {
@@ -360,7 +363,7 @@ describe('Test jobs', () => {
 				const url = `${endpoint}/${queryJob.uuid}`;
 				const result = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -370,7 +373,7 @@ describe('Test jobs', () => {
 				const url = `${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(400);
 			});
 			it('should return 404 if no trade is found', async () => {
@@ -378,7 +381,7 @@ describe('Test jobs', () => {
 				const url = `${endpoint}/${badUUID}`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 				expect(response.statusCode).toBe(404);
 			});
 		});
@@ -387,7 +390,7 @@ describe('Test jobs', () => {
 				const url = `${endpoint}/${queryJob.uuid}`;
 				const response = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(response.statusCode).toBe(200);
 
@@ -422,14 +425,14 @@ describe('Test jobs', () => {
 			it('Should return 400 if the UUID is invalid', async () => {
 				const result = await request(baseUrl)
 					.put(`${endpoint}/thisanin-vali-duui-dsoi-treturn404nf`)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
 			it('Shoud return 404 if the UUID does not exist', async () => {
 				const result = await request(baseUrl)
 					.put(`${endpoint}/a1bcdef2-1adc-d551-d701-74bacde40433`)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -440,7 +443,7 @@ describe('Test jobs', () => {
 				queryJob = await (
 					await request(baseUrl)
 						.get(`${endpoint}?city=quito`)
-						.set('Authorization', `Bearer ${TOKEN}`)
+						.set('Authorization', `${TOKEN}`)
 				).body.data[0];
 			});
 			it('should return 200 if there is empty JSON', async () => {
@@ -448,7 +451,7 @@ describe('Test jobs', () => {
 				const result = await request(baseUrl)
 					.put(url)
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(200);
 
@@ -490,7 +493,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ trade_uuid: invalidUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -499,7 +502,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ trade_uuid: inExistentUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -509,7 +512,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ trade_uuid: updateTrade.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -525,7 +528,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ city_uuid: invalidUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -534,7 +537,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ city_uuid: inExistentUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -544,7 +547,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ city_uuid: updateCity.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -560,7 +563,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ supplier_uuid: invalidUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -569,7 +572,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ supplier_uuid: inExistentUUID })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -579,7 +582,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ supplier_uuid: supplier.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -599,7 +602,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ is_taken: 'whatever value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -608,7 +611,7 @@ describe('Test jobs', () => {
 					let result = await request(baseUrl)
 						.put(url)
 						.send({ is_taken: true })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_taken).toBe(true);
@@ -616,7 +619,7 @@ describe('Test jobs', () => {
 					result = await request(baseUrl)
 						.put(url)
 						.send({ is_taken: false })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_taken).toBe(false);
@@ -628,7 +631,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ is_completed: 'whatever value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -637,7 +640,7 @@ describe('Test jobs', () => {
 					let result = await request(baseUrl)
 						.put(url)
 						.send({ is_completed: true })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_completed).toBe(true);
@@ -645,7 +648,7 @@ describe('Test jobs', () => {
 					result = await request(baseUrl)
 						.put(url)
 						.send({ is_completed: false })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.is_completed).toBe(false);
@@ -657,7 +660,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ low_price: 'whatever value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -666,7 +669,7 @@ describe('Test jobs', () => {
 					let result = await request(baseUrl)
 						.put(url)
 						.send({ low_price: 200 })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.low_price).toBe(200);
@@ -674,7 +677,7 @@ describe('Test jobs', () => {
 					result = await request(baseUrl)
 						.put(url)
 						.send({ low_price: 200.53 })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.low_price).toBe(200.53);
@@ -686,7 +689,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ high_price: 'whatever value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -695,7 +698,7 @@ describe('Test jobs', () => {
 					let result = await request(baseUrl)
 						.put(url)
 						.send({ high_price: 500 })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.high_price).toBe(500);
@@ -703,7 +706,7 @@ describe('Test jobs', () => {
 					result = await request(baseUrl)
 						.put(url)
 						.send({ high_price: 500.45 })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.high_price).toBe(500.45);
@@ -715,35 +718,35 @@ describe('Test jobs', () => {
 					let result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: 'whatever value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: '2022-13-15' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: '2022-12-50' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: '2022231-12-50' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 
 					result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: '2020-12-15' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -752,7 +755,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ expiration_date: '2023-12-15' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.expiration_date).toBe(
@@ -766,7 +769,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ description: 'value' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(406);
 				});
@@ -775,7 +778,7 @@ describe('Test jobs', () => {
 					const result = await request(baseUrl)
 						.put(url)
 						.send({ description: 'this is a valid description' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 					expect(result.body.data.description).toBe(

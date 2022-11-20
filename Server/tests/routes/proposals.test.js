@@ -8,12 +8,12 @@ const createTrade = require('../common/create-trade');
 const login = require('../common/login');
 const { TokenExpiredError } = require('jsonwebtoken');
 
-const endpoint = '/proposals';
+const endpoint = '/api/proposals';
 const invalidUUID = 'thisanin-vali-duui-dsoi-treturn404nf';
 const inExistentUUID = 'a1bcdef2-1adc-d551-d701-74bacde40433';
 const invalidTOKEN = 'thisis.aninvalidtokenthat.ivejustmadeup';
 
-let supplier, customer, trade, job, supplier2, TOKEN;
+let supplier, customer, trade, job, supplier2, TOKEN, CUSTOMERTOKEN;
 
 describe('Test the Proposals Route', () => {
 	beforeAll(async () => {
@@ -30,8 +30,9 @@ describe('Test the Proposals Route', () => {
 		supplier2 = await (
 			await createUser('supplier2@mail.com', 'Pas$wordForCust0mer', true)
 		).body.data;
+		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
 
-		TOKEN = await (
+		CUSTOMERTOKEN = await (
 			await login('customer@mail.com', 'Pas$wordForCust0mer')
 		).body.token;
 
@@ -42,10 +43,9 @@ describe('Test the Proposals Route', () => {
 				trade.uuid,
 				customer.uuid,
 				'first job for this test',
-				TOKEN
+				CUSTOMERTOKEN
 			)
 		).body.data;
-		TOKEN = await (await login('supplier@mail.com', 'Pas$W0rd')).body.token;
 	});
 	afterAll(async () => {
 		await client.end();
@@ -71,7 +71,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -81,7 +81,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.post(endpoint)
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -91,7 +91,7 @@ describe('Test the Proposals Route', () => {
 					.send({
 						job_uuid: invalidUUID,
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -102,7 +102,7 @@ describe('Test the Proposals Route', () => {
 						job_uuid: job.uuid,
 						price: 'Invalid price',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -114,7 +114,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2022-15-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 
@@ -125,7 +125,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2022-12-60',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 
@@ -136,7 +136,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '1231231-12-15',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -148,7 +148,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2020-12-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -159,7 +159,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 
@@ -169,7 +169,7 @@ describe('Test the Proposals Route', () => {
 						job_uuid: job.uuid,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 
@@ -179,7 +179,7 @@ describe('Test the Proposals Route', () => {
 						job_uuid: job.uuid,
 						price: 500,
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -196,7 +196,7 @@ describe('Test the Proposals Route', () => {
 						price: 500,
 						expiration_date: '2023-12-13',
 					})
-					.set('Authorization', `Bearer ${customerToken}`);
+					.set('Authorization', `${customerToken}`);
 
 				expect(result.statusCode).toBe(401);
 			});
@@ -207,8 +207,9 @@ describe('Test the Proposals Route', () => {
 						job_uuid: inExistentUUID,
 						price: 500,
 						expiration_date: '2023-12-13',
+						description: 'this is a description',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -219,8 +220,9 @@ describe('Test the Proposals Route', () => {
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
+						description: 'This is a description',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(201);
 
@@ -233,7 +235,7 @@ describe('Test the Proposals Route', () => {
 					'2023-12-13T05:00:00.000Z'
 				);
 				expect(proposal).toHaveProperty('is_accepted');
-				expect(proposal.is_accepted).toBe(false);
+				expect(proposal.is_accepted).toBe(null);
 				expect(proposal).toHaveProperty('supplier');
 				expect(proposal.supplier).toHaveProperty('uuid');
 				expect(proposal.supplier.uuid).toBe(supplier.uuid);
@@ -252,8 +254,9 @@ describe('Test the Proposals Route', () => {
 						job_uuid: job.uuid,
 						price: 500,
 						expiration_date: '2023-12-13',
+						description: 'This is a description',
 					})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(409);
 			});
@@ -271,7 +274,7 @@ describe('Test the Proposals Route', () => {
 			it('should return 403', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -280,7 +283,7 @@ describe('Test the Proposals Route', () => {
 			it('should return 400 if the user does not send the job uuid', async () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${CUSTOMERTOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -288,7 +291,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
 					.query({ job: invalidUUID })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${CUSTOMERTOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -296,7 +299,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
 					.query({ job: inExistentUUID })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -306,7 +309,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.get(endpoint)
 					.query({ job: job.uuid })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(200);
 
@@ -339,7 +342,7 @@ describe('Test the Proposals Route', () => {
 					const url = `${endpoint}/${supplier.uuid}`;
 					const result = await request(baseUrl)
 						.get(url)
-						.set('Authorization', `Bearer ${invalidTOKEN}`);
+						.set('Authorization', `${invalidTOKEN}`);
 
 					expect(result.statusCode).toBe(403);
 				});
@@ -348,7 +351,7 @@ describe('Test the Proposals Route', () => {
 				const url = `${endpoint}/${supplier.uuid}`;
 				const result = await request(baseUrl)
 					.get(url)
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -357,7 +360,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.get(url)
 					.query({ job: invalidUUID })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -367,7 +370,7 @@ describe('Test the Proposals Route', () => {
 					const result = await request(baseUrl)
 						.get(url)
 						.query({ job: job.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(400);
 				});
@@ -376,7 +379,7 @@ describe('Test the Proposals Route', () => {
 					const result = await request(baseUrl)
 						.get(url)
 						.query({ job: job.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -385,7 +388,7 @@ describe('Test the Proposals Route', () => {
 					const result = await request(baseUrl)
 						.get(url)
 						.query({ job: job.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(404);
 				});
@@ -394,7 +397,7 @@ describe('Test the Proposals Route', () => {
 					const result = await request(baseUrl)
 						.get(url)
 						.query({ job: job.uuid })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -428,7 +431,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.put(url)
 					.send({})
-					.set('Authorization', `Bearer ${invalidTOKEN}`);
+					.set('Authorization', `${invalidTOKEN}`);
 
 				expect(result.statusCode).toBe(403);
 			});
@@ -439,7 +442,7 @@ describe('Test the Proposals Route', () => {
 				const result = await request(baseUrl)
 					.put(url)
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -449,7 +452,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: invalidUUID })
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -459,7 +462,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: inExistentUUID })
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -471,7 +474,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: job.uuid })
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 			});
@@ -481,7 +484,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: job.uuid })
 					.send({})
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(404);
 			});
@@ -493,7 +496,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: job.uuid })
 					.send({ price: 'whatever value' })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -508,7 +511,7 @@ describe('Test the Proposals Route', () => {
 						expiration_date: '2022-15-13',
 					})
 					.query({ job: job.uuid })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -521,7 +524,7 @@ describe('Test the Proposals Route', () => {
 						expiration_date: '2022-12-60',
 					})
 					.query({ job: job.uuid })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -534,7 +537,7 @@ describe('Test the Proposals Route', () => {
 						expiration_date: '1231231-12-15',
 					})
 					.query({ job: job.uuid })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -549,7 +552,7 @@ describe('Test the Proposals Route', () => {
 						expiration_date: '2020-12-13',
 					})
 					.query({ job: job.uuid })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -562,7 +565,7 @@ describe('Test the Proposals Route', () => {
 					.put(url)
 					.query({ job: job.uuid })
 					.send({ is_accepted: 'whatever value' })
-					.set('Authorization', `Bearer ${TOKEN}`);
+					.set('Authorization', `${TOKEN}`);
 
 				expect(result.statusCode).toBe(400);
 				expect(result.body.detail).toBe(
@@ -578,7 +581,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ is_accepted: true })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(401);
 				});
@@ -592,7 +595,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ price: 455.76 })
-						.set('Authorization', `Bearer ${supplierToken}`);
+						.set('Authorization', `${supplierToken}`);
 
 					expect(result.statusCode).toBe(401);
 
@@ -600,7 +603,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ expiration_date: '2023-01-25' })
-						.set('Authorization', `Bearer ${supplierToken}`);
+						.set('Authorization', `${supplierToken}`);
 
 					expect(result.statusCode).toBe(401);
 				});
@@ -610,7 +613,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({})
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -623,7 +626,7 @@ describe('Test the Proposals Route', () => {
 						'2023-12-13T05:00:00.000Z'
 					);
 					expect(proposal).toHaveProperty('is_accepted');
-					expect(proposal.is_accepted).toBe(false);
+					expect(proposal.is_accepted).toBe(null);
 					expect(proposal).toHaveProperty('supplier');
 					expect(proposal.supplier).toHaveProperty('uuid');
 					expect(proposal.supplier.uuid).toBe(supplier.uuid);
@@ -639,7 +642,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ price: 455.76 })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -652,7 +655,7 @@ describe('Test the Proposals Route', () => {
 						'2023-12-13T05:00:00.000Z'
 					);
 					expect(proposal).toHaveProperty('is_accepted');
-					expect(proposal.is_accepted).toBe(false);
+					expect(proposal.is_accepted).toBe(null);
 					expect(proposal).toHaveProperty('supplier');
 					expect(proposal.supplier).toHaveProperty('uuid');
 					expect(proposal.supplier.uuid).toBe(supplier.uuid);
@@ -668,7 +671,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ expiration_date: '2023-01-25' })
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -681,7 +684,7 @@ describe('Test the Proposals Route', () => {
 						'2023-01-25T05:00:00.000Z'
 					);
 					expect(proposal).toHaveProperty('is_accepted');
-					expect(proposal.is_accepted).toBe(false);
+					expect(proposal.is_accepted).toBe(null);
 					expect(proposal).toHaveProperty('supplier');
 					expect(proposal.supplier).toHaveProperty('uuid');
 					expect(proposal.supplier.uuid).toBe(supplier.uuid);
@@ -695,19 +698,13 @@ describe('Test the Proposals Route', () => {
 				});
 			});
 			describe('Given the user updates is non supplier', () => {
-				let customerToken;
-				beforeAll(async () => {
-					customerToken = await (
-						await login('customer@mail.com', 'Pas$wordForCust0mer')
-					).body.token;
-				});
 				it('should return 401 if try to update any other field', async () => {
 					const url = `${endpoint}/${supplier.uuid}`;
 					let result = await request(baseUrl)
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ price: 455.76 })
-						.set('Authorization', `Bearer ${customerToken}`);
+						.set('Authorization', `${CUSTOMERTOKEN}`);
 
 					expect(result.statusCode).toBe(401);
 
@@ -715,7 +712,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ expiration_date: '2023-01-25' })
-						.set('Authorization', `Bearer ${customerToken}`);
+						.set('Authorization', `${CUSTOMERTOKEN}`);
 
 					expect(result.statusCode).toBe(401);
 				});
@@ -725,7 +722,7 @@ describe('Test the Proposals Route', () => {
 						.put(url)
 						.query({ job: job.uuid })
 						.send({ is_accepted: true })
-						.set('Authorization', `Bearer ${customerToken}`);
+						.set('Authorization', `${CUSTOMERTOKEN}`);
 
 					expect(result.statusCode).toBe(200);
 
@@ -750,10 +747,10 @@ describe('Test the Proposals Route', () => {
 					expect(proposal.supplier).toHaveProperty('phone');
 					expect(proposal.supplier.phone).toBe(supplier.phone);
 
-					const jobUrl = `/jobs/${job.uuid}`;
+					const jobUrl = `/api/jobs/${job.uuid}`;
 					const jobResult = await request(baseUrl)
 						.get(jobUrl)
-						.set('Authorization', `Bearer ${TOKEN}`);
+						.set('Authorization', `${TOKEN}`);
 
 					expect(jobResult.statusCode).toBe(200);
 					const updatedJob = jobResult.body.data;

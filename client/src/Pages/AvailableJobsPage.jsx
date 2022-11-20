@@ -14,7 +14,22 @@ import { useSelector } from 'react-redux';
 export const AvailableJobsPage = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
-  const [city, setCity] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [countries, setCountries] = useState([]);
+
+  const [cityInput, setCityInput] = useState('');
+  const [cityUUID, setCityUUID] = useState('');
+  const [cities, setCities] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [cityInputToggled, setCityInputToggled] = useState(false);
+
+  const cityInputHandler = (city) => {
+    setFilteredCities([]);
+    setCityInputToggled(true);
+    setCityInput(city.name);
+    setCityUUID(city.uuid);
+  };
+
   const [jobs, setJobs] = useState([]);
 
   const [noJobs, setNoJobs] = useState('');
@@ -26,8 +41,10 @@ export const AvailableJobsPage = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const { data: res } = await getAPI(`jobs?city=${city}`, userInfo.token);
-      const _proposals = proposals[0].jobs_pending.filter(proposal => proposal.city.name.toLowerCase() === city.toLowerCase());
+      console.log(cityUUID);
+      const { data: res } = await getAPI(`jobs?city=${cityUUID}`, userInfo.token);
+      console.log(res);
+      const _proposals = proposals[0].jobs_pending.filter(proposal => proposal.city.name.toLowerCase() === cityInput.toLowerCase());
       console.log(_proposals);
       const arr = res.data.filter(job => job.is_taken === false).filter(job => !_proposals.find(proposal => job.uuid === proposal.job.uuid));
       console.log(arr);
@@ -38,49 +55,138 @@ export const AvailableJobsPage = () => {
   };
 
   useEffect(() => {
+    (async () => {
+      try {
+        const { data: _countries } = await getAPI(`locations`, userInfo.token);
+        setCountries(_countries.data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (selectedCountry === '' && cities.length > 0) {
+      setCityInput('');
+      setCityUUID('');
+      setCities([]);
+      setFilteredCities([]);
+    }
+    if (selectedCountry !== '') {
+      setCityInput('');
+      setCityUUID('');
+      (async () => {
+        const { data: _cities } = await getAPI(
+          `locations/${selectedCountry}`,
+          userInfo.token
+        );
+        setCities(_cities.data);
+      })();
+    }
+  }, [selectedCountry, userInfo.token]);
+
+  useEffect(() => {
+    if (cityInput === '') {
+      setFilteredCities([]);
+      if (cityUUID !== '') setCityUUID('');
+      return;
+    }
+    const _cities = cities
+      .filter((city) =>
+        city.name.toLowerCase().includes(cityInput.toLowerCase())
+      )
+      .slice(0, 5);
+    if (!cityInputToggled) setFilteredCities(_cities);
+    if (cityInputToggled) setCityInputToggled(false);
+  }, [cityInput, cityUUID]);
+
+  useEffect(() => {
+    if (filteredCities.length > 0 && cityUUID !== '') setCityUUID('');
+  }, [filteredCities]);
+
+  useEffect(() => {
     if (jobs.length > 0 && noJobs) setNoJobs('');
-    if (jobs.length === 0 && city !== '') setNoJobs(city);
-    setCity('');
+    if (jobs.length === 0 && cityInput !== '') setNoJobs(cityInput);
+    setCityInput('');
+    setCityUUID('');
   }, [jobs]);
 
   return (
     <div className='h-screen'>
       <h1 className='font-bold text-center my-5'>Available Jobs</h1>
       <form
-        className='container p-4 mx-auto flex flex-row items-center justify-center'
+        className='container p-4 mx-auto flex flex-col items-center justify-center'
         onSubmit={handleSubmit}
       >
-        <div className='flex flex-row items-center'>
-          <label
-            className='mb-0 mx-2 font-bold text-lg text-black'
-            htmlFor='city'
-          >
-            City:
-          </label>
-          <input
-            className='border py-2 px-3 text-black rounded'
-            type='text'
-            required
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder='City'
-          />
+        <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-black text-center'
+                  htmlFor='countries'
+                >
+                  Country
+                </label>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className='cursor-pointer w-72'
+                >
+                  <option default value=''>
+                    Select a country
+                  </option>
+                  {countries.map((country) => {
+                    return (
+                      <option key={country.uuid} value={country.uuid}>
+                        {country.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className={`mb-2 font-bold text-lg text-black text-center ${
+                    selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
+                  }`}
+                  htmlFor='cities'
+                >
+                  City
+                </label>
+                <input
+                  className={`w-72 ${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
+                  type='search'
+                  value={cityInput}
+                  onChange={(e) => setCityInput(e.target.value)}
+                  disabled={selectedCountry === ''}
+                  maxLength={((cityUUID !== '') || (filteredCities.length === 0 && cityInput !== '')) ? cityInput.length : null}
+                />
+                <ul>
+                  {filteredCities.map((city) => (
+                    <li
+                      className='cursor-pointer hover:opacity-60 text-black'
+                      key={city.uuid}
+                      onClick={() => cityInputHandler(city)}
+                    >
+                      {city.name}
+                    </li>
+                  ))}
+                </ul>
         </div>
         <div className='mt-0 ml-2'>
           <Button
             type='submit'
             value='submit'
-            backgroundColor='primary-100'
+            backgroundColor='tertiary-100'
             name='Search'
+            disabled={(filteredCities.length === 0 && cityUUID === '') || (filteredCities.length > 0)}
           />
         </div>
       </form>
       <div>
         {jobs.length === 0 && noJobs !== '' &&
-          <h1>No jobs available in {noJobs}</h1>
+          <h1 className='mt-2 text-center font-semibold text-2xl px-4'>Sorry, there are no jobs available in {noJobs}.</h1>
         }
         {jobs.length > 0 && (
-          <h3 className='text-xl font-bold mb-5 text-center text-primary-200'>
+          <h3 className='text-xl px-4 font-bold my-8 text-center text-black'>
             Showing results for {jobs[0].city.name}
           </h3>
         )}
@@ -97,7 +203,6 @@ export const AvailableJobsPage = () => {
           );
         })}
       </div>
-      {jobs.length > 10 && <Pagination />}
     </div>
   );
 };

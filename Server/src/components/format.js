@@ -62,6 +62,7 @@ const formatOneJobRespnse = (job) => {
 		city: {
 			uuid: job.city_uuid,
 			name: job.city_name,
+			country_uuid: job.country_uuid
 		},
 		customer: {
 			uuid: job.customer_uuid,

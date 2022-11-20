@@ -1,6 +1,5 @@
-import { postAPI } from "../../Utils/Axios";
-import { AUTH } from "../ActionTypes";
-import {RESET_STORE} from "../ActionTypes";
+import { postAPI, putAPI } from "../../Utils/Axios";
+import { AUTH, RESET_STORE } from "../ActionTypes";
 
 export const login = userLogin => async dispatch => {
  try {
@@ -23,35 +22,37 @@ export const login = userLogin => async dispatch => {
   localStorage.setItem('userInfo', JSON.stringify(userInfo));
   window.location.href = `/user/${uuid}`;
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
 }
 
-export const signUp = userSignup => async dispatch => {
+export const signUp = userInputs => async dispatch => {
  try {
-  const _res = await postAPI('users', userSignup);
-  console.log(_res);
-  if (userSignup.trades) {
-    const res = await postAPI('trades', {
-      description: [userSignup.trades]
-    });
-    console.log(res);
-  }
-//   dispatch({
-//    type: AUTH,
-//    payload: res.data.data
-//   });
- 
-//   localStorage.setItem('logged', 'true');
+  const res = await postAPI('users', userInputs);
+  console.log(res);
  } catch (error) {
-  console.log(error);
+  return error.response;
  }
+}
+
+export const updateUser = (userInputs, userUUID, token) => async dispatch => {
+  try {
+    const res = await putAPI(`users/${userUUID}`, userInputs, token);
+    console.log(res);
+
+    dispatch({
+      type: AUTH,
+      payload: res.data
+    });
+
+  } catch (error) {
+    return error.response;
+  }
 }
 
 export const logout = () => {
   localStorage.clear();
   resetStore();
-  window.location.reload();
   window.location.pathname = '/';
 }
 
