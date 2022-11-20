@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import Error from './Error';
 import LandingImage from './../assets/images/Drill.jpg';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { signUp, updateUser } from '../Redux/Actions/authActions';
 import { useSelector, useDispatch } from 'react-redux';
 import Loading from './Loading';
@@ -18,8 +18,6 @@ export const UserForm = () => {
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo")) || "{}";
   const [userInputs, setUserInputs] = useState(initialState);
-
-  // const { name, email, password, isProvider, phone } = userInputs;
 
   const [selectedOption, setSelectedOption] = useState(false);
 
@@ -272,14 +270,6 @@ export const UserForm = () => {
                 />
               </div>
             }
-            {/* {Object.keys(auth).length === 0 &&            
-              <Link
-                className='block w-full no-underline mt-4 text-sm text-black hover:text-secondary-300'
-                to='/login'
-              >
-                Already have an account?
-              </Link>
-            } */}
           </div>
           <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12'>
             <img

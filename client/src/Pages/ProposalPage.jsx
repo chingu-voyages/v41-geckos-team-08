@@ -6,11 +6,8 @@ import Error from '../Components/Error';
 import { Button } from '../Components/Button';
 import { JobCard } from '../Components/JobCard';
 import { ProposalCard } from '../Components/ProposalCard';
-import { NavBar } from '../Components/NavBar';
 import { createProposal, updateProposal } from '../Redux/Actions/proposalActions';
 import { getAPI } from '../Utils/Axios';
-import { Footer } from '../Components/Footer';
-import { Pagination } from '../Components/Pagination';
 import PageNotFound from "./PageNotFound";
 
 export const ProposalPage = () => {

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from './Button';
-import { Link, useLocation } from 'react-router-dom';
-import { useRef } from 'react';
-import { store } from '../Redux/Store';
+import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 export const SecondaryNavBar = (props) => {

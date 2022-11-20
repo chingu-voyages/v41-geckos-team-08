@@ -1,18 +1,11 @@
 import React from 'react';
 import { JobCard } from '../Components/JobCard';
 import { ProfileCard } from '../Components/ProfileCard';
-import { NavBar } from '../Components/NavBar';
-import { Footer } from './../Components/Footer';
-import { Pagination } from './../Components/Pagination';
 import UserProfilePic from './../assets/images/measurements.jpg';
-import SortAndSearch from '../Components/SortAndSearch';
-//import {SecondaryNavBar} from '../Components/SecondaryNavBar'
 import { store } from '../Redux/Store';
 import { Button } from '../Components/Button';
 import { useSelector } from 'react-redux';
-import { useState, useEffect } from 'react';
-import { getAPI } from '../Utils/Axios';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export const UserProfile = () => {
   console.log(store.getState());
@@ -23,8 +16,6 @@ export const UserProfile = () => {
 
   const [buttonAClicked, setButtonAClicked] = useState(true);
   const [buttonBClicked, setButtonBClicked] = useState(false);
-
-  const navigate = useNavigate();
 
   return (
     <div className='bg-white  rounded-sm border-none'>
