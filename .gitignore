@@ -1,7 +1,7 @@
 .env
-/.github/ISSUES_TEMPLATE
-/Documentation
-/database tables and fields
+.github/ISSUES_TEMPLATE
+.Documentation
+.database tables and fields
 /Server/.env
 /Server/node_modules/
 /Server/package-lock.json
