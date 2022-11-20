@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
+import Error from './Error';
 import LandingImage from './../assets/images/Drill.jpg';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signUp, updateUser } from '../Redux/Actions/authActions';
@@ -79,15 +80,19 @@ export const UserForm = () => {
     console.log(userInputs);
   }, [userInputs]);
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(userInputs);
     if (Object.keys(auth).length > 0) {
-      dispatch(updateUser(userInputs, auth.data.uuid, userInfo.token));
-      navigate(`/user/${auth.data.uuid}`);
+      dispatch(updateUser(userInputs, auth.data.uuid, userInfo.token)).then(error => {
+        error ? setError(error.data) : navigate(`/user/${auth.data.uuid}`);
+      });
     } else {
-      dispatch(signUp(userInputs));
-      navigate('/login');
+      dispatch(signUp(userInputs)).then(error => {
+        error ? setError(error.data) : navigate('/login');
+      });
     }
   };
 
@@ -97,7 +102,7 @@ export const UserForm = () => {
         <Loading />
       }
       {!loading &&     
-        <div className='flex flex-wrap lg:h-full'>
+        <div className='flex flex-wrap lg:h-full overflow-x-hidden'>
           <div className='w-full lg:w-1/2 bg-white p-8 m-0'>
             <h1 className='block w-full text-center text-gray-800 text-2xl font-bold mb-6'>
               {Object.keys(auth).length > 0 ? 'Update User' : 'Register'}
@@ -253,13 +258,20 @@ export const UserForm = () => {
                   disabled={
                     userInputs.name === '' ||
                     userInputs.email === '' ||
-                    userInputs.password === '' ||
                     userInputs.phone === '' ||
-                    (userInputs.is_supplier ? trade === '' : null)
+                    (userInputs.is_supplier ? trade === '' : null) ||
+                    (Object.keys(auth).length > 0 ? null : userInputs.password === '')
                   }
                 />
               </div>
             </form>
+            {error !== '' &&
+              <div className='flex justify-center mt-3'>
+                <Error 
+                  error={error}
+                />
+              </div>
+            }
             {/* {Object.keys(auth).length === 0 &&            
               <Link
                 className='block w-full no-underline mt-4 text-sm text-black hover:text-secondary-300'

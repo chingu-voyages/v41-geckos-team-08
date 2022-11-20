@@ -3,16 +3,14 @@ import { CREATE_JOB_PROPOSAL, UPDATE_JOB_PROPOSAL, COMPLETE_JOB } from "../Actio
 
 export const createProposal = (proposal, token) => async dispatch => {
  try {
-  const res = await postAPI('proposals', proposal, token);
+  const { data: res } = await postAPI('proposals', proposal, token);
 
-  console.log(res);
+  console.log(res.data);
 
   dispatch({
    type: CREATE_JOB_PROPOSAL,
-   payload: res.data.data
+   payload: res.data
   });
-
-  return res;
 
  } catch (error) {
   return error.response;
@@ -21,16 +19,14 @@ export const createProposal = (proposal, token) => async dispatch => {
 
 export const updateProposal = (supplier, job, proposal, token) => async dispatch => {
  try {
-  const res = await putAPI(`proposals/${supplier}?job=${job}`, proposal, token);
+  const { data: res } = await putAPI(`proposals/${supplier}?job=${job}`, proposal, token);
 
-  console.log(res.data.data);
+  console.log(res.data);
 
   dispatch({
    type: UPDATE_JOB_PROPOSAL,
-   payload: res.data.data
+   payload: res.data
   });
-
-  return res;
 
  } catch (error) {
   return error.response;
@@ -39,16 +35,14 @@ export const updateProposal = (supplier, job, proposal, token) => async dispatch
 
 export const completeJob = (job, token) => async dispatch => {
  try {
-  const res = await putAPI(`jobs/${job}`, { is_completed: true }, token);
+  const { data: res } = await putAPI(`jobs/${job}`, { is_completed: true }, token);
 
-  console.log(res.data.data);
+  console.log(res.data);
 
   dispatch({
    type: COMPLETE_JOB,
-   payload: res.data.data
+   payload: res.data
   });
-
-  return res;
 
  } catch (error) {
   return error.response;

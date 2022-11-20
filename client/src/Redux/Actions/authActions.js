@@ -20,29 +20,18 @@ export const login = userLogin => async dispatch => {
   };
 
   localStorage.setItem('userInfo', JSON.stringify(userInfo));
-  
-  return res;
-
+  window.location.href = `/user/${uuid}`;
  } catch (error) {
-  return error.message;
+  return error.response;
  }
 }
 
 export const signUp = userInputs => async dispatch => {
  try {
   const res = await postAPI('users', userInputs);
-  
-  if (userInputs.trades) {
-    await postAPI('trades', {
-      description: [userInputs.trades]
-    });
-  }
-
-  return res;
-
+  console.log(res);
  } catch (error) {
-  console.log(error);
-  return error.message;
+  return error.response;
  }
 }
 
@@ -56,8 +45,6 @@ export const updateUser = (userInputs, userUUID, token) => async dispatch => {
       payload: res.data
     });
 
-    return res;
-
   } catch (error) {
     return error.response;
   }
@@ -66,7 +53,6 @@ export const updateUser = (userInputs, userUUID, token) => async dispatch => {
 export const logout = () => {
   localStorage.clear();
   resetStore();
-  window.location.reload();
   window.location.pathname = '/';
 }
 

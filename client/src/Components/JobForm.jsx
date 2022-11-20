@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import DatePicker from 'react-date-picker';
 import { Button } from './Button';
+import Error from "./Error";
 import Loading from './Loading';
 import LandingImage from './../assets/images/drillBits.jpg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -198,29 +199,18 @@ export const JobForm = () => {
 
   const navigate = useNavigate();
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(newJob);
-    let res;
     if (showUpdate) {
-      dispatch(updateJob(newJob, jobUUID, userInfo.token)).then(response => {
-        console.log(response);
-        res = response;
-        if (res.status !== 200) {
-          // add error msg here later
-          return;
-        }
-        navigate(`/user/${auth.data.uuid}`);
+      dispatch(updateJob(newJob, jobUUID, userInfo.token)).then(error => {
+        error ? setError(error.data.detail) : navigate(`/user/${auth.data.uuid}`);
       });
     } else {
-      dispatch(createJob(newJob, userInfo.token)).then(response => {
-        console.log(response);
-        res = response;
-        if (res.status !== 201) {
-          // add error msg here later
-          return;
-        }
-        navigate(`/user/${auth.data.uuid}`);
+      dispatch(createJob(newJob, userInfo.token)).then(error => {
+        error ? setError(error.data.detail) : navigate(`/user/${auth.data.uuid}`);
       });
     }
   };
@@ -237,7 +227,7 @@ export const JobForm = () => {
             <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black'
+                  className='mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='countries'
                 >
                   Countries
@@ -261,7 +251,7 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className={`mb-2 font-bold text-lg text-black ${
+                  className={`mb-2 font-bold text-lg text-black text-center sm:text-start ${
                     selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
                   }`}
                   htmlFor='cities'
@@ -290,8 +280,8 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black'
-                  htmlFor='last_name'
+                  className='mb-2 font-bold text-lg text-black text-center sm:text-start'
+                  htmlFor='trade'
                 >
                   Trade
                 </label>
@@ -314,7 +304,7 @@ export const JobForm = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black'
+                  className='mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='description'
                 >
                   Description
@@ -329,27 +319,10 @@ export const JobForm = () => {
                   required
                 />
               </div>
-              <div className='flex flex-col mb-4'>
-                <label
-                  className='mb-2 font-bold text-lg text-black'
-                  htmlFor='date'
-                >
-                  I Need this Done by
-                </label>
-                <div>
-                  <DatePicker
-                    clearIcon={null}
-                    className='bg-white'
-                    value={date}
-                    onChange={changeDate}
-                    required
-                  />
-                </div>
-              </div>
               {/* prices are converted from numbers to strings when changed */}
               <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-black'
+                  className='mb-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='low_price'
                 >
                   Low Price
@@ -364,7 +337,7 @@ export const JobForm = () => {
                   onChange={handleChange}
                 />
                 <label
-                  className='my-2 font-bold text-lg text-black'
+                  className='my-2 font-bold text-lg text-black text-center sm:text-start'
                   htmlFor='high_price'
                 >
                   High Price
@@ -379,12 +352,29 @@ export const JobForm = () => {
                   onChange={handleChange}
                 />
               </div>
-              <div>
+              <div className='flex flex-col mb-4'>
+                <label
+                  className='mb-2 font-bold text-lg text-black text-center sm:text-start'
+                  htmlFor='date'
+                >
+                  I Need this Done by
+                </label>
+                <div className='flex justify-center sm:justify-start'>
+                  <DatePicker
+                    clearIcon={null}
+                    className='bg-white'
+                    value={date}
+                    onChange={changeDate}
+                    required
+                  />
+                </div>
+              </div>
+              <div className='flex justify-center sm:justify-start mt-2'>
                 <Button
                   type='submit'
                   value='submit'
                   backgroundColor='tertiary-100'
-                  name='Post'
+                  name={showUpdate ? 'Update' : 'Post'}
                   disabled={
                     newJob.trade_uuid === '' ||
                     newJob.city_uuid === '' ||
@@ -398,6 +388,13 @@ export const JobForm = () => {
                 />
               </div>
             </form>
+            {error !== '' &&
+              <div className="flex justify-center sm:justify-start mt-2">
+                <Error 
+                  error={error}
+                />
+              </div>
+            }
           </div>
           <div className='hidden grow-0 shrink-0 basis-90 lg:flex lg:w-6/12 xl:w-6/12 '>
             <img

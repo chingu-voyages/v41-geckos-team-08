@@ -24,7 +24,6 @@ export const AvailableJobsPage = () => {
   const [cityInputToggled, setCityInputToggled] = useState(false);
 
   const cityInputHandler = (city) => {
-    console.log('fired');
     setFilteredCities([]);
     setCityInputToggled(true);
     setCityInput(city.name);
@@ -121,15 +120,15 @@ export const AvailableJobsPage = () => {
       >
         <div className='flex flex-col mb-4'>
                 <label
-                  className='mb-2 font-bold text-lg text-quaternary-300'
+                  className='mb-2 font-bold text-lg text-black text-center'
                   htmlFor='countries'
                 >
-                  Countries
+                  Country
                 </label>
                 <select
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
-                  className='cursor-pointer'
+                  className='cursor-pointer w-72'
                 >
                   <option default value=''>
                     Select a country
@@ -145,15 +144,15 @@ export const AvailableJobsPage = () => {
               </div>
               <div className='flex flex-col mb-4'>
                 <label
-                  className={`mb-2 font-bold text-lg text-quaternary-300 ${
+                  className={`mb-2 font-bold text-lg text-black text-center ${
                     selectedCountry ? 'text-opacity-100' : 'text-opacity-20'
                   }`}
                   htmlFor='cities'
                 >
-                  Cities
+                  City
                 </label>
                 <input
-                  className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
+                  className={`w-72 ${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
                   type='search'
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
@@ -163,7 +162,7 @@ export const AvailableJobsPage = () => {
                 <ul>
                   {filteredCities.map((city) => (
                     <li
-                      className='cursor-pointer hover:opacity-60 text-quaternary-300'
+                      className='cursor-pointer hover:opacity-60 text-black'
                       key={city.uuid}
                       onClick={() => cityInputHandler(city)}
                     >
@@ -176,7 +175,7 @@ export const AvailableJobsPage = () => {
           <Button
             type='submit'
             value='submit'
-            backgroundColor='primary-100'
+            backgroundColor='tertiary-100'
             name='Search'
             disabled={(filteredCities.length === 0 && cityUUID === '') || (filteredCities.length > 0)}
           />
@@ -184,10 +183,10 @@ export const AvailableJobsPage = () => {
       </form>
       <div>
         {jobs.length === 0 && noJobs !== '' &&
-          <h1>No jobs available in {noJobs}</h1>
+          <h1 className='mt-2 text-center font-semibold text-2xl px-4'>Sorry, there are no jobs available in {noJobs}.</h1>
         }
         {jobs.length > 0 && (
-          <h3 className='text-xl font-bold mb-5 text-center text-primary-200'>
+          <h3 className='text-xl px-4 font-bold my-8 text-center text-black'>
             Showing results for {jobs[0].city.name}
           </h3>
         )}
@@ -204,7 +203,6 @@ export const AvailableJobsPage = () => {
           );
         })}
       </div>
-      {jobs.length > 10 && <Pagination />}
     </div>
   );
 };

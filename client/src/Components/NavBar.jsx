@@ -256,7 +256,7 @@ export const NavBar = (props) => {
   // }
 
   return (
-    <nav className='relative flex flex-wrap justify-between items-center bg-white px-2 py mb-0 h-auto py-3'>
+    <nav className='relative flex flex-wrap justify-between items-center bg-white px-2 py mb-0 h-auto py-3 overflow-x-hidden'>
       <div className='container px-4 mx-auto flex flex-wrap items-center justify-between'>
         <div className='w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start md:w-auto md:static md:block md:justify-start'>
           <Link className='inline-block mr-4 py-2 whitespace-nowrap' to='/'>
