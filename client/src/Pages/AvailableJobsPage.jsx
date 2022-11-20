@@ -112,7 +112,7 @@ export const AvailableJobsPage = () => {
   }, [jobs]);
 
   return (
-    <div className='h-screen'>
+    <div className='h-full'>
       <h1 className='font-bold text-center my-5'>Available Jobs</h1>
       <form
         className='container p-4 mx-auto flex flex-col items-center justify-center'
