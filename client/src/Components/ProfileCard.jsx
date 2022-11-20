@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { store } from '../Redux/Store';
 import { Button } from './Button';
 
 export const ProfileCard = () => {
@@ -47,9 +46,6 @@ export const ProfileCard = () => {
             bolder='font-semibold'
           />
         </section>
-        {/* <p className='text-black text-base mb-1'>
-          <span className='font-bold'>Location:</span> not Available
-        </p> */}
       </div>
     </div>
   );

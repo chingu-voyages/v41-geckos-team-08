@@ -8,19 +8,14 @@ import {AvailableJobsPage} from './Pages/AvailableJobsPage'
 import {ContractorProfile} from './Pages/ContractorProfile'
 import {JobFormPage} from './Pages/JobFormPage'
 import {ProposalPage} from './Pages/ProposalPage'
-import {UserProfile} from './Pages/UserProfile'
-import SortAndSearch from './Components/SortAndSearch';
+import {UserProfile} from './Pages/UserProfile';
 import { NavBar } from './Components/NavBar';
 import { Footer } from './Components/Footer';
-import Loading from './Components/Loading';
 import PageNotFound from './Pages/PageNotFound';
 import { getAPI } from './Utils/Axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { AUTH, GET_JOBS, GET_PROPOSALS } from './Redux/ActionTypes';
 import AuthRoute from './AuthRoute';
-import {store} from './Redux/Store';
-import { checkTokenExp } from './Utils/CheckTokenExp';
-import { logout } from './Redux/Actions/authActions';
 
 function App() {
 
@@ -42,12 +37,6 @@ function App() {
     const getUserInfo = async () => {
       const { token, uuid } = userInfo;
       try {
-        // const tokenActive = await checkTokenExp(token);
-        // if (!tokenActive) {
-        //   // logout();
-        //   setLoading(false);
-        //   return;
-        // }
         const { data: authRes } = await getAPI(`users/${uuid}`, token);
         console.log(authRes);
         dispatch({

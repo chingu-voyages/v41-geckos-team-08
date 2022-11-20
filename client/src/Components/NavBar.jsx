@@ -213,48 +213,6 @@ export const NavBar = (props) => {
     );
   }
 
-  // if (
-  // 	!isSupplier &&
-  // 	userInfo &&
-  // 	location.pathname === `/user/${userInfo.uuid}`
-  // ) {
-  // 	buttons = (
-  // 		<div className="flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-3">
-  // 			<Button
-  // 				backgroundColor="transparent"
-  // 				activeEffect="primary-100"
-  // 				name="Jobs Posted"
-  // 			/>
-
-  // 			<Button
-  // 				backgroundColor="transparent"
-  // 				activeEffect="primary-100"
-  // 				name="Jobs in Progress"
-  // 			/>
-  // 		</div>
-  // 	);
-  // } else if (
-  // 	isSupplier &&
-  // 	userInfo &&
-  // 	location.pathname === `/user/${userInfo.uuid}`
-  // ) {
-  // 	buttons = (
-  // 		<div className="flex flex-col lg:flex-row md:flex-row list-none lg:ml-auto md:ml-auto gap-3">
-  // 			<Button
-  // 				backgroundColor="transparent"
-  // 				activeEffect="primary-100"
-  // 				name="Jobs Taken"
-  // 			/>
-
-  // 			<Button
-  // 				backgroundColor="transparent"
-  // 				activeEffect="primary-100"
-  // 				name="Jobs Pending"
-  // 			/>
-  // 		</div>
-  // 	);
-  // }
-
   return (
     <nav className='relative flex flex-wrap justify-between items-center bg-white px-2 py mb-0 h-auto py-3 overflow-x-hidden'>
       <div className='container px-4 mx-auto flex flex-wrap items-center justify-between'>
