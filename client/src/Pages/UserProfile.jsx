@@ -78,16 +78,16 @@ export const UserProfile = () => {
               </h1>
               {buttonAClicked &&
                 !auth.data.is_supplier &&
-                jobs[0].jobs_posted.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs posted.</h3>}
+                jobs[0].jobs_posted.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow text-center w-11/12'>Sorry, you don't have any jobs posted.</h3>}
               {buttonAClicked &&
                 auth.data.is_supplier &&
-                proposals[0].jobs_taken.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs picked up.</h3>}
+                proposals[0].jobs_taken.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow text-center w-11/12'>Sorry, you don't have any jobs picked up.</h3>}
               {buttonBClicked &&
                 !auth.data.is_supplier &&
-                jobs[0].jobs_in_progress.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs in progress.</h3>}
+                jobs[0].jobs_in_progress.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow text-center w-11/12'>Sorry, you don't have any jobs in progress.</h3>}
               {buttonBClicked &&
                 auth.data.is_supplier &&
-                proposals[0].jobs_pending.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow'>Sorry, you don't have any jobs waiting to be picked up.</h3>}
+                proposals[0].jobs_pending.length === 0 && <h3 className='font-bold bg-tertiary-100 rounded p-4 shadow-customShadow text-center w-11/12'>Sorry, you don't have any jobs waiting to be picked up.</h3>}
               {/* I'm gonna have to add logic later differentiating between Jobs Posted and Jobs Picked Up by Suppliers */}
               {buttonAClicked &&
                 !auth.data.is_supplier &&

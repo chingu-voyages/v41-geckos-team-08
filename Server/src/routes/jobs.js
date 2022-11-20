@@ -272,7 +272,7 @@ route.put('/:uuid', authorization, validateUUID, async (req, res) => {
 		await client.query('ROLLBACK');
 		if (err.code === '23503')
 			return res.status(404).json({ detail: err.detail });
-		return res.status(422).json({ detail: 'Unprocesable entity' });
+		return res.status(422).json({ detail: 'Unprocessable entity' });
 	}
 });
 

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const SERVER = `http://localhost:8080/api/`;
+const SERVER = process.env.REACT_APP_SERVER;
 
 export const postAPI = async (url, post, token) => {
 	const res = await axios.post(`${SERVER}${url}`, post, {
