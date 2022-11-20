@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { acceptJobProposal } from '../Redux/Actions/jobActions';
 import { Button } from './Button';
+import Error from './Error';
 
 export const ProposalCard = (props) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [error, setError] = useState('');
+
   const acceptProposal = () => {
-   dispatch(acceptJobProposal(props.supplierUUID, props.jobUUID, props.token));
-   navigate(`/user/${props.user}`);
+   dispatch(acceptJobProposal(props.supplierUUID, props.jobUUID, props.token)).then(error => {
+    error ? setError(error.data.detail) : navigate(`/user/${props.user}`);
+   });
   }
 
   return (
@@ -25,25 +29,30 @@ export const ProposalCard = (props) => {
              <h5 className='text-lg font-medium'>Phone: {props.phone}</h5>
             </div>
 
-            <p className='my-2 text-lg pr-2'>
+            <p className='my-2 font-semibold text-lg pr-2'>
               {props.description}
             </p>
             <div className='flex items-center mt-4'>
               <div className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
-                Offered Price: {props.price}
+                Offered Price: ${props.price}.00
               </div>
             </div>
             <div className='flex gap-3 mt-2'>
               <Button
-                backgroundColor='primary-100'
+                backgroundColor='tertiary-100'
                 textColor='white'
                 actionEffect='secondary-300'
                 name='Accept'
                 handleClick={acceptProposal}
               />
             </div>
-          </div>
-          <div className='text-right md:ml-8 flex'>
+            {error !== '' &&
+              <div className="flex justify-center sm:justify-start mt-2">
+                <Error 
+                  error={error}
+                />
+              </div>
+            }
           </div>
         </div>
       </div>
