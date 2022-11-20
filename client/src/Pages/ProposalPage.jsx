@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../Components/Loading';
+import Error from '../Components/Error';
 import { Button } from '../Components/Button';
 import { JobCard } from '../Components/JobCard';
 import { ProposalCard } from '../Components/ProposalCard';
@@ -62,6 +63,8 @@ export const ProposalPage = () => {
 
   const dispatch = useDispatch();
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   const handleSubmit = async e => {
     e.preventDefault();
     const proposal = {
@@ -71,11 +74,14 @@ export const ProposalPage = () => {
       price
     };
     if (location.search === "?edit") {
-      dispatch(updateProposal(auth.data.uuid, jobUUID, proposal, userInfo.token));
+      dispatch(updateProposal(auth.data.uuid, jobUUID, proposal, userInfo.token)).then(error => {
+        error ? setErrorMsg(error.data.detail) : navigate(`/user/${auth.data.uuid}`);
+      });
     } else {
-      dispatch(createProposal(proposal, userInfo.token));
+      dispatch(createProposal(proposal, userInfo.token)).then(error => {
+        error ? setErrorMsg(error.data.detail) : navigate(`/user/${auth.data.uuid}`);
+      });
     }
-    navigate(`/user/${auth.data.uuid}`);
   }
 
   return (
@@ -99,20 +105,22 @@ export const ProposalPage = () => {
               <div>
                 <form onSubmit={handleSubmit} className='flex flex-col items-center gap-10'>
                   <div className='flex flex-col items-center gap-2'>
-                    <label htmlFor='proposal'>Proposal:</label>
+                    <label htmlFor='proposal' className='font-semibold text-xl mb-2'>Proposal:</label>
                     <textarea 
                       type='text'
                       required
                       placeholder="Type your proposal here..."
                       rows={5}
                       cols={40}
-                      className='rounded-md'
+                      className='rounded-md w-11/12 sm:w-full'
                       value={description}
                       onChange={e => setDescription(e.target.value)}
                     />
                   </div>
                   <div className='flex items-center gap-2'>
-                    <label htmlFor='price'>Price:</label>
+                    <label htmlFor='price'
+                    className='font-semibold text-xl'>Price:</label>
+                    <span className='font-semibold text-lg mt-1'>$</span>
                     <input 
                       type='number'
                       required
@@ -122,23 +130,32 @@ export const ProposalPage = () => {
                       value={price}
                       onChange={e => setPrice(parseInt(e.target.value))}
                     />
+                    <span className='font-semibold text-lg mt-1'>.00</span>
                   </div>
                   <Button
                       type='submit'
                       value='submit'
-                      backgroundColor='primary-100'
+                      backgroundColor='tertiary-100'
                       name='Submit'
+                      disabled={description === ''}
                   />
                 </form>
+                {errorMsg !== '' &&
+                  <div className="flex justify-center sm:justify-start mt-2">
+                    <Error 
+                     error={errorMsg}
+                    />
+                  </div>
+                }
               </div>
             }
             {!auth.data.is_supplier &&
               <div className='mt-10'>
                 {proposals.length === 0 &&
-                  <h1 className='text-center font-bold mb-5'>No proposals have been made for this job, yet.</h1>
+                  <h1 className='text-center font-bold mb-5 text-xl sm:text-2xl'>No proposals have been made for this job, yet.</h1>
                 }
                 {proposals.length > 0 &&                 
-                  <h1 className='text-center font-bold mb-5'>Proposals:</h1>
+                  <h1 className='text-center font-bold mb-5 text-xl sm:text-2xl'>Proposals:</h1>
                 }
                 {proposals.map(proposal => {
                   return (

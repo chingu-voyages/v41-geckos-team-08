@@ -41,7 +41,7 @@ export const ProfileCard = () => {
         </p>
         <section className='mt-4'>
           <Button 
-            backgroundColor="white"
+            backgroundColor="tertiary-100"
             name="Edit Profile"
             handleClick={() => navigate(`/edit_user/${auth.data.uuid}`)}
             bolder='font-semibold'
