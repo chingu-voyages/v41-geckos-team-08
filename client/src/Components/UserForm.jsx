@@ -124,6 +124,7 @@ export const UserForm = () => {
                   value={userInputs.name}
                   onChange={handleChange}
                   required={Object.keys(auth).length === 0}
+                  maxLength={10}
                 />
               </div>
               <div className='flex flex-col mb-4'>
@@ -142,6 +143,7 @@ export const UserForm = () => {
                   value={userInputs.phone}
                   onChange={handleChange}
                   required={Object.keys(auth).length === 0}
+                  maxLength={10}
                 />
               </div>
               <div className='flex flex-col mb-4'>
