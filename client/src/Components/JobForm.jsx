@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-date-picker';
 import { Button } from './Button';
 import Error from "./Error";
@@ -8,8 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { createJob, updateJob } from '../Redux/Actions/jobActions';
 import { getAPI } from '../Utils/Axios';
-import SortAndSearch from './SortAndSearch';
-import { store } from '../Redux/Store';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export const JobForm = () => {
@@ -264,7 +262,6 @@ export const JobForm = () => {
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
                   disabled={selectedCountry === ''}
-                  // maxLength={((cityUUID !== '') || (filteredCities.length === 0 && cityInput !== '')) ? cityInput.length : null}
                 />
                 <ul>
                   {filteredCities.map((city) => (

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { completeJob } from '../Redux/Actions/proposalActions';
 import { Button } from './Button';
+import Error from './Error';
 
 export const JobCard = (props) => {
 
@@ -10,6 +11,14 @@ export const JobCard = (props) => {
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const dispatch = useDispatch();
+
+  const [error, setError] = useState('');
+
+  const finishJob = () => {
+    dispatch(completeJob(props.jobUUID, userInfo.token)).then(error => {
+      if (error) setError(error.data.detail);
+    });
+  }
 
   return (
     <div key={props.uuid} onClick={props.onClick} className={`${props.onClick ? 'cursor-pointer' : ''} container mx-auto px-3 sm:px-20 mb-5`}>
@@ -61,9 +70,16 @@ export const JobCard = (props) => {
                       textColor='white'
                       actionEffect='secondary-300'
                       name='Job Complete'
-                      handleClick={() => dispatch(completeJob(props.jobUUID, userInfo.token))}
+                      handleClick={finishJob}
                       bolder='font-semibold'
                     />
+                </div>
+              }
+              {error !== '' &&
+                <div className="flex justify-center sm:justify-start mt-2">
+                  <Error 
+                    error={error}
+                  />
                 </div>
               }
             </div>

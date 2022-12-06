@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { store } from '../Redux/Store';
 import { Button } from './Button';
 
 export const ProfileCard = () => {
@@ -41,15 +40,12 @@ export const ProfileCard = () => {
         </p>
         <section className='mt-4'>
           <Button 
-            backgroundColor="white"
+            backgroundColor="tertiary-100"
             name="Edit Profile"
             handleClick={() => navigate(`/edit_user/${auth.data.uuid}`)}
             bolder='font-semibold'
           />
         </section>
-        {/* <p className='text-black text-base mb-1'>
-          <span className='font-bold'>Location:</span> not Available
-        </p> */}
       </div>
     </div>
   );
