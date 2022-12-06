@@ -8,6 +8,7 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 module.exports.port = process.env.PORT || 8888;
+module.exports.client = process.env.CLIENT || 5000;
 module.exports.database_name = process.env.DATABASE_NAME;
 module.exports.database_username = process.env.DATABASE_USERNAME;
 module.exports.database_port = process.env.DATABASE_PORT;
