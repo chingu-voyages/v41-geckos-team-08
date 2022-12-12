@@ -102,7 +102,7 @@ export const UserForm = () => {
       {!loading &&     
         <div className='flex flex-wrap lg:h-full overflow-x-hidden'>
           <div className='w-full lg:w-1/2 bg-white p-8 m-0'>
-            <h1 className='block w-full text-center text-gray-800 text-2xl font-bold mb-6'>
+            <h1 data-testid='header' className='block w-full text-center text-gray-800 text-2xl font-bold mb-6'>
               {Object.keys(auth).length > 0 ? 'Update User' : 'Register'}
             </h1>
             <form
@@ -116,6 +116,7 @@ export const UserForm = () => {
                   Name
                 </label>
                 <input
+                  data-testid='name'
                   className='border py-2 px-3 text-black rounded'
                   type='text'
                   name='name'
@@ -135,6 +136,7 @@ export const UserForm = () => {
                   Phone
                 </label>
                 <input
+                  data-testid='phone'
                   className='border py-2 px-3 text-black rounded'
                   type='text'
                   name='phone'
@@ -154,6 +156,7 @@ export const UserForm = () => {
                   Email
                 </label>
                 <input
+                  data-testid='email'
                   className='border py-2 px-3 text-black rounded'
                   type='email'
                   name='email'
@@ -172,6 +175,7 @@ export const UserForm = () => {
                   {Object.keys(auth).length > 0 ? 'New Password' : 'Password'}
                 </label>
                 <input
+                  data-testid='password'
                   className='border py-2 px-3 text-black rounded'
                   type='password'
                   name='password'
@@ -194,6 +198,7 @@ export const UserForm = () => {
                     <div className='flex gap-10 sm:gap-3'>
                       <div className='flex items-center gap-2'>
                         <input
+                          data-testid='supplier'
                           type='radio'
                           checked={selectedOption}
                           value={true}
@@ -210,6 +215,7 @@ export const UserForm = () => {
                       </div>
                       <div className='flex items-center gap-2'>
                         <input
+                          data-testid='customer'
                           type='radio'
                           value={false}
                           checked={!selectedOption}
@@ -236,6 +242,7 @@ export const UserForm = () => {
                       Trade
                     </label>
                     <input
+                      data-testid='trade'
                       className={`${userInputs.is_supplier ? 'opacity-100' : 'opacity-60'}`}
                       type='text'
                       id='trade'
@@ -243,7 +250,7 @@ export const UserForm = () => {
                       onChange={e => setTrade(e.target.value)}
                       name='trade'
                       placeholder='Trade'
-                      required={userInputs.is_supplier ?  true : false}
+                      required={userInputs.is_supplier ? true : false}
                     />
                   </div>                
                 }
