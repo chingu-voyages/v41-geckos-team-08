@@ -5,7 +5,7 @@ export const LandingBottom = () => {
     <section className='m-0 p-10 text-black bg-quaternary-200'>
       
       <div className='flex justify-center items-center lg:justify-start px-12 py-0 md:px-9'>
-            <h2 className='text-2xl font-bold mb-4 pr-0 text-center lg:text-left lg:pr-96 lg:mr-40'>
+            <h2 data-testid='bottomHeading' className='text-2xl font-bold mb-4 pr-0 text-center lg:text-left lg:pr-96 lg:mr-40'>
                 Here's what Handy Work can do for you
               </h2>
           </div>
