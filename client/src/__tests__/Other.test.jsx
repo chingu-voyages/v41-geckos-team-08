@@ -41,6 +41,28 @@ describe('Landing Page', () => {
     expect(screen.getByTestId('bottomHeading')).toHaveTextContent(
         "Here's what Handy Work can do for you"
       );
-     
+  });
+});
+
+describe('Error Page', () => {
+  const setup = () => {
+    const { container } = render(
+      <Router>
+        <PageNotFound />
+      </Router>
+    );
+    return { container };
+  };
+
+  it('renders the error page', () => {
+    const { container } = setup();
+    expect(container).toMatchSnapshot();
+  });
+
+  it('renders the error msg', () => {
+    setup();
+    expect(screen.getByTestId('errorMsg')).toHaveTextContent(
+      "Sorry, we couldn't find this page."
+    );
   });
 });
