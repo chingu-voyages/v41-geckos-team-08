@@ -24,12 +24,16 @@ afterEach(done => {
 });
 
 describe("Profile Page", () => {
- const setup = async () => {
+ const setup = async (is_supplier = false) => {
   const mockStore = configureMockStore([thunk]);
   const store = mockStore({
    auth: {
     data: {
-     is_supplier: false
+     name: 'exampleUser',
+     email: 'example@email.com',
+     phone: '1234567890',
+     uuid: 'exampleUUID',
+     is_supplier
     }
    },
    jobs: [
@@ -73,5 +77,25 @@ describe("Profile Page", () => {
  it('renders the profile page', async () => {
   const { container } = await setup();
   expect(container).toMatchSnapshot();
+ });
+
+ it('renders the user as a customer', async () => {
+  await setup();
+
+  expect(screen.getByTestId('profileName').textContent).toEqual('exampleUser');
+  expect(screen.getByTestId('profileEmail').textContent).toEqual('Email: example@email.com');
+  expect(screen.getByTestId('profilePhone').textContent).toEqual('Phone: (123) 4567890');
+
+  expect(screen.getByTestId('profileType').textContent).toEqual('');
+  expect(screen.getByTestId('leftBtn').textContent).toEqual('Jobs Posted');
+  expect(screen.getByTestId('rightBtn').textContent).toEqual('Jobs In Progress');  
+ });
+
+ it('renders the user as a supplier', async () => {
+  await setup(true);
+
+  expect(screen.getByTestId('profileType').textContent).toEqual('Service Provider');
+  expect(screen.getByTestId('leftBtn').textContent).toEqual('Jobs Taken');
+  expect(screen.getByTestId('rightBtn').textContent).toEqual('Jobs Pending');
  });
 });

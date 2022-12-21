@@ -7,7 +7,7 @@ export const Button = (props) => {
 			disabled={props.disabled}
 			value={props.value}
 			onClick={props.handleClick}
-			data-testid='btn'>
+			data-testid={props.testId}>
 			{/* Button Name will be here probably through props*/}
 			{/* example props backgroundColor ='transparent' activeEffect = 'primary-100' */}
 			{props.name}

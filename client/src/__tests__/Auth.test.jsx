@@ -74,7 +74,7 @@ describe("Login Page", () => {
   fireEvent.change(screen.getByTestId("password"), {target: {value: "Example@1"}});
   expect(screen.getByTestId('password')).toHaveValue('Example@1');
 
-  fireEvent.click(screen.getByTestId("btn"));
+  fireEvent.click(screen.getByTestId("submitBtn"));
 
   await waitFor(() => {
    expect(useDispatch).toBeCalled();
@@ -124,8 +124,8 @@ describe("Sign Up Page", () => {
   expect(screen.getByTestId('header').innerHTML).toEqual('Register');
   expect(screen.getByTestId('header').innerHTML).not.toEqual('Update User');
 
-  expect(screen.getByTestId('btn').innerHTML).toEqual('Sign Up');
-  expect(screen.getByTestId('btn').innerHTML).not.toEqual('Update');
+  expect(screen.getByTestId('submitBtn').innerHTML).toEqual('Sign Up');
+  expect(screen.getByTestId('submitBtn').innerHTML).not.toEqual('Update');
  });
 
  it('signs up the user as a customer', async () => {
@@ -146,7 +146,7 @@ describe("Sign Up Page", () => {
   expect(screen.getByTestId('supplier')).not.toBeChecked();
   expect(screen.getByTestId('customer')).toBeChecked();
 
-  fireEvent.click(screen.getByTestId("btn"));
+  fireEvent.click(screen.getByTestId("submitBtn"));
 
   await waitFor(() => {
    expect(useDispatch).toBeCalled();
@@ -168,7 +168,7 @@ describe("Sign Up Page", () => {
   fireEvent.change(screen.getByTestId("trade"), {target: {value: "developer"}});
   expect(screen.getByTestId('trade')).toHaveValue('developer');
 
-  fireEvent.click(screen.getByTestId("btn"));
+  fireEvent.click(screen.getByTestId("submitBtn"));
 
   await waitFor(() => {
    expect(useDispatch).toBeCalled();

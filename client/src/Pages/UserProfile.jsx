@@ -35,6 +35,7 @@ export const UserProfile = () => {
           <div className='py-0 grow-0 shrink-0 basis-auto w-full'>
             <div className='flex gap-5 justify-center sm:justify-end mt-4 sm:mr-4'>
               <Button
+                testId='leftBtn'
                 type='submit'
                 value={buttonAClicked}
                 name={auth.data.is_supplier ? 'Jobs Taken' : 'Jobs Posted'}
@@ -45,6 +46,7 @@ export const UserProfile = () => {
                 disabled={buttonAClicked}
               />
               <Button
+                testId='rightBtn'
                 type='submit'
                 value={buttonBClicked}
                 name={
