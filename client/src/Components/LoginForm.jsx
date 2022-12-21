@@ -81,6 +81,7 @@ export function LoginForm() {
             </div>
             <div className='flex justify-center'>
               <Button 
+                testId='submitBtn'
                 backgroundColor='tertiary-100' 
                 name='Sign In'
                 disabled={

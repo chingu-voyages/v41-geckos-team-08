@@ -258,6 +258,7 @@ export const UserForm = () => {
 
               <div className='flex justify-center sm:justify-start'>
                 <Button
+                  testId='submitBtn'
                   type='submit'
                   value='submit'
                   backgroundColor='tertiary-100'
