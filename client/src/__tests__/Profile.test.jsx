@@ -24,7 +24,7 @@ afterEach(done => {
 });
 
 describe("Profile Page", () => {
- const setup = async (is_supplier = false) => {
+ const setup = async (is_supplier = false, jobs = {}) => {
   const mockStore = configureMockStore([thunk]);
   const store = mockStore({
    auth: {
@@ -38,14 +38,14 @@ describe("Profile Page", () => {
    },
    jobs: [
     {
-     jobs_posted: [],
-     jobs_in_progress: []
+     jobs_posted: jobs.posted || [],
+     jobs_in_progress: jobs.in_progress || []
     }
    ],
    proposals: [
     {
-     jobs_taken: [],
-     jobs_pending: []
+     jobs_taken: jobs.taken || [],
+     jobs_pending: jobs.pending || []
     }
    ]
   });
@@ -97,5 +97,25 @@ describe("Profile Page", () => {
   expect(screen.getByTestId('profileType').textContent).toEqual('Service Provider');
   expect(screen.getByTestId('leftBtn').textContent).toEqual('Jobs Taken');
   expect(screen.getByTestId('rightBtn').textContent).toEqual('Jobs Pending');
+ });
+
+ it('displays the no jobs msg for the customer', async () => {
+  await setup();
+
+  expect(screen.getByTestId('noJobs').textContent).toEqual('Sorry, you don\'t have any jobs posted.');
+
+  fireEvent.click(screen.getByTestId('rightBtn'));
+
+  expect(screen.getByTestId('noJobs').textContent).toEqual('Sorry, you don\'t have any jobs in progress.');
+ });
+
+ it('displays the no jobs msg for the supplier', async () => {
+  await setup(true);
+
+  expect(screen.getByTestId('noJobs').textContent).toEqual('Sorry, you don\'t have any jobs picked up.');
+
+  fireEvent.click(screen.getByTestId('rightBtn'));
+
+  expect(screen.getByTestId('noJobs').textContent).toEqual('Sorry, you don\'t have any jobs waiting to be picked up.');
  });
 });
