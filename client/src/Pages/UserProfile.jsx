@@ -105,11 +105,12 @@ export const UserProfile = () => {
               {buttonAClicked &&
                 auth.data.is_supplier &&
                 proposals.length > 0 &&
-                proposals[0].jobs_taken.map((proposal) => {
+                proposals[0].jobs_taken.map((proposal, index) => {
                   return (
                     <JobCard
                       key={proposal.job.uuid}
                       jobUUID={proposal.job.uuid}
+                      testIndex={index}
                       name={proposal.customer.name}
                       description={proposal.job.description}
                       trade={proposal.trade.description}
@@ -121,11 +122,12 @@ export const UserProfile = () => {
               {buttonBClicked &&
                 auth.data.is_supplier &&
                 proposals.length > 0 &&
-                proposals[0].jobs_pending.map((proposal) => {
+                proposals[0].jobs_pending.map((proposal, index) => {
                   return (
                     <JobCard
                       key={proposal.job.uuid}
                       jobUUID={proposal.job.uuid}
+                      testIndex={index}
                       name={proposal.customer.name}
                       description={proposal.job.description}
                       trade={proposal.trade.description}
@@ -138,10 +140,11 @@ export const UserProfile = () => {
               {buttonBClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&
-                jobs[0].jobs_in_progress.map((job) => {
+                jobs[0].jobs_in_progress.map((job, index) => {
                   return (
                     <JobCard
                       key={job.uuid}
+                      testIndex={index}
                       name={job.customer.name}
                       description={job.description}
                       trade={job.trade.description}
