@@ -12,6 +12,7 @@ export const UserProfile = () => {
 
   const { auth, jobs, proposals } = useSelector((state) => state);
 
+  console.log(jobs);
   console.log(proposals);
 
   const [buttonAClicked, setButtonAClicked] = useState(true);
@@ -85,11 +86,12 @@ export const UserProfile = () => {
               {buttonAClicked &&
                 !auth.data.is_supplier &&
                 jobs.length > 0 &&
-                jobs[0].jobs_posted.map((job) => {
+                jobs[0].jobs_posted.map((job, index) => {
                   return (
                     <JobCard
                       key={job.uuid}
                       jobUUID={job.uuid}
+                      testIndex={index}
                       name={job.customer.name}
                       description={job.description}
                       trade={job.trade.description}
