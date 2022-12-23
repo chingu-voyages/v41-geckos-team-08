@@ -118,4 +118,31 @@ describe("Profile Page", () => {
 
   expect(screen.getByTestId('noJobs').textContent).toEqual('Sorry, you don\'t have any jobs waiting to be picked up.');
  });
+
+ it('displays jobs posted by the customer', async () => {
+  const jobs = {
+   posted: [
+    {
+     uuid: 0,
+     customer: {
+      name: 'exampleName0'
+     },
+     description: 'example description zero',
+     trade: {
+      description: 'Welder'
+     },
+     expiration_date: '2032-01-01T00:00:00'
+    },
+   ]
+  };
+
+  await setup(false, jobs);
+
+  expect(screen.queryByTestId('noJobs')).not.toBeInTheDocument();
+
+  expect(screen.getByTestId('jobName0').textContent).toEqual('exampleName0');
+  expect(screen.getByTestId('jobDescription0').textContent).toEqual('example description zero');
+  expect(screen.getByTestId('jobTrade0').textContent).toEqual('Skills Required: Welder');
+  expect(screen.getByTestId('jobExpiration0').textContent).toEqual('Due Date: 2032-01-01');
+ });
 });

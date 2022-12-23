@@ -25,16 +25,16 @@ export const JobCard = (props) => {
       <div>
         <div className='bg-primary rounded p-4 shadow-customShadow md:flex justify-between bg-tertiary-100'>
           <div data-v-648b5d7b=''>
-            <h4 data-testid='jobName' className='text-2xl font-semibold'>{props.name}</h4>
+            <h4 data-testid={`jobName${props.testIndex}`} className='text-2xl font-semibold'>{props.name}</h4>
 
-            <p data-testid='jobDescription' className='my-2 text-lg pr-2'>
+            <p data-testid={`jobDescription${props.testIndex}`} className='my-2 text-lg pr-2'>
               {props.description}
             </p>
             <div className='flex items-center mt-4'>
-              <div data-testid='jobTrade' className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
+              <div data-testid={`jobTrade${props.testIndex}`} className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
                 Skills Required: {props.trade}
               </div>
-              <div data-testid='jobExpiration' className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
+              <div data-testid={`jobExpiration${props.testIndex}`} className='text-xs uppercase font-bold tracking-wider bg-gray-300 inline-block px-0 py-1 rounded mr-6'>
                 Due Date: {props.expiration_date}
               </div>
             </div>
