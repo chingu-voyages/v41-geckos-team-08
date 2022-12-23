@@ -42,7 +42,7 @@ export const JobCard = (props) => {
               {props.showEditBtn &&             
                 <div className='flex gap-3 mt-2'>
                   <Button
-                    testId='editBtn'
+                    testId={`editBtn${props.testIndex}`}
                     backgroundColor='tertiary-100'
                     textColor='white'
                     actionEffect='secondary-300'
@@ -55,7 +55,7 @@ export const JobCard = (props) => {
               {props.showJobBtn &&             
                 <div className='flex gap-3 mt-2'>
                     <Button
-                      testId='jobBtn'
+                      testId={`jobBtn${props.testIndex}`}
                       backgroundColor='tertiary-100'
                       textColor='white'
                       actionEffect='secondary-300'
@@ -68,7 +68,7 @@ export const JobCard = (props) => {
               {props.showCompletedBtn &&             
                 <div className='flex gap-3 mt-2'>
                     <Button
-                      testId='finishBtn'
+                      testId={`finishBtn${props.testIndex}`}
                       backgroundColor='tertiary-100'
                       textColor='white'
                       actionEffect='secondary-300'
