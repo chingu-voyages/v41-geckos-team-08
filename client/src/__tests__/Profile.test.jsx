@@ -203,4 +203,44 @@ describe("Profile Page", () => {
   expect(screen.getByTestId('jobTrade1').textContent).toEqual('Skills Required: Electrician');
   expect(screen.getByTestId('jobExpiration0').textContent).toEqual('Due Date: 2032-01-01');
  });
+
+ it('displays jobs from the customer in progress', async () => {
+  const jobs = {
+   in_progress: [
+    {
+     uuid: 0,
+     customer: {
+      name: 'exampleName0'
+     },
+     description: 'example description zero',
+     trade: {
+      description: 'Welder'
+     },
+     expiration_date: '2032-01-01T00:00:00'
+    },
+    {
+     uuid: 1,
+     customer: {
+      name: 'exampleName1'
+     },
+     description: 'example description one',
+     trade: {
+      description: 'Electrician'
+     },
+     expiration_date: '2032-01-01T00:00:00'
+    },
+   ]
+  };
+
+  await setup(false, jobs);
+
+  fireEvent.click(screen.getByTestId('rightBtn'));
+
+  expect(screen.queryByTestId('noJobs')).not.toBeInTheDocument();
+
+  expect(screen.getByTestId('jobName1').textContent).toEqual('exampleName1');
+  expect(screen.getByTestId('jobDescription0').textContent).toEqual('example description zero');
+  expect(screen.getByTestId('jobTrade1').textContent).toEqual('Skills Required: Electrician');
+  expect(screen.getByTestId('jobExpiration0').textContent).toEqual('Due Date: 2032-01-01');
+ });
 });
