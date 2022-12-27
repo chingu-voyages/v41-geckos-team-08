@@ -122,6 +122,7 @@ export const AvailableJobsPage = () => {
                   Country
                 </label>
                 <select
+                  data-testid='countrySelect'
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
                   className='cursor-pointer w-72'
@@ -150,14 +151,16 @@ export const AvailableJobsPage = () => {
                 <input
                   className={`w-72 ${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
                   type='search'
+                  data-testid='cityInput'
                   value={cityInput}
                   onChange={(e) => setCityInput(e.target.value)}
                   disabled={selectedCountry === ''}
                   maxLength={((cityUUID !== '') || (filteredCities.length === 0 && cityInput !== '')) ? cityInput.length : null}
                 />
-                <ul>
+                <ul data-testid='citiesList'>
                   {filteredCities.map((city) => (
                     <li
+                      data-testid='citySelect'
                       className='cursor-pointer hover:opacity-60 text-black'
                       key={city.uuid}
                       onClick={() => cityInputHandler(city)}

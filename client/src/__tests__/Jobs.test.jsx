@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import { BrowserRouter as Router } from "react-router-dom";
 import * as ReactRedux from "react-redux";
@@ -27,20 +28,44 @@ afterEach(done => {
 describe('Available Jobs Page', () => {
  const setup = async (jobs = {}) => {
   jest.spyOn(Storage.prototype, 'getItem').mockReturnValue('{"token":"token"}');
-  axios.get = jest.fn().mockResolvedValue({
-    data: {
-      data: [
-       {
-        uuid: '0',
-        name: 'United States'
-       },
-       {
-        uuid: '1',
-        name: 'Canada'
-       },
-      ]
-    }
+  const getMock = async (url) => await axios.get.mockImplementation(() => {
+   switch (url) {
+    case "locations":
+     return Promise.resolve({
+      data: {
+       data: [
+        {
+         uuid: '0',
+         name: 'United States'
+        },
+        {
+         uuid: '1',
+         name: 'Canada'
+        },
+       ]
+      }
+     })
+    case "locations/0":
+     return Promise.resolve({
+      data: {
+       data: [
+        {
+         uuid: '0',
+         name: 'Los Angeles'
+        },
+        {
+         uuid: '1',
+         name: 'New York'
+        },
+       ]
+      }
+     })
+    default:
+     return '';
+   }
   });
+
+  await getMock('locations');
 
   const mockStore = configureMockStore([thunk]);
   const store = mockStore({
@@ -72,6 +97,7 @@ describe('Available Jobs Page', () => {
 
   return {
    container,
+   getMock,
    useDispatch
   };
  }
@@ -79,5 +105,27 @@ describe('Available Jobs Page', () => {
  it('renders the available jobs page', async () => {
   const { container } = await setup();
   expect(container).toMatchSnapshot();
+ });
+
+ it('selects a city', async () => {
+  const { getMock } = await setup();
+  jest.useFakeTimers();
+
+  await act(async () => {
+    await getMock('locations/0');
+  });
+
+  userEvent.selectOptions(screen.getByTestId("countrySelect"), "United States");
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  fireEvent.change(screen.getByTestId("cityInput"), {target: {value: "Los Angeles"}});
+  expect((screen.getByTestId("citySelect")).textContent).toEqual("Los Angeles");
+
+  fireEvent.click(screen.getByTestId("cityInput"));
+
+  expect((screen.getByText("United States")).selected).toBeTruthy();
+  expect((screen.getByTestId("cityInput"))).toHaveValue("Los Angeles");
  });
 });
