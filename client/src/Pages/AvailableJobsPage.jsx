@@ -37,7 +37,6 @@ export const AvailableJobsPage = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.log(cityUUID);
       const { data: res } = await getAPI(`jobs?city=${cityUUID}`, userInfo.token);
       console.log(res);
       const _proposals = proposals[0].jobs_pending.filter(proposal => proposal.city.name.toLowerCase() === cityInput.toLowerCase());
@@ -172,6 +171,7 @@ export const AvailableJobsPage = () => {
         </div>
         <div className='mt-0 ml-2'>
           <Button
+            testId='submitBtn'
             type='submit'
             value='submit'
             backgroundColor='tertiary-100'
@@ -182,10 +182,10 @@ export const AvailableJobsPage = () => {
       </form>
       <div>
         {jobs.length === 0 && noJobs !== '' &&
-          <h1 className='mt-2 text-center font-semibold text-2xl px-4'>Sorry, there are no jobs available in {noJobs}.</h1>
+          <h1 data-testid='noJobs' className='mt-2 text-center font-semibold text-2xl px-4'>Sorry, there are no jobs available in {noJobs}.</h1>
         }
         {jobs.length > 0 && (
-          <h3 className='text-xl px-4 font-bold my-8 text-center text-black'>
+          <h3 data-testid='jobResults' className='text-xl px-4 font-bold my-8 text-center text-black'>
             Showing results for {jobs[0].city.name}
           </h3>
         )}

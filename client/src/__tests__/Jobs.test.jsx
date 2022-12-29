@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/extend-expect";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -56,6 +56,37 @@ describe('Available Jobs Page', () => {
         {
          uuid: '1',
          name: 'New York'
+        },
+       ]
+      }
+     })
+    case "jobs?city=0":
+     return Promise.resolve({
+      data: {
+       data: [
+        {
+         uuid: '0',
+         customer: {
+          name: 'Customer Zero',
+         },
+         description: 'Example Description Zero',
+         trade: {
+          description: "Electrician"
+         },
+         expiration_date: "2032-01-01T00:00:00",
+         is_taken: false
+        },
+        {
+         uuid: '1',
+         customer: {
+          name: 'Customer One',
+         },
+         description: 'Example Description One',
+         trade: {
+          description: "Welder"
+         },
+         expiration_date: "2032-01-01T00:00:00",
+         is_taken: false
         },
        ]
       }
@@ -127,5 +158,57 @@ describe('Available Jobs Page', () => {
 
   expect((screen.getByText("United States")).selected).toBeTruthy();
   expect((screen.getByTestId("cityInput"))).toHaveValue("Los Angeles");
+ });
+
+ it("returns no jobs", async () => {
+  const { getMock } = await setup({
+   pending: [
+    {
+     job: {
+      uuid: '0',
+     },
+     city: {
+      name: 'Los Angeles'
+     },
+    },
+    {
+     job: {
+      uuid: '1',
+     },
+     city: {
+      name: 'Los Angeles'
+     },
+    },
+   ]
+  });
+  jest.useFakeTimers();
+
+  await act(async () => {
+    await getMock('locations/0');
+  });
+
+  userEvent.selectOptions(screen.getByTestId("countrySelect"), "United States");
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  fireEvent.change(screen.getByTestId("cityInput"), {target: {value: "Los Angeles"}});
+  fireEvent.click(screen.getByTestId("citySelect"));  
+
+  await act(async () => {
+    await getMock('jobs?city=0');
+  });
+
+  fireEvent.click(screen.getByTestId("submitBtn"));
+  
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  await waitFor(() => {
+   expect(screen.getByTestId("noJobs")).toBeInTheDocument();
+  });
+
+  expect(screen.getByTestId("noJobs").textContent).toEqual("Sorry, there are no jobs available in Los Angeles.");
  });
 });
