@@ -189,11 +189,12 @@ export const AvailableJobsPage = () => {
             Showing results for {jobs[0].city.name}
           </h3>
         )}
-        {jobs.map((job) => {
+        {jobs.map((job, index) => {
           return (
             <JobCard
               onClick={() => navigate(`/job/${job.uuid}`)}
               key={job.uuid}
+              testIndex={index}
               name={job.customer.name}
               description={job.description}
               trade={job.trade.description}
