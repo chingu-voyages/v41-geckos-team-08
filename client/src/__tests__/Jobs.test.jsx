@@ -69,6 +69,9 @@ describe('Available Jobs Page', () => {
          customer: {
           name: 'Customer Zero',
          },
+         city: {
+          name: 'Los Angeles'
+         },
          description: 'Example Description Zero',
          trade: {
           description: "Electrician"
@@ -80,6 +83,9 @@ describe('Available Jobs Page', () => {
          uuid: '1',
          customer: {
           name: 'Customer One',
+         },
+         city: {
+          name: 'Los Angeles'
          },
          description: 'Example Description One',
          trade: {
@@ -210,5 +216,59 @@ describe('Available Jobs Page', () => {
   });
 
   expect(screen.getByTestId("noJobs").textContent).toEqual("Sorry, there are no jobs available in Los Angeles.");
+ });
+
+ it("returns jobs from the selected city", async () => {
+  const { getMock } = await setup({
+   pending: [
+    {
+     job: {
+      uuid: '3',
+     },
+     city: {
+      name: 'Los Angeles'
+     },
+    },
+    {
+     job: {
+      uuid: '4',
+     },
+     city: {
+      name: 'Los Angeles'
+     },
+    },
+   ]
+  });
+  jest.useFakeTimers();
+
+  await act(async () => {
+    await getMock('locations/0');
+  });
+
+  userEvent.selectOptions(screen.getByTestId("countrySelect"), "United States");
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  fireEvent.change(screen.getByTestId("cityInput"), {target: {value: "Los Angeles"}});
+  fireEvent.click(screen.getByTestId("citySelect"));  
+
+  await act(async () => {
+    await getMock('jobs?city=0');
+  });
+
+  fireEvent.click(screen.getByTestId("submitBtn"));
+  
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  expect(screen.queryByTestId("noJobs")).not.toBeInTheDocument();
+  expect(screen.getByTestId('jobResults').textContent).toEqual('Showing results for Los Angeles');
+
+  expect(screen.getByTestId('jobName1').textContent).toEqual('Customer One');
+  expect(screen.getByTestId('jobDescription0').textContent).toEqual('Example Description Zero');
+  expect(screen.getByTestId('jobTrade1').textContent).toEqual('Skills Required: Welder');
+  expect(screen.getByTestId('jobExpiration0').textContent).toEqual('Due Date: 2032-01-01');
  });
 });
