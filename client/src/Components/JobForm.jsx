@@ -47,6 +47,7 @@ export const JobForm = () => {
       const { data: _countries } = await getAPI(`locations`, userInfo.token);
       setCountries(_countries.data);
       const { data: _trades } = await getAPI('trades', userInfo.token);
+      console.log(_trades);
       const tradesArr = _trades.data
         .filter((trade) => trade.description.substring(0, 2) !== '{{')
         .sort((a, b) => a.description.localeCompare(b.description))
@@ -219,7 +220,7 @@ export const JobForm = () => {
       {!loading &&
         <div className='flex flex-wrap lg:h-full'>        
           <div className='w-full lg:w-1/2 bg-white p-8 m-0'>
-            <h1 className='block w-full text-center text-black text-3xl tracking-tight font-bold mb-6'>
+            <h1 data-testid='jobHeading' className='block w-full text-center text-black text-3xl tracking-tight font-bold mb-6'>
               {showUpdate ? 'Update' : 'New'} Job
             </h1>
             <form className='flex flex-col justify-center' onSubmit={handleSubmit}>
@@ -231,6 +232,7 @@ export const JobForm = () => {
                   Countries
                 </label>
                 <select
+                  data-testid='countrySelect'
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
                   className='cursor-pointer'
@@ -257,6 +259,7 @@ export const JobForm = () => {
                   Cities
                 </label>
                 <input
+                  data-testid='cityInput'
                   className={`${selectedCountry ? 'opacity-100' : 'opacity-20'}`}
                   type='search'
                   value={cityInput}
@@ -266,6 +269,7 @@ export const JobForm = () => {
                 <ul>
                   {filteredCities.map((city) => (
                     <li
+                      data-testid='citySelect'
                       className='cursor-pointer hover:opacity-60 text-black'
                       key={city.uuid}
                       onClick={() => cityInputHandler(city)}
@@ -283,6 +287,7 @@ export const JobForm = () => {
                   Trade
                 </label>
                 <select
+                  data-testid='tradeSelect'
                   value={selectedTrade}
                   onChange={(e) => setSelectedTrade(e.target.value)}
                   className='cursor-pointer'
@@ -307,6 +312,7 @@ export const JobForm = () => {
                   Description
                 </label>
                 <textarea
+                  data-testid='description'
                   className='border py-2 px-3 text-black rounded'
                   type='text'
                   name='description'
@@ -325,6 +331,7 @@ export const JobForm = () => {
                   Low Price
                 </label>
                 <input
+                  data-testid='lowPrice'
                   type='number'
                   min={1}
                   required
@@ -340,6 +347,7 @@ export const JobForm = () => {
                   High Price
                 </label>
                 <input
+                  data-testid='highPrice'
                   type='number'
                   min={1}
                   required
@@ -368,6 +376,7 @@ export const JobForm = () => {
               </div>
               <div className='flex justify-center sm:justify-start mt-2'>
                 <Button
+                  testId='submitBtn'
                   type='submit'
                   value='submit'
                   backgroundColor='tertiary-100'
