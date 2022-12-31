@@ -57,6 +57,7 @@ export const JobForm = () => {
             trade.description.charAt(0).toUpperCase() +
             trade.description.slice(1).toLowerCase(),
         }));
+      console.log(tradesArr);
       setTrades(tradesArr);
     })();
   }, [userInfo.token]);
@@ -76,6 +77,7 @@ export const JobForm = () => {
     (async () => {
       try {
         const { data: res } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
+        console.log(res);
         const data = res.data;
         const [country] = countries.filter(_country => _country.uuid === data.city.country_uuid);
         setSelectedCountry(country.uuid);

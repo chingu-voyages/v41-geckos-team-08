@@ -111,7 +111,13 @@ describe("Job Form Page", () => {
   await act(async () => {
     await getMock('trades');
   });
-
+  
+  if (search === '?jobs/1') {
+   setTimeout(async () => {
+    await getMock('jobs/1');
+   }, 1);
+  }
+  
   const mockStore = configureMockStore([thunk]);
   const store = mockStore({
    auth: {
@@ -120,12 +126,12 @@ describe("Job Form Page", () => {
     }
    }
   });
-
+  
   const dispatch = jest.fn(() => Promise.resolve());
   const useDispatch = jest.spyOn(ReactRedux, 'useDispatch').mockReturnValue(dispatch);
-
+  
   const { Provider } = ReactRedux;
-
+  
   const { container } = render(
    <Provider store={store}>
     <Router>
@@ -133,7 +139,7 @@ describe("Job Form Page", () => {
     </Router>
    </Provider>
   );
-
+  
   const resolve = Promise.resolve();
   await act(async () => {
    await resolve;
@@ -149,5 +155,15 @@ describe("Job Form Page", () => {
  it('renders the job form page', async () => {
   const { container } = await setup();
   expect(container).toMatchSnapshot();
+ });
+
+ it('renders the create a job form', async () => {
+  await setup();
+  expect(screen.getByTestId('jobHeading').textContent).toEqual('New Job');
+ });
+
+ it('renders the update a job form', async () => {
+  await setup('?jobs/1');
+  expect(screen.getByTestId('jobHeading').textContent).toEqual('Update Job');
  });
 });
