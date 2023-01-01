@@ -47,7 +47,6 @@ export const JobForm = () => {
       const { data: _countries } = await getAPI(`locations`, userInfo.token);
       setCountries(_countries.data);
       const { data: _trades } = await getAPI('trades', userInfo.token);
-      console.log(_trades);
       const tradesArr = _trades.data
         .filter((trade) => trade.description.substring(0, 2) !== '{{')
         .sort((a, b) => a.description.localeCompare(b.description))
@@ -57,7 +56,6 @@ export const JobForm = () => {
             trade.description.charAt(0).toUpperCase() +
             trade.description.slice(1).toLowerCase(),
         }));
-      console.log(tradesArr);
       setTrades(tradesArr);
     })();
   }, [userInfo.token]);
@@ -77,9 +75,9 @@ export const JobForm = () => {
     (async () => {
       try {
         const { data: res } = await getAPI(`jobs/${jobUUID}`, userInfo.token);
-        console.log(res);
         const data = res.data;
         const [country] = countries.filter(_country => _country.uuid === data.city.country_uuid);
+        console.log(country);
         setSelectedCountry(country.uuid);
         setCityInput(data.city.name);
         setCityLength(data.city.name.length);
@@ -102,10 +100,6 @@ export const JobForm = () => {
   }, [trades]);
 
   const [selectedCountry, setSelectedCountry] = useState('');
-
-  useEffect(() => {
-    console.log(newJob);
-  }, [newJob]);
 
   const [showCityForUpdate, setShowCityForUpdate] = useState(true);
 
@@ -159,6 +153,7 @@ export const JobForm = () => {
       setFilteredCities([]);
       return;
     }
+    console.log(cities);
     const _cities = cities
       .filter((city) =>
         city.name.toLowerCase().includes(cityInput.toLowerCase())
@@ -368,6 +363,7 @@ export const JobForm = () => {
                 </label>
                 <div className='flex justify-center sm:justify-start'>
                   <DatePicker
+                    calendarAriaLabel='datePicker'
                     clearIcon={null}
                     className='bg-white'
                     value={date}
