@@ -31,8 +31,12 @@ afterEach(done => {
 
 describe("Job Form Page", () => {
  const setup = async (search = '') => {
+  jest.useFakeTimers();
+
+  const navigate = jest.fn();
+
   jest.spyOn(ReactRouter, 'useLocation').mockReturnValue({ search });
-  jest.spyOn(ReactRouter, 'useNavigate').mockReturnThis();
+  jest.spyOn(ReactRouter, 'useNavigate').mockReturnValue(navigate);
 
   jest.spyOn(Storage.prototype, 'getItem').mockReturnValue('{"token":"token"}');
   const getMock = async (url) => await axios.get.mockImplementation(() => {
@@ -108,16 +112,6 @@ describe("Job Form Page", () => {
 
   await getMock('locations');
 
-  await act(async () => {
-    await getMock('trades');
-  });
-  
-  if (search === '?jobs/1') {
-   setTimeout(async () => {
-    await getMock('jobs/1');
-   }, 1);
-  }
-  
   const mockStore = configureMockStore([thunk]);
   const store = mockStore({
    auth: {
@@ -139,10 +133,10 @@ describe("Job Form Page", () => {
     </Router>
    </Provider>
   );
-  
-  const resolve = Promise.resolve();
+
   await act(async () => {
-   await resolve;
+   await getMock('trades');
+   if (search === '?jobs/1') await getMock('jobs/1');
   });
 
   return {
@@ -159,11 +153,48 @@ describe("Job Form Page", () => {
 
  it('renders the create a job form', async () => {
   await setup();
+
   expect(screen.getByTestId('jobHeading').textContent).toEqual('New Job');
+  expect(screen.getByTestId('submitBtn').textContent).toEqual('Post');
  });
 
  it('renders the update a job form', async () => {
   await setup('?jobs/1');
+
   expect(screen.getByTestId('jobHeading').textContent).toEqual('Update Job');
+  expect(screen.getByTestId('submitBtn').textContent).toEqual('Update');
+ });
+
+ it('creates a new job', async () => {
+  const { getMock, useDispatch } = await setup();
+  jest.useFakeTimers();
+
+  await act(async () => {
+    await getMock('locations/1');
+  });
+
+  userEvent.selectOptions(screen.getByTestId("countrySelect"), "Canada");
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  fireEvent.change(screen.getByTestId("cityInput"), {target: {value: "Vancouver"}});
+  fireEvent.click(screen.getByTestId("citySelect")); 
+  
+  await act(async () => {
+   await jest.runAllTimers();
+  });
+
+  userEvent.selectOptions(screen.getByTestId("tradeSelect"), "Welder");
+  fireEvent.change(screen.getByTestId("description"), {target: {value: "This is an example job description."}});
+  fireEvent.change(screen.getByTestId("lowPrice"), {target: {value: 3}});
+  fireEvent.change(screen.getByTestId("highPrice"), {target: {value: 7}});
+  fireEvent.change(screen.getByLabelText("datePicker"), {target: {value: '2032-01-01T00:00:00'}});
+
+  fireEvent.click((screen.getByTestId('submitBtn')));
+
+  await waitFor(() => {
+   expect(useDispatch).toBeCalled();
+  });
  });
 });
